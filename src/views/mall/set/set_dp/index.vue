@@ -10,25 +10,29 @@
       >{{item.label}}</div>
     </div>
     <div class="set-body">
-      <!-- <component :is="currentTab"></component> -->
+      <component :is="currentTab"></component>
     </div>
   </div>
 </template>
 <script>
-
+import dpxx from './set_dpxx'
+import ksck from './set_ksck'
+import thwq from './set_thwq'
 export default {
   data(){
     return {
       tabs:[
-        {label:'店铺信息',component:'smzt'},
-        {label:'可售仓库',component:'kdfh'},
-        {label:'退货/维权设置',component:'jysz'}
+        {label:'店铺信息',component:'dpxx'},
+        {label:'可售仓库',component:'ksck'},
+        {label:'退货/维权设置',component:'thwq'}
       ],
-      currentTab:'smzt'
+      currentTab:'dpxx'
     }
   },
   components:{
-    
+    dpxx,
+    ksck,
+    thwq
   }
 }
 </script>

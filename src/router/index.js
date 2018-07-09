@@ -42,7 +42,8 @@ export default new Router({
           children:[
             {path:'/main/mallchildren/set_dd',name:'set_dd',component:resolve=>require(['../views/mall/set/set_dd/index'],resolve)},
             {path:'/main/mallchildren/set_dd_addkd',name:'set_dd_addkd',component:resolve=>require(['../views/mall/set/set_dd/set_kdfh/kdfh_add'],resolve)},
-            {path:'/main/mallchildren/set_jy/:id',name:'set_jy',component:resolve=>require(['../views/mall/set/set_jy'],resolve)}
+            {path:'/main/mallchildren/set_jy',name:'set_jy',component:resolve=>require(['../views/mall/set/set_jy'],resolve)},
+            {path:'/main/mallchildren/set_dp',name:'set_dp',component:resolve=>require(['../views/mall/set/set_dp/index'],resolve)}
           ]
         }
       ]

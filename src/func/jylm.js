@@ -1,0 +1,23 @@
+//经营类目
+export const jylm=[
+    {label:'食品',value:1},
+    {label:'数码家电',value:2},
+    {label:'女装',value:3},
+    {label:'日用百货',value:4},
+    {label:'美妆',value:5},
+    {label:'休闲娱乐',value:6},
+    {label:'教育培训',value:7},
+    {label:'亲子',value:8},
+    {label:'男装',value:9},
+    {label:'餐饮外卖',value:10},
+    {label:'医疗健康',value:11},
+    {label:'箱包配饰',value:12},
+    {label:'家居家纺',value:13},
+    {label:'运动户外',value:14},
+    {label:'海外购',value:15},
+    {label:'礼品鲜花',value:16},
+    {label:'媒体服务',value:17},
+    {label:'票务卡券',value:18},
+    {label:'酒店旅游',value:19},
+    {label:'其他',value:20}
+];
