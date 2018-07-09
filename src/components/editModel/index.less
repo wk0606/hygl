@@ -1,0 +1,31 @@
+.edit-container{
+    width: 420px;
+    height: 100%;
+    background: #fff;
+    box-sizing: border-box;
+    box-shadow: -3px 0px 5px #E3E3E3;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top:0;
+    right: 0;
+    .edit-title{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+        padding: 15px;
+        flex-shrink: 0;
+        div{
+            display: inline-flex;
+            align-items: center;
+            img{margin-right: 10px;}
+        }
+        i{cursor: pointer;font-size: 18px;font-weight: bold;color: #888;}
+    }
+    .el-body{
+        padding: 0 15px 15px 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+}

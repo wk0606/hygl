@@ -1,0 +1,109 @@
+@font-face{
+    font-family: 'yuedong';
+    src: url('../../static/font/yuedong.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+.cell-span-wrap{
+    font-size: 12px;
+    width: 100%;
+}
+.cell-span{
+    font-size: 12px;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cell-span>img{margin-left: 10px;}
+.cell-span-blue{
+    color: #409EFF;
+    cursor: pointer;
+}
+.el-table-drak-head{background-color: #f0f0f0 !important;}
+.pagination{
+    padding: 10px 0;
+    background: #fff;
+    text-align: center;
+    border-top: 1px solid #f4f4f9;
+}
+
+
+.set-tab{
+  width: calc(100% + 20px);
+  height: auto;
+  border-bottom: 1px solid #f0f0f0;
+  position: relative;
+  left:-10px;
+  top:-10px;
+  color: #888;
+}
+.set-tab-item{
+    font-size: 14px;
+    padding: 15px 0;
+    display: inline-block;
+    cursor: pointer;
+    margin: 0 10px;
+}
+.set-tab-select{
+    border-bottom: 1px solid #409eff;
+    color: #409eff;
+}
+.set-gray-head{
+    box-sizing: border-box;
+    padding: 20px;
+    background: #f8f8f8;
+}
+.set-gray-head .set-gray-head-top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+}
+.set-gray-head .set-gray-head-top p:nth-child(2){font-size: 12px;margin-top: 10px;}
+.set-gray-head>p{
+    margin-top: 20px;
+}
+.set-gray-head>p a{color: #409eff;}
+
+.flex-center{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.i-close{
+    font-weight:bold;
+    font-size:18px;
+    color:#ccc;
+    cursor: pointer;
+}
+.slideRight{
+    position: absolute;
+    top:1px;
+    right: 0;
+    height:calc(100% - 1px);
+}
+
+.slideRight-enter-active{
+    animation:slideRight .3s;
+}
+.slideRight-leave-active{
+    animation:slideRightclose .3s;
+}
+@-webkit-keyframes slideRight{
+    from{right:-100%;}
+    to{right: 0;}
+}
+@keyframes slideRight{
+    from{right:-100%;}
+    to{right: 0;}
+}
+@-webkit-keyframes slideRightclose{
+    from{right: 0;}
+    to{right: -100%;}
+}
+@keyframes slideRightclose{
+    from{right: 0;}
+    to{right: -100%;}
+}
