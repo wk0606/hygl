@@ -27,6 +27,7 @@ export default {
   data(){
       return {
           fksj:0,
+
           qrsj:6
       }
   },
