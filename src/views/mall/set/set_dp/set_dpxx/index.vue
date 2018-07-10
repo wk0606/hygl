@@ -59,7 +59,7 @@
   </div>
 </template>
 <script>
-import {jylm} from '../../../../func/jylm'
+import {jylm} from '../../../../../func/jylm'
 export default {
   data(){
     return {
@@ -89,7 +89,7 @@ export default {
       item.show=!item.show;
     },
     openRz(){
-
+      this.$router.push('/main/mallchildren/set_dprz');
     },
     openXf(){
 

@@ -32,7 +32,7 @@
             </el-row>
           </el-form-item>
           <el-form-item label="地理定位" prop="lnglat">
-            <maps :lnglat="addInfo.lnglat" ref="maps"></maps>
+            <maps v-model="addInfo.lnglat" ref="maps"></maps>
           </el-form-item>
           <el-form-item label="联系电话" prop="phone">
             <el-input v-model="addInfo.qh" size="mini" style="width:80px;"></el-input>
@@ -130,10 +130,7 @@ export default {
         town:'',
         pct:'',
         dz:'',
-        lnglat:{
-          lng:120.585315,
-          lat:31.298886
-        },
+        lnglat:'',
         qh:'',
         phone:'',
         jdsj:[],
@@ -189,8 +186,7 @@ export default {
       this.$http('/api/x6/gps/getDzGps.do',{
         dz:dz
       }).then(res=>{
-        this.addInfo.lnglat.lng=res.lnglat.split(',')[0];
-        this.addInfo.lnglat.lat=res.lnglat.split(',')[1];
+        this.addInfo.lnglat=res.lnglat;
       });
     }
   },

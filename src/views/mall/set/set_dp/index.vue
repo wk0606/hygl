@@ -15,7 +15,7 @@
   </div>
 </template>
 <script>
-import dpxx from './set_dpxx'
+import dpxx from './set_dpxx/index'
 import ksck from './set_ksck'
 import thwq from './set_thwq'
 export default {

@@ -1,0 +1,150 @@
+.set-rz-container{
+    height: ~"calc(100% - 35px)";
+    overflow-y: auto;
+}
+.set-rz-header{
+    height: 50px;
+    display: flex;
+    align-items: center;
+img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+b{
+    font-size: 18px;
+    margin-left: 5px;
+}
+em{
+    width: 1px;
+    height: 60%;
+    background: #f0f0f0;
+    margin: 0 10px;
+}
+span{
+    font-size: 16px;
+    color: #999;
+}
+}
+.set-rz-tips{
+    box-sizing: border-box;
+    padding: 15px;
+    background: #f8f8f8;
+    border: 1px solid #e5e5e5;
+    p{
+        font-size: 12px;
+        color: #666;
+        margin-top: 15px;
+    }
+    p:nth-child(2){margin-top: 20px;}
+}
+.set-rz-title{
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding-left: 10px;
+    height: 15px;
+    border-left: 2px solid #fc6621;
+    font-size: 14px;
+    em{
+        font-weight: 100;
+        font-size: 13px;
+        color: #999;
+        padding-left: 10px;
+        border-left: 1px solid #ccc;
+        margin-left: 10px;
+    }
+}
+.set-rz-body{
+    box-sizing: border-box;
+    padding: 15px;
+    border-left: 1px solid #e5e5e5;
+    border-right: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+    .set-rz-title{margin: 40px 0 20px 0;}
+    .set-rz-items{
+        margin-top: 20px;
+        >div{
+            display: flex;
+            align-items: center;
+            >span,.set-item-label span{
+                width: 120px;
+                text-align: right;
+                font-size: 13px;
+                margin-right: 20px;
+                &:after{
+                    content: ':';
+                    margin-left: 2px;
+                }
+            }
+        }
+        .set-item-label{
+            display: flex;
+            flex-direction: column;
+            i{
+                width: 120px;
+                text-align: right;
+                font-size: 12px;
+                margin-top: 5px;
+                color: #ccc;
+            }
+        }
+        >div.no-label{
+            padding-left: 140px;margin-top: 5px;
+        }
+        >div.tips{padding-left: 140px;color:red;margin-top: 5px;}
+    }
+    .set-rz-top{
+        >div{
+            align-items: flex-start;
+        }
+    }
+    .set-upload{
+        width: auto;
+        height: auto;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        .set-upload-btn{
+            width: 220px;
+            height: 150px;
+            font-size: 40px;
+            color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    .set-img{
+        display: inline-flex;
+        align-items: flex-start;
+        font-size: 12px;
+        height: 150px;
+        margin-left: 50px;
+        img{
+            width: auto;
+            height: 100%;
+        }
+    }
+    .set-yzm{
+        width: 400px;
+        height: auto;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        input{
+            line-height: 32px;
+            border:1px solid #ccc;
+            border-right: none;
+            padding-left: 10px;
+        }
+    }
+    .set-btn{
+        line-height: 35px;
+        padding: 0 10px;
+        text-align: center;
+        color: #fff;
+        background: #398bfc;
+        cursor: pointer;
+    }
+}

@@ -5,16 +5,22 @@
 import AMap from 'AMap'
 export default {
   props:{
-      lnglat:{required:true},
       width:{default:'auto'},
-      height:{default:'400'}
+      height:{default:'400'},
+      value:{
+          default:'120.585315,31.298886'
+      }
+  },
+  data(){
+      return{
+          lnglat:this.value||'120.585315,31.298886'
+      }
   },
   watch:{
-      'lnglat':{
-          handler:function(nv){
-              this.drawMap(nv);
-          },
-          deep:true
+      value(nv){
+          this.lnglat=nv;
+          var pointer=this.lnglat.split(',');
+          this.drawMap(pointer);
       }
   },
   methods:{
@@ -23,16 +29,16 @@ export default {
         var map = new AMap.Map("maps", {
             resizeEnable: true,
             zoom:15,
-            center:[lnglat.lng,lnglat.lat]
+            center:lnglat
         });
-        this.markerPoint(lnglat.lng,lnglat.lat,map);
+        this.markerPoint(lnglat[0],lnglat[1],map);
         //添加点击事件
         var clickEventListener = map.on('click', e=>{
-            this.lng=e.lnglat.getLng();
-            this.lat=e.lnglat.getLat();
-            this.lnglat.lng=this.lng;
-            this.lnglat.lat=this.lat;
-            this.markerPoint(this.lng,this.lat,map);
+            var lng=e.lnglat.getLng();
+            var lat=e.lnglat.getLat();
+            this.markerPoint(lng,lat,map);
+            this.lnglat=lng+','+lat;
+            this.$emit('input',this.lnglat);
         });
     },
     //标注地点
@@ -46,7 +52,8 @@ export default {
     },
   },
   mounted(){
-      this.drawMap(this.lnglat);
+      var pointer=this.lnglat.split(',');
+      this.drawMap(pointer);
   }
 }
 </script>
