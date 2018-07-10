@@ -43,6 +43,7 @@
                         :class="{'cell-span-blue':item.click}"
                         @click="item.click?item.click(scope.row):null">
                         {{scope.row[item.prop]}}
+                        <span v-if="item.prop=='hyname'&&scope.row.ishide" style="color:#ccc !important;">(匿名)</span>
                     </span>
                 </template>
             </el-table-column>
@@ -72,7 +73,7 @@ export default {
             rows:0
           },
           colModels:[
-              {label:'用户名称',prop:'hyname',width:150,click:this.openCustomer},
+              {label:'用户名称',prop:'hyname',width:150,click:this.openCustomer,format:this.formatName},
               {label:'商品评论',prop:'rate1',rate:true,click:this.openComments},
               {label:'门店评论',prop:'rate3',rate:true,click:this.openComments},
               {label:'营业员评论',prop:'rate2',rate:true,click:this.openComments},
@@ -182,6 +183,9 @@ export default {
               this.pfModel.data=Object.assign({},{title:title},row);
               this.pfModel.show=true;
           }
+      },
+      formatName(row){
+          return row.hyname;
       }
   },
   mounted(){

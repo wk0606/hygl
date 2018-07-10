@@ -11,12 +11,20 @@
     </div>
     <el-collapse-transition>
       <div class="set-jy-description" v-show="openPay">
-        <p>启用麦尔芽微信支付(代销账户),你的店铺可以通过麦佳铺子代销商品，并由你发起提现申请与麦尔芽结算相应货款</p>
-        <p><b>提现时间:</b></p>
-        <p>当天18点前申请提现,当天审核完成。实际到账时间以银行入账是时间为准。<a>查看收入</a></p>
-        <p><b>交易手续费:</b></p>
-        <p>麦尔芽不收取任何提现手续费。</p>
-        <p>支付机构收取0.6%交易手续费,通过麦尔芽完成代缴。</p>
+        <el-form
+          :model="details" :rules="rules" ref="form" label-width="100px"
+        >
+          <el-form-item label="商户号" prop="shh">
+            <el-input v-model="details.shh" size="mini" style="width:300px;"></el-input>
+            <span style="font-size:12px;color:#ccc;">请填写微信发给你邮件中的微信号,不是财付通账号</span>
+          </el-form-item>
+          <el-form-item label="秘钥" prop="secret">
+            <el-input v-model="details.secret" size="mini" style="width:300px;"></el-input>
+          </el-form-item>
+        </el-form>
+        <div style="padding-left:100px;margin-top:50px;">
+          <el-button size="mini" type="primary" @click="save">保存</el-button>
+        </div>
       </div>
     </el-collapse-transition>
   </div>
@@ -25,7 +33,20 @@
 export default {
   data(){
     return {
-      openPay:true
+      openPay:true,
+      details:{
+        shh:'',
+        secret:''
+      },
+      rules:{
+        shh:{required:true,message:'商户号不可为空'},
+        secret:{required:true,message:'秘钥不可为空'}
+      }
+    }
+  },
+  methods:{
+    save(){
+
     }
   }
 }
@@ -48,16 +69,14 @@ export default {
   }
   .set-jy-description{
     box-sizing: border-box;
-    padding: 10px 10px 30px 20px;
+    padding: 50px 10px 30px 20px;
     font-size: 14px;
     border-left:1px solid #e7e7e7;
     border-right:1px solid #e7e7e7;
     border-bottom:1px solid #e7e7e7;
-    color: #666;
-    p{margin-top: 10px;font-size: 12px;}
-    p:nth-child(1){font-size: 14px;}
-    p:nth-child(2),p:nth-child(4){margin-top: 30px;}
-    p:nth-child(1),p:nth-child(3),p:nth-child(5),p:nth-child(6){color: #888;}
-    a{color:#409EFF;}
+    color: #666;    
+  }
+  .el-row{
+    line-height: 0;
   }
 </style>
