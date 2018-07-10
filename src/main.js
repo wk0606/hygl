@@ -37,7 +37,8 @@ import {
   Tag,
   Rate,
   Transfer,
-
+  cascader,
+  
   Message,
   MessageBox
 } from 'element-ui'
@@ -66,6 +67,7 @@ Vue.use(Switch)
 Vue.use(Tag)
 Vue.use(Rate)
 Vue.use(Transfer)
+Vue.use(cascader)
 Vue.component(CollapseTransition.name, CollapseTransition)
 /**vuex */
 Vue.prototype.$store=store;
