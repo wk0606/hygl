@@ -130,10 +130,10 @@ export default {
           ],
           //常用功能
           menus:[
-              {icon:require('../../assets/1.png'),label:'发布网店商品',path:'/main/mallchildren'},
+              {icon:require('../../assets/1.png'),label:'发布网店商品',path:'/main/mallchildren/set_sp'},
               {icon:require('../../assets/2.png'),label:'消息推送',path:''},
               {icon:require('../../assets/3.png'),label:'设置中心',path:'/main/mallchildren/set_dd'},
-              {icon:require('../../assets/4.png'),label:'资产/交易',path:''}
+              {icon:require('../../assets/4.png'),label:'资产/交易',path:'/main/mallchildren/asset_jy'}
           ]
       }
   },

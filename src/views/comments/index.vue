@@ -43,7 +43,7 @@
                         :class="{'cell-span-blue':item.click}"
                         @click="item.click?item.click(scope.row):null">
                         {{scope.row[item.prop]}}
-                        <span v-if="item.prop=='hyname'&&scope.row.ishide" style="color:#ccc !important;">(匿名)</span>
+                        <span v-if="item.prop=='hyname'&&scope.row.ishide" style="color:#ccc !important;position:absolute;right:8px;top:12px;">(匿名)</span>
                     </span>
                 </template>
             </el-table-column>

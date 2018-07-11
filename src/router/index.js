@@ -40,6 +40,8 @@ export default new Router({
           component:resolve=>require(['../views/mall/main'],resolve),
           redirect:'/main/mallchildren/set_dd',
           children:[
+            {path:'/main/mallchildren/asset_jy',name:'asset_jy',component:resolve=>require(['../views/mall/asset/index'],resolve)},
+            {path:'/main/mallchildren/set_sp',name:'set_sp',component:resolve=>require(['../views/mall/product/index'],resolve)},
             {path:'/main/mallchildren/set_dd',name:'set_dd',component:resolve=>require(['../views/mall/set/set_dd/index'],resolve)},
             {path:'/main/mallchildren/set_dd_addkd',name:'set_dd_addkd',component:resolve=>require(['../views/mall/set/set_dd/set_kdfh/kdfh_add'],resolve)},
             {path:'/main/mallchildren/set_jy',name:'set_jy',component:resolve=>require(['../views/mall/set/set_jy'],resolve)},

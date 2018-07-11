@@ -49,6 +49,29 @@
     border-bottom: 1px solid #409eff;
     color: #409eff;
 }
+.wdsp-tab{
+    height: auto;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+    display: flex;
+    user-select: none;
+    margin-bottom: 10px;
+}
+.wdsp-tab>div{
+    width: 80px;
+    text-align: center;
+    line-height: 35px;
+    position: relative;
+    top:1px;
+    border-top:1px solid #ccc;
+    border-right:1px solid #ccc;
+    border-bottom:1px solid #ccc;
+    background: #f0f0f0;
+    cursor: pointer;
+}
+.wdsp-tab>div:nth-child(1){border-left:1px solid #ccc;}
+.wdsp-tab .selected{border-bottom:1px solid #fff;background: #fff;}
+
 .set-gray-head{
     box-sizing: border-box;
     padding: 20px;
