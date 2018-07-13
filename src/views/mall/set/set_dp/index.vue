@@ -26,7 +26,7 @@ export default {
         {label:'可售仓库',component:'ksck'},
         {label:'退货/维权设置',component:'thwq'}
       ],
-      currentTab:'ksck'
+      currentTab:'dpxx'
     }
   },
   components:{
@@ -39,6 +39,7 @@ export default {
 <style lang="less" scoped>
   .set-body{
     height: ~"calc(100% - 47px)";
+    overflow-y: auto;
     >div{height: 100%;}
   }
 </style>

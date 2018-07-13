@@ -93,12 +93,12 @@
 			//打开客服
 			openKefu() {
 				if (isQtclient) {
-				new QWebChannel(qt.webChannelTransport, function (channel) {
-					var content = channel.objects.content;
-					content.openQq();
-				});
+					new QWebChannel(qt.webChannelTransport, function (channel) {
+						var content = channel.objects.content;
+						content.openQq();
+					});
 				} else {
-				window.open("http://wpa.b.qq.com/cgi/wpa.php?ln=1&key=XzgwMDA3MzcyM18xNzU0OTRfODAwMDczNzIzXzJf");
+					window.open("http://wpa.b.qq.com/cgi/wpa.php?ln=1&key=XzgwMDA3MzcyM18xNzU0OTRfODAwMDczNzIzXzJf");
 				}
 			}
 		},

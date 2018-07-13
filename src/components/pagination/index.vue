@@ -1,6 +1,7 @@
 <template>
     <div class="pagination">
         <el-pagination
+            :small="small"
             @current-change="changePage"
             :page-size="data.size" 
             :total="data.rows"
@@ -11,7 +12,14 @@
 </template>
 <script>
     export default{
-        props:['data'],
+        props:{
+            data:{
+                required:true
+            },
+            small:{
+                default:false
+            }
+        },
         methods:{
             changePage(page){
                 this.$emit('current-change',page);

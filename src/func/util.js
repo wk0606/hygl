@@ -92,6 +92,12 @@ var util={
     getCache(name){
         return JSON.parse(sessionStorage.getItem(name));
     },
+    removeCache(name,storage=sessionStorage){
+        storage.removeItem(name);
+    },
+    clearCache(storage=sessionStorage){
+        storage.clear();
+    },
     //根据key（默认id）取出公司信息
     getCompanyInfo(value,key='id'){
         var list=this.getCache('gslist');
@@ -252,6 +258,18 @@ var util={
             else
                 return 0;
         })
+    },
+    parseAddressToLng(http,dz){
+        var promise=new Promise(function(resolve,reject){
+            http('/api/x6/gps/getDzGps.do',{
+                dz:dz
+            }).then(res=>{
+                resolve(res);
+            },er=>{
+                reject(err);
+            });
+        });
+        return promise;
     },
     windowResize(callback,route){
         callback();

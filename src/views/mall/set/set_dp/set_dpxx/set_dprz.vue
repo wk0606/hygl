@@ -13,8 +13,8 @@
             <span>麦尔芽认证说明</span>
             <em>麦尔芽提供两种认证类型,请根据实际情况任选一种</em>
           </div>
-          <p>个人认证 : 大陆身份证默认进行实时快速认证；其他证件类型可进行人工认证，审核周期为1个工作日；</p>
-          <p>企业认证 : 适合公司经营者，增加可提现至公司银行账户，审核周期为1个工作日；</p>
+          <p>个人认证 : 大陆身份证默认进行实时快速认证；审核周期为1个工作日；</p>
+          <p>企业认证 : 适合公司经营者；审核周期为3个工作日；</p>
         </div>
         <div class="set-rz-body">
           <!-- block 1 -->
@@ -24,37 +24,37 @@
           <div class="set-rz-items">
             <div>
               <span>我是</span>
-              <el-radio v-model="details.lx" label="1">个人</el-radio>
-              <el-radio v-model="details.lx" label="2">公司</el-radio>
+              <el-radio v-model="details.ztsf" label="1">个人</el-radio>
+              <el-radio v-model="details.ztsf" label="2">公司</el-radio>
             </div>
           </div>
           <div class="set-rz-items" v-show="!showQyItems">
             <div>
               <span>姓名</span>
-              <el-input size="mini" v-model="details.name" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.userName" style="width:250px;"></el-input>
             </div>
-            <div class="tips" v-if="rules.name.show">{{rules.name.label}}</div>
+            <div class="tips" v-if="rules.userName.show">{{rules.userName.label}}</div>
           </div>
           <div class="set-rz-items" v-show="!showQyItems">
             <div>
               <span>身份证号码</span>
-              <el-input size="mini" v-model="details.sfzid" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.cardNum" style="width:250px;"></el-input>
             </div>
-            <div class="tips" v-if="rules.sfzid.show">{{rules.sfzid.label}}</div>
+            <div class="tips" v-if="rules.cardNum.show">{{rules.cardNum.label}}</div>
           </div>
           <div class="set-rz-items" v-show="showQyItems">
             <div>
               <span>企业名称</span>
-              <el-input size="mini" v-model="details.qyname" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.company" style="width:250px;"></el-input>
             </div>
-            <div class="tips" v-if="rules.qyname.show">{{rules.qyname.label}}</div>
+            <div class="tips" v-if="rules.company.show">{{rules.company.label}}</div>
           </div>
           <div class="set-rz-items" v-show="showQyItems">
             <div>
               <span>法人</span>
-              <el-input size="mini" v-model="details.frname" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.legalPerson" style="width:250px;"></el-input>
             </div>
-            <div class="tips" v-if="rules.frname.show">{{rules.frname.label}}</div>
+            <div class="tips" v-if="rules.legalPerson.show">{{rules.legalPerson.label}}</div>
           </div>
           <div class="set-rz-items set-rz-top" v-show="showQyItems">
             <div>
@@ -62,15 +62,15 @@
                 <span>法人证件</span>
                 <i>身份证正面</i>
               </p>
-              <div class="set-upload">
-                <div class="set-upload-btn"><i class="el-icon-plus"></i></div>
+              <div class="set-upload" :style="{backgroundImage:'url('+details.frupUrl+')'}" @click="selectImg('frupUrl')">
+                <div class="set-upload-btn"><i :class="frupUrl.disabled?'el-icon-loading':'el-icon-plus'" v-if="!details.frupUrl"></i></div>
               </div>
               <div class="set-img">
                 <span>示例 ：</span>
                 <img src="../../../../../assets/sfz1.png" alt="">
               </div>
             </div>
-            <div class="tips" v-if="rules.frpic1.show">{{rules.frpic1.label}}</div>
+            <div class="tips" v-if="rules.frupUrl.show">{{rules.frupUrl.label}}</div>
           </div>
           <div class="set-rz-items set-rz-top" v-show="showQyItems">
             <div>
@@ -78,35 +78,35 @@
                 <span>法人证件</span>
                 <i>身份证反面</i>
               </p>
-              <div class="set-upload">
-                <div class="set-upload-btn"><i class="el-icon-plus"></i></div>
+              <div class="set-upload" :style="{backgroundImage:'url('+details.frdownUrl+')'}" @click="selectImg('frdownUrl')">
+                <div class="set-upload-btn"><i :class="frdownUrl.disabled?'el-icon-loading':'el-icon-plus'" v-if="!details.frdownUrl"></i></div>
               </div>
               <div class="set-img">
                 <span>示例 ：</span>
                 <img src="../../../../../assets/sfz2.png" alt="">
               </div>
             </div>
-            <div class="tips" v-if="rules.frpic2.show">{{rules.frpic2.label}}</div>
+            <div class="tips" v-if="rules.frdownUrl.show">{{rules.frdownUrl.label}}</div>
           </div>
           <div class="set-rz-items set-rz-top" v-show="showQyItems">
             <div>
               <span>营业执照</span>
-              <div class="set-upload">
-                <div class="set-upload-btn"><i class="el-icon-plus"></i></div>
+              <div class="set-upload" :style="{backgroundImage:'url('+details.yyzzUrl+')'}" @click="selectImg('yyzzUrl')">
+                <div class="set-upload-btn"><i :class="yyzzUrl.disabled?'el-icon-loading':'el-icon-plus'" v-if="!details.yyzzUrl"></i></div>
               </div>
               <div class="set-img">
                 <span>示例 ：</span>
                 <img src="../../../../../assets/yyzz.jpg" alt="">
               </div>
             </div>
-            <div class="tips" v-if="rules.yypic.show">{{rules.yypic.label}}</div>
+            <div class="tips" v-if="rules.yyzzUrl.show">{{rules.yyzzUrl.label}}</div>
           </div>
           <div class="set-rz-items" v-show="showQyItems">
             <div>
               <span>营业执照号</span>
-              <el-input size="mini" v-model="details.yyid" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.yyzzNum" style="width:250px;"></el-input>
             </div>
-            <div class="tips" v-if="rules.yyid.show">{{rules.yyid.label}}</div>
+            <div class="tips" v-if="rules.yyzzNum.show">{{rules.yyzzNum.label}}</div>
           </div>
           <!-- block 2 -->
           <div class="set-rz-title">
@@ -115,19 +115,19 @@
           <div class="set-rz-items">
             <div>
               <span>店铺名称</span>
-              <em>{{details.dpname}}</em>
+              <em>{{details.dpName}}</em>
             </div>
           </div>
           <div class="set-rz-items">
             <div>
               <span>主营商品</span>
               <el-select
-                v-model="details.lm"
+                v-model="details.zylm"
                 size="mini"
                 style="width:180px;"
               >
                 <el-option
-                  v-for="item in lm"
+                  v-for="item in zylm"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -148,62 +148,63 @@
               ></city-select>
             </div>
             <div class="no-label">
-              <el-input size="mini" v-model="details.dz" style="width:450px;"></el-input>
+              <el-input size="mini" v-model="details.jtdz" style="width:360px;margin-right:10px;"></el-input>
+              <el-button size="mini" @click="searchMaps">搜索地图</el-button>
             </div>
-            <div class="tips" v-if="rules.dz.show">{{rules.dz.label}}</div>
+            <div class="tips" v-if="rules.jtdz.show||rules.province.show||rules.city.show||rules.town.show">{{rules.jtdz.label}}</div>
             <div class="no-label">
-              <maps v-model="details.lnglat" width="600"></maps>
+              <maps v-model="details.jwd" width="600"></maps>
             </div>
           </div>
           <div class="set-rz-items set-rz-top">
             <div>
               <span>门店门头照片</span>
-              <div class="set-upload">
-                <div class="set-upload-btn"><i class="el-icon-plus"></i></div>
+              <div class="set-upload" :style="{backgroundImage:'url('+details.mtPicUrl+')'}" @click="selectImg('mtPicUrl')">
+                <div class="set-upload-btn"><i :class="mtPicUrl.disabled?'el-icon-loading':'el-icon-plus'" v-if="!details.mtPicUrl"></i></div>
               </div>
               <div class="set-img">
                 <span>示例 ：</span>
                 <img src="../../../../../assets/mdpic1.png" alt="">
               </div>
             </div>
-            <div class="tips" v-if="rules.mdpic1.show">{{rules.mdpic1.label}}</div>
+            <div class="tips" v-if="rules.mtPicUrl.show">{{rules.mtPicUrl.label}}</div>
           </div>
           <div class="set-rz-items set-rz-top">
             <div>
               <span>门店内景照片</span>
-              <div class="set-upload">
-                <div class="set-upload-btn"><i class="el-icon-plus"></i></div>
+              <div class="set-upload" :style="{backgroundImage:'url('+details.njPicUrl+')'}" @click="selectImg('njPicUrl')">
+                <div class="set-upload-btn"><i :class="njPicUrl.disabled?'el-icon-loading':'el-icon-plus'" v-if="!details.njPicUrl"></i></div>
               </div>
               <div class="set-img">
                 <span>示例 ：</span>
                 <img src="../../../../../assets/mdpic2.jpg" alt="">
               </div>
             </div>
-            <div class="tips" v-if="rules.mdpic2.show">{{rules.mdpic2.label}}</div>
+            <div class="tips" v-if="rules.njPicUrl.show">{{rules.njPicUrl.label}}</div>
           </div>
           <div class="set-rz-items set-rz-top">
             <div>
               <span>收银台照片</span>
-              <div class="set-upload">
-                <div class="set-upload-btn"><i class="el-icon-plus"></i></div>
+              <div class="set-upload" :style="{backgroundImage:'url('+details.sytPicUrl+')'}" @click="selectImg('sytPicUrl')">
+                <div class="set-upload-btn"><i :class="sytPicUrl.disabled?'el-icon-loading':'el-icon-plus'" v-if="!details.sytPicUrl"></i></div>
               </div>
               <div class="set-img">
                 <span>示例 ：</span>
                 <img src="../../../../../assets/mdpic3.jpg" alt="">
               </div>
             </div>
-            <div class="tips" v-if="rules.mdpic3.show">{{rules.mdpic3.label}}</div>
+            <div class="tips" v-if="rules.sytPicUrl.show">{{rules.sytPicUrl.label}}</div>
           </div>
           <div class="set-rz-items">
             <div>
               <span>短信验证码</span>
               <div class="set-yzm">
-                <input type="text">
-                <div class="set-btn">获取验证码</div>
+                <input type="text" v-model="details.code">
+                <sms-code :phone="details.phone"></sms-code>
               </div>
             </div>
-            <div class="tips" v-if="rules.yzm.show">{{rules.yzm.label}}</div>
-            <div class="no-label" style="color:#ccc;">验证短信将发送到你绑定的手机 : ,请注意查收</div>
+            <div class="tips" v-if="rules.code.show">{{rules.code.label}}</div>
+            <div class="no-label" style="color:#ccc;">验证短信将发送到你绑定的手机 : {{this.details.phone.substring(0,3)}}****{{this.details.phone.substring(7)}},请注意查收</div>
           </div>
           <div class="set-rz-items" style="margin-top:30px;">
             <div class="no-label">
@@ -212,12 +213,15 @@
           </div>
         </div>
       </div>
+      <input type="file" ref="file" @change="uploadImg" style="display:none;"/>
   </div>
 </template>
 <script>
 import breadNav from '../../../../../components/breadNav/index'
 import citySelect from '../../../../../components/citySelect/index'
 import maps from '../../../../../components/maps/index'
+import smsCode from '../../../../../components/smsCode/index'
+import lrz from 'lrz'
 import {jylm} from '../../../../../func/jylm'
 export default {
   data(){
@@ -227,113 +231,198 @@ export default {
         {label:'店铺认证'}
       ],
       details:{
-        lx:'1',//1-个人 2-公司
-        name:'',
-        sfzid:'',
-        dpname:'好达通尊享会员店',
-        lm:2,
+        ztsf:'1',//1-个人 2-公司
+        userName:'',
+        cardNum:'',
+        dpName:'',
+        zylm:"2",
         province:'',
         city:'',
         town:'',
-        dz:'',
-        lnglat:'',
-        mdpic1:'',
-        mdpic2:'',
-        mdpic3:'',
-        yzm:'',
+        jtdz:'',
+        jwd:'',
+        mtPicUrl:'',
+        njPicUrl:'',
+        sytPicUrl:'',
+        code:'',
+        phone:'',
         //公司认证多填写的信息
-        qyname:'',
-        frname:'',
-        frpic1:'',
-        frpic2:'',
-        yypic:'',
-        yyid:''
+        company:'',
+        legalPerson:'',
+        frupUrl:'',
+        frdownUrl:'',
+        yyzzUrl:'',
+        yyzzNum:''
       },
-      lm:jylm,
+      zylm:jylm,
+      mtPicUrl:{
+        disabled:false
+      },
+      njPicUrl:{
+        disabled:false
+      },
+      sytPicUrl:{
+        disabled:false
+      },
+      frupUrl:{
+        disabled:false
+      },
+      frdownUrl:{
+        disabled:false
+      },
+      yyzzUrl:{
+        disabled:false
+      },
       rules:{
-        name:{
+        userName:{
           label:'姓名不可为空',
           show:false
         },
-        sfzid:{
-          label:'身份证号码不可为空',
+        cardNum:{
+          label:'请输入正确的身份证号',
           show:false
         },
-        dz:{
-          label:'门店位置不可为空',
+        province:{
+          label:'请完善地理信息',
           show:false
         },
-        mdpic1:{
+        city:{
+          label:'请完善地理信息',
+          show:false
+        },
+        town:{
+          label:'请完善地理信息',
+          show:false
+        },
+        jtdz:{
+          label:'请完善地理信息',
+          show:false
+        },
+        mtPicUrl:{
           label:'请上传门店门头照片',
           show:false
         },
-        mdpic2:{
+        njPicUrl:{
           label:'请上传门店内景照片',
           show:false
         },
-        mdpic3:{
+        sytPicUrl:{
           label:'请上传收银台照片',
           show:false
         },
-        yzm:{
+        code:{
           label:'验证码不可为空',
           show:false
         },
-        qyname:{
+        company:{
           label:'企业名称不可为空',
           show:false
         },
-        frname:{
+        legalPerson:{
           label:'法人名称不可为空',
           show:false
         },
-        frpic1:{
+        frupUrl:{
           label:'请上传法人证件',
           show:false
         },
-        frpic2:{
+        frdownUrl:{
           label:'请上传法人证件',
           show:false
         },
-        yypic:{
+        yyzzUrl:{
           label:'请上传营业执照',
           show:false
         },
-        yyid:{
+        yyzzNum:{
           label:'营业执照号不可为空',
           show:false
         }
-      }
+      },
+      currentKey:'',
+      dpInformation:null
     }
   },
   computed:{
     showQyItems(){
-      return this.details.lx=="1"?false:true;
+      return this.details.ztsf=="1"?false:true;
     }
   },
   methods:{
     save(){
-      var temp=true;
+      var temp=false;
       var keys=Object.keys(this.rules);
-      if(this.details.lx=='1')
-        keys=keys.slice(0,7);
+      if(this.details.ztsf=='1')
+        keys=keys.slice(0,10);
       for(let key of keys){
-        this.rules[key].show=this.details[key]?false:true;
-        if(!this.details[key])
-          temp=true;
+        if(key!=='cardNum'){
+          this.rules[key].show=this.details[key]?false:true;
+          if(!this.details[key]){
+            temp=true;
+          } 
+        }else{
+          this.rules[key].show=(this.details[key].length==15||this.details[key].length==18)?false:true;
+          if(this.details[key].length!=15&&this.details[key].length!=18)
+            temp=true;
+        }
       }
       if(temp){
         this.$message('请完善信息','error');
         return;
       }else{
-        console.log(this.details)
+        this.$http('/api/x6/saveHysetRzInfo.do',this.details).then(res => {
+          this.$message('认证已提交，请等待审核');
+          this.$router.push('/main/mallchildren/set_dp');
+        });
+      }
+    },
+    selectImg(key){
+      this.currentKey=key;
+      if(this[this.currentKey].disabled){
+        this.$message('正在上传,请稍后','error');
+        return;
+      }
+      this.$refs.file.click();
+    },
+    uploadImg(){
+      var file=this.$refs.file.files[0];
+      this.$refs.file.value='';
+      if(!/^image/.test(file.type)){
+          this.$message('请上传图片文件','error');
+      }else{
+          this[this.currentKey].disabled=true;
+          lrz(file).then(rst=>{
+              rst.formData.append('base64img', rst.base64);
+              this.$http('/api/x6/saveOtherPic.do',rst.formData).then(res=>{
+                  this.$message('上传成功');
+                  this.details[this.currentKey]=res.file_path;
+                  this[this.currentKey].disabled=false;
+              },err=>{
+                  this[this.currentKey].disabled=false;
+              });
+          });
+      }
+    },
+    searchMaps(){
+      if(!this.details.province){
+        this.$message('请至少选择所在省份','error');
+      }else{
+        var dz=this.details.province+this.details.city+this.details.town+this.details.jtdz;
+        this.$util.parseAddressToLng(this.$http,dz).then(res=>{
+          this.details.jwd=res.lnglat;
+        });
       }
     }
+  },
+  mounted(){
+    this.details.phone=this.$route.params.phone;
+    this.details.dpName=this.$route.params.name;
   },
   components:{
     breadNav,
     citySelect,
-    maps
+    maps,
+    smsCode
   }
 }
 </script>

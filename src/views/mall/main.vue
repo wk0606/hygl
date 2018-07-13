@@ -38,7 +38,7 @@ export default {
               {
                   label:'商品',
                   list:[
-                      {label:'网店商品',path:'/main/mallchildren/sp'}
+                      {label:'网店商品',path:'/main/mallchildren/product_sp'}
                   ]
               },
               {
@@ -50,8 +50,7 @@ export default {
               {
                   label:'资产',
                   list:[
-                      {label:'网店资产',path:'/main/mallchildren/zc'},
-                      {label:'网店交易',path:'/main/mallchildren/zc'}
+                      {label:'网店交易',path:'/main/mallchildren/asset_jy'}
                   ]
               },
               {

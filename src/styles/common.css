@@ -101,6 +101,18 @@
     color:#ccc;
     cursor: pointer;
 }
+/* 两行超出省略 */
+.eellipsis2rows{
+    overflow:hidden; 
+    
+    text-overflow:ellipsis;
+    
+    display:-webkit-box; 
+    
+    -webkit-box-orient:vertical;
+    
+    -webkit-line-clamp:2; 
+}
 .slideRight{
     position: absolute;
     top:1px;
