@@ -37,7 +37,8 @@ export default {
           yzText:'获取验证码',
           yzDisabled:false,
           newphone:'',
-          show:true
+          show:true,
+          interval:null
       }
   },
   methods:{
@@ -47,18 +48,18 @@ export default {
         }else{
             this.yzDisabled=true;
             this.yzText=99;
-            var id=setInterval(function(){
+            this.interval=setInterval(function(){
                 this.yzText--;
                 if(this.yzText<0){
                     this.yzText='获取验证码';
                     this.yzDisabled=false;
-                    clearInterval(id);
+                    clearInterval(this.interval);
                 }
             }.bind(this),1000);
             this.$http('/api/x6/sentCrmDpYzm.do',{
                 phone:this.views.phone
             }).then(res=>{
-
+                
             });
         }
       },
@@ -67,6 +68,11 @@ export default {
             phone:this.views.phone,
             code:this.yzcode
         }).then(res=>{
+            this.yzText='获取验证码';
+            this.yzDisabled=false;
+            this.$util.removeCache('START');
+            this.$util.removeCache('LENGTH');
+            clearInterval(this.interval);            
             this.show=false;
         });
       },
@@ -82,17 +88,17 @@ export default {
   mounted(){
       var start=parseInt(this.$util.getCache('START'));
       var length=parseInt(this.$util.getCache('LENGTH'));
-      if(start){
+      if(length){
           var distance=new Date().getTime()-this.$util.getCache('START');
           if(distance<length*1000){
               this.yzText=parseInt((length*1000-distance)/1000);
               this.yzDisabled=true;
-              var id=setInterval(function(){
+              this.interval=setInterval(function(){
                 this.yzText--;
                 if(this.yzText<0){
                     this.yzText='获取验证码';
                     this.yzDisabled=false;
-                    clearInterval(id);
+                    clearInterval(this.interval);
                     this.$util.removeCache('START');
                     this.$util.removeCache('LENGTH');
                 }

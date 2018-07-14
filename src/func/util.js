@@ -99,8 +99,8 @@ var util={
         storage.clear();
     },
     //根据key（默认id）取出公司信息
-    getCompanyInfo(value,key='id'){
-        var list=this.getCache('gslist');
+    getCompanyInfo(value,key='id',data){
+        var list=data||this.getCache('gslist');
         for(let obj of list){
             if(obj[key]==value){
                 return obj;
@@ -209,7 +209,7 @@ var util={
         var bm=this.getCache('user').ssgsbm;
         var _temp=[];
         //自定义权限的情况
-        if(JSON.parse(this.getCache('user').flags).customQx!=0){
+        if(JSON.parse(this.getCache('user').flags).customQx){
             for(let gs of lists){
                 if(this.isMyCompany(gs))
                     _temp.push(gs);

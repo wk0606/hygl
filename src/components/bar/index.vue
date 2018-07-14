@@ -33,9 +33,9 @@ export default {
             width:100%;
             box-sizing: border-box;
             padding: 0 10px;
-            height: auto;
+            height: 100%;
             position: absolute;
-            top:14px;
+            top:0;
             left: 0;
             display: flex;
             justify-content: space-between;

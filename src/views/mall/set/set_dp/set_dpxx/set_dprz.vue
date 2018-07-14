@@ -31,28 +31,28 @@
           <div class="set-rz-items" v-show="!showQyItems">
             <div>
               <span>姓名</span>
-              <el-input size="mini" v-model="details.userName" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.userName" style="width:250px;" @input="rules.userName.show=false"></el-input>
             </div>
             <div class="tips" v-if="rules.userName.show">{{rules.userName.label}}</div>
           </div>
           <div class="set-rz-items" v-show="!showQyItems">
             <div>
               <span>身份证号码</span>
-              <el-input size="mini" v-model="details.cardNum" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.cardNum" style="width:250px;" @input="rules.cardNum.show=false"></el-input>
             </div>
             <div class="tips" v-if="rules.cardNum.show">{{rules.cardNum.label}}</div>
           </div>
           <div class="set-rz-items" v-show="showQyItems">
             <div>
               <span>企业名称</span>
-              <el-input size="mini" v-model="details.company" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.company" style="width:250px;" @input="rules.company.show=false"></el-input>
             </div>
             <div class="tips" v-if="rules.company.show">{{rules.company.label}}</div>
           </div>
           <div class="set-rz-items" v-show="showQyItems">
             <div>
               <span>法人</span>
-              <el-input size="mini" v-model="details.legalPerson" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.legalPerson" style="width:250px;" @input="rules.legalPerson.show=false"></el-input>
             </div>
             <div class="tips" v-if="rules.legalPerson.show">{{rules.legalPerson.label}}</div>
           </div>
@@ -104,7 +104,7 @@
           <div class="set-rz-items" v-show="showQyItems">
             <div>
               <span>营业执照号</span>
-              <el-input size="mini" v-model="details.yyzzNum" style="width:250px;"></el-input>
+              <el-input size="mini" v-model="details.yyzzNum" style="width:250px;" @input="rules.yyzzNum.show=false"></el-input>
             </div>
             <div class="tips" v-if="rules.yyzzNum.show">{{rules.yyzzNum.label}}</div>
           </div>
@@ -148,7 +148,7 @@
               ></city-select>
             </div>
             <div class="no-label">
-              <el-input size="mini" v-model="details.jtdz" style="width:360px;margin-right:10px;"></el-input>
+              <el-input size="mini" v-model="details.jtdz" style="width:360px;margin-right:10px;" @input="rules.jtdz.show=false;rules.province.show=false;rules.city.show=false;rules.town.show=false"></el-input>
               <el-button size="mini" @click="searchMaps">搜索地图</el-button>
             </div>
             <div class="tips" v-if="rules.jtdz.show||rules.province.show||rules.city.show||rules.town.show">{{rules.jtdz.label}}</div>
@@ -199,7 +199,7 @@
             <div>
               <span>短信验证码</span>
               <div class="set-yzm">
-                <input type="text" v-model="details.code">
+                <input type="text" v-model="details.code" @input="rules.code.show=false">
                 <sms-code :phone="details.phone"></sms-code>
               </div>
             </div>
@@ -274,12 +274,12 @@ export default {
         disabled:false
       },
       rules:{
-        userName:{
-          label:'姓名不可为空',
-          show:false
-        },
         cardNum:{
           label:'请输入正确的身份证号',
+          show:false
+        },
+        userName:{
+          label:'姓名不可为空',
           show:false
         },
         province:{
@@ -348,16 +348,26 @@ export default {
       return this.details.ztsf=="1"?false:true;
     }
   },
+  watch:{
+    'details.ztsf':function(nv){
+      for(let key in this.rules){
+        this.rules[key].show=false;
+      }
+    }
+  },
   methods:{
     save(){
       var temp=false;
       var keys=Object.keys(this.rules);
       if(this.details.ztsf=='1')
         keys=keys.slice(0,10);
+      else
+        keys=keys.slice(2);
       for(let key of keys){
         if(key!=='cardNum'){
           this.rules[key].show=this.details[key]?false:true;
           if(!this.details[key]){
+            console.log(key,this.details[key])
             temp=true;
           } 
         }else{
@@ -397,6 +407,7 @@ export default {
                   this.$message('上传成功');
                   this.details[this.currentKey]=res.file_path;
                   this[this.currentKey].disabled=false;
+                  this.rules[this.currentKey].show=false;
               },err=>{
                   this[this.currentKey].disabled=false;
               });

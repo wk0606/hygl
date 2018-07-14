@@ -62,23 +62,24 @@ export default {
     createOptions(){
       this.List=this.$util.getMyGsList();
       var _zgsbm;
-      for(let i=0,len=this.List.length;i<len;i++){
-        //找到总公司
-        if(this.List[i].lx===0){
-          _zgsbm=this.List[i].bm;
-          this.options.push({
-            bm:this.List[i].bm,
-            id:this.List[i].id,
-            value:this.List[i].bm,
-            label:this.List[i].name,
-            children:[]
-          });
-          //this.List.splice(i,1);
-          break;
+      if(this.List.length){
+        for(let i=0,len=this.List.length;i<len;i++){
+          //找到总公司
+          if(this.List[i].lx===0){
+            _zgsbm=this.List[i].bm;
+            this.options.push({
+              bm:this.List[i].bm,
+              id:this.List[i].id,
+              value:this.List[i].bm,
+              label:this.List[i].name,
+              children:[]
+            });
+            break;
+          }
         }
-      }
-      //寻找下一级
-      this.findChildren(_zgsbm,this.List,this.options[0].children);
+        //寻找下一级
+        this.findChildren(_zgsbm,this.List,this.options[0].children);
+      } 
     },
     //寻找子级
     findChildren(bm,array,target){
