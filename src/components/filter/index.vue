@@ -5,6 +5,7 @@
     :style="{top:top+15+'px',left:left-34+'px'}"
     ref="panel"
     id="FILTER_PANEL"
+    v-checkOutBounding
   >
       <div class="f-trig"></div>
       <div class="f-body">
@@ -65,6 +66,7 @@ function close(ev){
 export default {
   data(){
       return{
+          message:'hello',
           List:[],
           checkedList:[],
           resultMaps:null,
@@ -128,12 +130,15 @@ export default {
     },
     //从原数据中找出选中项
     matchConditions(){
-        var target=this.$store.state.filterTable[this.getCurrentRouter()]||this.datas;
+        //var target=this.$store.state.filterTable[this.getCurrentRouter()]||this.datas;
+        var target=this.datas;
         var temp=[];
+        console.log(this.checkedList)
         for(let obj of target){
             if(this.checkedList.indexOf(obj[this.column])>-1)
                 temp.push(obj);
         }
+        console.log(temp)
         return temp;
     },
     //筛选源数据
@@ -144,9 +149,13 @@ export default {
             if(!this.filterColumn.hasOwnProperty(this.column))
                 this.filterColumn[this.column]=[];
             this.filterColumn[this.column].push(item.label);
-            this.checkedList.push(item.label);
+            if(this.checkedList.indexOf(item.label)==-1)
+                this.checkedList.push(item.label);
         }else{
             //未选从筛选项中删除
+            this.checkedList=this.checkedList.filter(row=>{
+                return row!=item.label;
+            });
             for(let i=0;i<this.filterColumn[this.column].length;i++){
                 if(this.filterColumn[this.column][i]==item.label){
                     this.filterColumn[this.column].splice(i,1);
@@ -156,6 +165,7 @@ export default {
             if(!this.filterColumn[this.column].length)
                 delete this.filterColumn[this.column];
         }
+        console.log(this.filterColumn)
         //当filterColumn仅剩下datas属性时候返回全部
         if(Object.keys(this.filterColumn).length==1){
             this.$bus.$emit('filter-success',this.filterColumn.datas);

@@ -121,9 +121,8 @@ export default {
           setTimeout(()=>{
               for(let obj of this.List){
                   this.$refs.table.toggleRowSelection(obj,obj.checked);
-              }
-                
-          },0)
+              }  
+          },10);
       },
       getData(){
           this.$http('/api/x6/getHyCkList.do').then(res=>{
@@ -210,6 +209,7 @@ export default {
       this.getData();
       this.$bus.$on('filter-success', (array) => {
         this.allList=array;
+        this.page.rows=array.length;
         this.changePage(1);
       });
   },
