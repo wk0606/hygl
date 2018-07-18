@@ -31,24 +31,24 @@ export default {
   methods:{
       login(){
         var _this=this;
-        var params={
-            "phone":"13584833734",
-            "pwd":"e10adc3949ba59abbe56e057f20f883e",
-            "clientType":"pc",
-            "erroryzm":"",
-            "safeyzm":"",
-            "machineId":"",
-            "gsdm":"232"
-        }
         // var params={
         //     "phone":"13584833734",
-        //     "pwd":"c33367701511b4f6020ec61ded352059",
+        //     "pwd":"e10adc3949ba59abbe56e057f20f883e",
         //     "clientType":"pc",
         //     "erroryzm":"",
         //     "safeyzm":"",
         //     "machineId":"",
-        //     "gsdm":"166"
+        //     "gsdm":"232"
         // }
+        var params={
+            "phone":"13584833734",
+            "pwd":"c33367701511b4f6020ec61ded352059",
+            "clientType":"pc",
+            "erroryzm":"",
+            "safeyzm":"",
+            "machineId":"",
+            "gsdm":"166"
+        }
         params.safeyzm=localStorage.getItem('safeyzm')||'';
         var xhr=new XMLHttpRequest();
         xhr.open('POST',`${this.$util.getBaseUrl()}/api/x6/login.do`);

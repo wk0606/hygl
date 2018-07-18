@@ -44,6 +44,7 @@ export default {
         this.data.city='';
         this.data.town='';
         this.townList=[];
+        this.$emit('change');
     },
     getTown(p,c){
         this.data.town = "";
@@ -53,6 +54,7 @@ export default {
         }).then((res) => {
             this.townList = res.list;
         });
+        this.$emit('change');
     }
   },
   mounted(){

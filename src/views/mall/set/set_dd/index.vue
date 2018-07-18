@@ -6,7 +6,7 @@
         v-for="item in tabs"
         :key="item.component"
         :class="{'set-tab-select':item.component==currentTab}"
-        @click="currentTab=item.component"
+        @click="openPath(item.component)"
       >{{item.label}}</div>
     </div>
     <div class="set-body">
@@ -28,6 +28,15 @@ export default {
       ],
       currentTab:'smzt'
     }
+  },
+  methods:{
+    openPath(name){
+      this.currentTab=name;
+      this.$router.push(`/main/mallchildren/set_dd/${name}`);
+    }
+  },
+  activated(){
+    this.currentTab=this.$route.params.name;
   },
   components:{
     smzt,

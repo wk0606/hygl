@@ -9,22 +9,23 @@
             label-width="80px"
           >
             <el-form-item label="模板名称" prop="name">
-                <el-input v-model="details.name" size="mini"></el-input>
+                <el-input v-model="details.name" size="mini" style="width:250px;"></el-input>
             </el-form-item>
             <el-form-item label="计费方式" prop="jffs">
-                <el-radio-group v-model="details.jffs">
+                <el-radio-group v-model="details.jffs" @change="changeLabel">
                     <el-radio
                         v-for="item in jfList"
                         :key="item.label"
                         :label="item.value"
+                        :disabled="disabled"
                     >{{item.label}}</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="配送区域" prop="qy" required>
+            <el-form-item label="配送区域" prop="data" required>
                 <el-row>
                     <div style="border:1px solid #f0f0f0;">
                         <el-table
-                            :data="details.qy"
+                            :data="details.data"
                         >
                             <el-table-column
                                 v-for="item in colModels"
@@ -61,8 +62,8 @@
             <el-form-item>
                 <el-row>
                     <div style="text-align:center;padding:20px 0;">
-                        <el-button size="mini" type="primary" @click="save">保存</el-button>
-                        <el-button size="mini">返回</el-button>
+                        <el-button size="mini" type="primary" :loading="load" @click="save">保存</el-button>
+                        <el-button size="mini" @click="back">返回</el-button>
                     </div>
                 </el-row>
             </el-form-item>
@@ -78,66 +79,100 @@ import areaSet from './area'
 export default {
   data(){
       const validatePass = (rule, value, callback) => {
-          if(!this.details.qy.length){
+          if(!this.details.data.length){
               callback(new Error('请填写配送区域'));
           }else{
               callback();
           }
       }
       return {
+          load:false,
           navs:[
-              {label:'订单设置',path:'/main/mallchildren/set_dd'},
+              {label:'订单设置',path:'/main/mallchildren/set_dd/kdfh'},
               {label:'编辑模板'}
           ],
           jfList:[
-              {label:'按件计费',value:"0"},
-              {label:'按重计费',value:"1"}
+              {label:'按件计费',value:0},
+              {label:'按重计费',value:1}
           ],
           details:{
+              id:-1,
               name:'',
-              jffs:"0",//0-按件 1-按重量
-              qy:[]
+              jffs:0,//0-个-按件 1-千克-按重量
+              data:[]
           },
+          _details:null,
           rules:{
               name:{required:true,message:'请输入模板名称'},
-              qy:{validator:validatePass}
+              data:{validator:validatePass}
           },
           colModels:[
               {label:'可配送区域',prop:'dq',align:'left',format:this.formatArea},
-              {label:'首件（个）',prop:'first'},
+              {label:'首件（个）',prop:'firstsl'},
               {label:'运费（元）',prop:'firstje'},
-              {label:'需件（个）',prop:'second'},
+              {label:'续件（个）',prop:'secondsl'},
               {label:'运费（元）',prop:'secondje'}
           ],
           dialog:{
               show:false,
-              data:[]
+              data:[],
+              selected:[]
           },
           currentIndex:undefined
       }
   },
+  computed:{
+      disabled(){
+          return this.details.id=='-1'?false:true;
+      }
+  },
   methods:{
-      initKdItem(array=[],sl1=0,je1=0,sl2=0,je2=0){
+      changeLabel(val){
+          this.colModels[1].label=val?'首重（千克）':'首件（个）';
+          this.colModels[3].label=val?'续重（千克）':'续件（个）';
+      },
+      initKdItem(array=[],sl1=1,je1=0,sl2=1,je2=0){
           return {
               dq:array,
-              first:sl1,
+              firstsl:sl1,
               firstje:je1,
-              second:sl2,
+              secondsl:sl2,
               secondje:je2
           }
       },
+      getDetails(id){
+          this.$http('/api/x6/getHySetKdmbByid.do',{
+              id:id
+          }).then(res=>{
+              for(let key in this.details){
+                  if(key=='data')
+                    this.details.data=JSON.parse(res.VO.data);
+                  else
+                    this.details[key]=res.VO[key];
+              }
+              this._details=JSON.parse(JSON.stringify(this.details));
+          });
+      },
       openDialog(row,index){
           this.currentIndex=index;
+          this.dialog.selected=[];
+          if(this.details.data.length){
+            for(let obj of this.details.data){
+                this.dialog.selected=this.dialog.selected.concat(obj.dq);
+            }
+          }
           if(row){
               this.dialog.data=row.dq;
+          }else{
+              this.dialog.data=[];
           }
           this.dialog.show=true;
       },
       addRow(array){
           if(this.currentIndex!==undefined){
-              this.details.qy[this.currentIndex].dq=array;
+              this.details.data[this.currentIndex].dq=array;
           }else{
-              this.details.qy.push(this.initKdItem(array));
+              this.details.data.push(this.initKdItem(array));
           }
       },
       formatArea(row){
@@ -149,28 +184,56 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                this.details.qy.splice(index,1);
+                this.details.data.splice(index,1);
                 this.$message('删除成功');
             }).catch(() => {});
       },
-
       save(){
           this.$refs.form.validate(valid=>{
             if (valid) {
-                for(let obj of this.details.qy){
-                    for(let key in obj){
-                        if(!obj[key]){
-                            return;
-                        }
-                    }
-                }
-                console.log(212);
+                this.load=true;
+                this.details.jjdw=this.details.jffs?'千克':'个';
+                this.$http('/api/x6/HySetKdmbSave.do',this.details).then(res=>{
+                    this.$message(this.$route.params.id!=='-1'?'编辑成功':'新增成功');
+                    this.$router.push('/main/mallchildren/set_dd/kdfh');
+                    res.VO.show=true;
+                    this.$util.setCache('KDMB',res.VO);
+                    this.load=false;
+                },err=>{
+                    this.load=false;
+                });
             }
           });
+      },
+      back(){
+          if(!this.$util.compareEqualWidthObjects(this.details,this._details)){
+            this.$confirm('返回后所填信息将丢失，是否继续, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.$router.push('/main/mallchildren/set_dd/kdfh');
+            }).catch(() => {
+                    
+            });
+          }else{
+              this.$router.push('/main/mallchildren/set_dd/kdfh');
+          }
       }
   },
-  mounted(){
-      //console.log(this.$route)
+  activated(){
+      this.$refs.form.resetFields();
+      if(this.$route.params.id!=='-1'){
+          this.getDetails(this.$route.params.id);
+      }else{
+          this.details={
+              id:-1,
+              name:'',
+              jffs:0,//0-个-按件 1-千克-按重量
+              data:[]
+          };
+          this._details=JSON.parse(JSON.stringify(this.details));
+      }
   },
   components:{
       breadNav,

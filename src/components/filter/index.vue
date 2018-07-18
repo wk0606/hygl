@@ -130,8 +130,8 @@ export default {
     },
     //从原数据中找出选中项
     matchConditions(){
-        //var target=this.$store.state.filterTable[this.getCurrentRouter()]||this.datas;
-        var target=this.datas;
+        var target=this.$store.state.filterTable[this.getCurrentRouter()]||this.datas;
+        //var target=this.datas;
         var temp=[];
         console.log(this.checkedList)
         for(let obj of target){

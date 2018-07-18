@@ -1,5 +1,6 @@
 <template>
   <div class="input-number">
+      <i v-if="icon" :class="icon"></i>
       <p><input type="number" v-model="val" @change="changeValue" :style="{textAlign:align}"></p>
       <div v-if="arrowControl">
           <i class="el-icon-caret-top" @click="calc('add')"></i>
@@ -10,6 +11,9 @@
 <script>
 export default {
   props:{
+      icon:{
+          default:''
+      },
       value:{required:true},
       max:{default:null},
       min:{default:0},
@@ -19,6 +23,11 @@ export default {
   data(){
       return {
           val:this.value
+      }
+  },
+  watch:{
+      value(nv){
+          this.val=nv;
       }
   },
   methods:{
@@ -75,6 +84,7 @@ export default {
         padding: 5px;
         background: #fff;
         p{flex-grow: 1;}
+        >i{margin-right: 5px;}
         input{
             //width: ~"calc(100% - 14px)";
             width: 100%;

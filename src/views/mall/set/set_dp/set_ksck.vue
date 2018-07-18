@@ -1,6 +1,6 @@
 <template>
   <div>  
-      <bar :barShow="barMenu">
+      <bar :bar-show="barMenu">
         <div class="set-ksck-header" slot="bar-x">
             <el-input
                 size="mini"
@@ -79,7 +79,6 @@
 import companySelect from '../../../../components/companySelect/index'
 import pagination from '../../../../components/pagination/index'
 import bar from '../../../../components/bar/index'
-import bus from '../../../../func/eventBus'
 export default {
   data(){
       return{
@@ -143,7 +142,8 @@ export default {
           return this.$util.getCompanyInfo(value,'bm',list);
       },
       searchList(item){
-          console.log(item);
+          if(!item.hasOwnProperty('bm'))
+            this.gsbm='';
           this.$http('/api/x6/getHyCkListByCondition.do',{
               name:this.ckname,
               bm:this.gsbm
@@ -182,6 +182,9 @@ export default {
                  if(keys.indexOf(obj.id)>-1)
                     obj.isb2c=status;
                     obj.status=status?'可售':'不可售';
+             }
+             for(let obj of this.allList){
+                obj.checked=false;
              }
              this.$refs.table.clearSelection();
              this.barMenu=true;

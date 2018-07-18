@@ -75,10 +75,86 @@
              <div class="edit-items">
                  <span>规格设置</span>
                  <div>
-                     <gg-select v-model="type_group"></gg-select>
+                     <gg-select :data="type_group" @select-change="handleChange"></gg-select>
                  </div>
              </div>
-            
+             <div class="edit-items">
+                 <span>规格信息</span>
+                 <div>
+                     <!-- <el-button @click="test">click</el-button> -->
+                     <el-table
+                        :data="details.spList"
+                     >
+                        <el-table-column
+                            v-for="item in colModels"
+                            :key="item.prop"
+                            :label="item.label"
+                            :prop="item.prop"
+                        ></el-table-column>
+                     </el-table>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <div class="edit-block">
+         <div>物流/其他</div>
+         <div>
+             <div class="edit-items">
+                 <span class="edit-items-required">配送方式</span>
+                 <div>
+                     <div style="line-height:28px;">
+                        <el-checkbox v-model="iskdps">快递配送</el-checkbox>
+                        <el-checkbox v-model="isddzt">到店自提</el-checkbox>
+                     </div>
+                     <div class="tips" v-if="rules.name.show" style="width:300px;">{{rules.name.label}}</div>
+                 </div>
+             </div>
+             <div class="edit-items">
+                 <span class="edit-items-required">运费设置</span>
+                 <div>
+                     <div>
+                        <div class="edit-items-yysz" style="margin-bottom:25px;">
+                            <el-radio v-model="details.yysz" label="1">统一运费</el-radio>
+                            <input-number
+                                v-model="details.yfje"
+                                icon="iconfont icon-qian1"
+                                :arrow-control="false"
+                                style="margin-left:20px;width:150px;"
+                            ></input-number>
+                        </div>
+                        <div class="edit-items-yysz">
+                            <el-radio v-model="details.yysz" label="2">运费模板</el-radio>
+                            <el-select
+                                size="mini"
+                                v-model="details.yfmb"
+                                style="margin-left:20px;width:150px;"
+                            >
+                                <el-option
+                                    v-for="item in yfmb"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
+                                ></el-option>
+                            </el-select>
+                            <router-link tag="a" to="/main/mallchildren/set_dd_addkd">新建</router-link>
+                        </div>
+                     </div>
+                     <div class="tips" v-if="rules.name.show" style="width:300px;">{{rules.name.label}}</div>
+                 </div>
+             </div>
+             <div class="edit-items">
+                 <span>每人限购</span>
+                 <div>
+                     <div style="line-height:28px;">
+                        <input-number
+                            v-model="details.mrxg"
+                            :arrow-control="false"
+                            style="width:150px;"
+                        ></input-number>
+                     </div>
+                     <div style="color:#ccc;margin-top:10px;">0代表不限购</div>
+                 </div>
+             </div>
          </div>
      </div>
  </div> 
@@ -86,6 +162,8 @@
 <script>
 import draggable from 'vuedraggable'
 import ggSelect from '../specs_select'
+import py from '../../../../func/pinyin'
+import inputNumber from '../../../../components/inputNumber/index'
 export default {
   data(){
       return{
@@ -102,6 +180,11 @@ export default {
               {label:'冬季新品',value:4}
           ],
           type_group:[],
+          colModels:[
+              {label:'商品名称',prop:'qspmc'},
+              {label:'网店售价',prop:'wdsj'},
+              {label:'可售库存',prop:'kskc'}
+          ],
           details:{
               name:'',
               group:1,
@@ -110,18 +193,69 @@ export default {
                   'http://img2.imgtn.bdimg.com/it/u=2239146502,165013516&fm=27&gp=0.jpg',
                   'http://img5.imgtn.bdimg.com/it/u=1893461451,2619342480&fm=27&gp=0.jpg',
                   'http://img0.imgtn.bdimg.com/it/u=2316242837,3672164063&fm=27&gp=0.jpg'
-              ]
-          }
+              ],
+              spList:[],
+              psfs:1,
+              yfje:0,
+              yysz:'1',
+              yfmb:1,
+              mrxg:0
+          },
+          radio:"1",
+          iskdps:true,
+          isddzt:false,
+          yfmb:[
+              {label:'华东地区',value:1},
+              {label:'华南地区',value:2},
+              {label:'华北地区',value:3}
+          ]
       }
   },
   methods:{
       uploadImgs(){
           console.log(this.details.pics)
+      },
+      //规格选择完毕
+      handleChange(array){
+          //console.log(array)
+          this.type_group=array.filter(item=>{
+              return item.label&&item.value.length;
+          });
+          this.colModels=this.colModels.slice(-3);
+          for(let obj of this.type_group){
+              this.colModels.splice(0,0,{
+                  label:obj.label,
+                  prop:py.GetPY(obj.label)
+              });
+          }
+          var obj={};
+          var index=0;
+          this.details.spList=[];
+          this.tarnsferArray(obj,this.type_group,index,null);
+          console.log(this.details.spList);
+      },
+      //转发规格二维数组为列表形式的一维数组
+      tarnsferArray(target,data,row,el){
+        for(let i=0;i<data[row].value.length;i++){
+            target[py.GetPY(data[row].label)]=data[row].value[i];
+            var k=row+1;
+            if(k>data.length-1){
+                target[py.GetPY(data[row].label)]=data[row].value[i];
+                this.details.spList.push(JSON.parse(JSON.stringify(target)));
+                delete target[py.GetPY(data[row].label)];
+            }else{
+                this.tarnsferArray(target,data,k,data[k-1].label);
+            }
+            if(i>=data[row].value.length-1){
+                delete target[el];
+            }
+        }
       }
   },
   components:{
       draggable,
-      ggSelect
+      ggSelect,
+      inputNumber
   }
 }
 </script>

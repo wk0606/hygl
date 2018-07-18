@@ -26,7 +26,9 @@
           </div>
       </div>
       <div class="c-body">
-          <router-view></router-view>
+          <keep-alive>
+              <router-view></router-view>
+          </keep-alive>
       </div>
   </div>
 </template>
@@ -56,7 +58,7 @@ export default {
               {
                   label:'设置',
                   list:[
-                      {label:'订单设置',path:'/main/mallchildren/set_dd'},
+                      {label:'订单设置',path:'/main/mallchildren/set_dd/smzt'},
                       {label:'支付/交易',path:'/main/mallchildren/set_jy'},
                       {label:'店铺设置',path:'/main/mallchildren/set_dp'}
                   ]

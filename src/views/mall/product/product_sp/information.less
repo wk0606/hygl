@@ -1,8 +1,9 @@
+@bgcolor:#f8f8f8;
 .edit-block{
     display: flex;
     align-items: flex-start;
     width: 100%;
-    background: #f8f8f8;
+    background: @bgcolor;
     margin-top: 10px;
     >div{color:#666;box-sizing: border-box;}
     >div:nth-child(1){
@@ -85,5 +86,20 @@
             justify-content: flex-start;
             //.edit-items-pic:nth-child(1){margin-left: 0;}
         }
+        .edit-items-yysz{
+            display: flex;
+            align-items: center;
+            line-height:28px;
+            >a{
+                margin-left: 10px;
+                color: #409eff;
+            }
+        }
     }
+}
+.edit-submit{
+    background: @bgcolor;
+    padding: 10px 0;
+    text-align: center;
+    margin-top: 10px;
 }

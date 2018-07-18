@@ -24,10 +24,10 @@
                                 v-for="item in maps.List"
                                 :key="item.label"
                                 v-show="item.show"
-                                :class="{select:item.checked}"
+                                :class="{select:item.checked,disabled:views.selected.indexOf(item.label)>-1}"
                                 @click="checkedItem(item,'selLeft')"
                             >
-                                <i class="el-icon-circle-plus"></i>
+                                <i :class="views.selected.indexOf(item.label)>-1?'el-icon-remove':'el-icon-circle-plus'"></i>
                                 <span>{{item.label}}</span>
                             </li>
                         </div>
@@ -94,6 +94,10 @@ export default {
           }
       },
       checkedItem(item,map){
+          if(this.views.selected.indexOf(item.label)>-1){
+              this.$message('当前区域已被选择','error');
+              return;
+          }
           if(item.checked){
               this.maps[map]=this.maps[map].filter(_item=>{
                   return _item.label!=item.label;
@@ -212,6 +216,10 @@ export default {
             }
             .select{
                 color: #409eff;
+            }
+            .disabled{
+                background: #f8f8f8;
+                cursor: not-allowed;
             }
             .m-transfer-item{
                 height: ~"calc(100% - 48px)";

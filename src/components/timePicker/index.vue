@@ -11,26 +11,34 @@
         format="HH:mm"
         value-format="HH:mm"
         size="mini"
+        :disabled="disabled"
+        :clearable="clearable"
         @change="changeTime">
     </el-time-picker>
   </div>
 </template>
 <script>
 export default {
-  props:['value'],
+  props:{
+      value:{required:true},
+      disabled:{default:false},
+      clearable:{default:false}
+  },
   data(){
       return {
           defaultTime:this.value
+      }
+  },
+  watch:{
+      value(nv){
+          this.defaultTime=nv;
       }
   },
   methods:{
       changeTime(){
         this.$emit('input',this.defaultTime);
       }
-  },
-//   mounted(){
-//       this.defaultTime=this.value;
-//   }
+  }
 }
 </script>
 <style lang="less" scoped>

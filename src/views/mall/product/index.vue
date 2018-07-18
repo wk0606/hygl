@@ -16,6 +16,7 @@
 </template>
 <script>
 import wdsp from './product_sp/index'
+import spfz from './product_group/index'
 export default {
   data(){
     return {
@@ -27,7 +28,8 @@ export default {
     }
   },
   components:{
-    wdsp
+    wdsp,
+    spfz
   }
 }
 </script>

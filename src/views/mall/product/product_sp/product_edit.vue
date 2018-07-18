@@ -1,6 +1,6 @@
 <template>
   <!-- 既是编辑也是新增 😶 -->
-  <div>
+  <div ref="container">
     <bread-nav :data="navs"></bread-nav>
     <div class="p-edit-tab">
         <div
@@ -9,12 +9,21 @@
             :class="{selected:item.value==currentTab}"
         >{{item.label}}</div>
     </div>
-    <component :is="currentTab"></component>
+    <component :is="currentTab" :height="height" v-if="height"></component>
+    <div class="p-tab-submit">
+        <div v-if="currentTab=='information'"><el-button type="primary" size="mini" @click="nextStep">下一步</el-button></div>
+        <div v-else>
+            <el-button size="mini" @click="currentTab='information'">上一步</el-button>
+            <el-button type="primary" size="mini">上架</el-button>
+            <el-button size="mini">下架</el-button>
+        </div>
+    </div>
   </div>
 </template>
 <script>
 import breadNav from '../../../../components/breadNav/index'
 import information from './product_edit_information'
+import editDetails from './product_details'
 export default {
   data(){
       return {
@@ -29,19 +38,25 @@ export default {
               },
               {
                 label:'2. 编辑商品详情',
-                value:'details'
+                value:'editDetails'
               }
           ],
           currentTab:'information',
-          
+          height:0
       }
   },
-  mounted(){
-      
+  methods:{
+      nextStep(){
+          this.currentTab='editDetails';
+      }
+  },
+  activated(){
+    this.height=this.$refs.container.offsetHeight-120;
   },
   components:{
       breadNav,
-      information
+      information,
+      editDetails
   }
 }
 </script>
@@ -68,6 +83,12 @@ export default {
             background: #fff;
             border-bottom: none;
         }
+    }
+    .p-tab-submit{
+        background: #f8f8f8;
+        padding: 10px 0;
+        text-align: center;
+        margin-top: 10px;
     }
 </style>
 

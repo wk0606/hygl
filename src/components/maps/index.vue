@@ -18,6 +18,7 @@ export default {
   },
   watch:{
       value(nv){
+          console.log(nv)
           this.lnglat=nv;
           var pointer=this.lnglat.split(',');
           this.drawMap(pointer);
