@@ -15,27 +15,29 @@
   </div>
 </template>
 <script>
-import wdsp from './product_sp/index'
-import spfz from './product_group/index'
+import wdsp from "./product_sp/index";
+import spfz from "./product_group/index";
 export default {
-  data(){
+  data() {
     return {
-      tabs:[
-        {label:'网店商品',component:'wdsp'},
-        {label:'商品分组',component:'spfz'}
+      tabs: [
+        { label: "网店商品", component: "wdsp" },
+        { label: "商品分组", component: "spfz" }
       ],
-      currentTab:'wdsp'
-    }
+      currentTab: "wdsp"
+    };
   },
-  components:{
+  components: {
     wdsp,
     spfz
   }
-}
+};
 </script>
 <style lang="less" scoped>
-  .product-body{
-    height: ~"calc(100% - 47px)";
-    >div{height: 100%;}
+.product-body {
+  height: ~"calc(100% - 47px)";
+  > div {
+    height: 100%;
   }
+}
 </style>

@@ -44,11 +44,13 @@ export default new Router({
             {path:'/main/mallchildren/product_edit',name:'product_edit',component:resolve=>require(['../views/mall/product/product_sp/product_edit'],resolve)},
             {path:'/main/mallchildren/product_group_add/:id',name:'product_group_add',component:resolve=>require(['../views/mall/product/product_group/product_group_add'],resolve)},
             {path:'/main/mallchildren/asset_jy',name:'asset_jy',component:resolve=>require(['../views/mall/asset/index'],resolve)},
-            {path:'/main/mallchildren/set_dd/:name',name:'set_dd',component:resolve=>require(['../views/mall/set/set_dd/index'],resolve)},
+            {path:'/main/mallchildren/set_dd',name:'set_dd',component:resolve=>require(['../views/mall/set/set_dd/index'],resolve)},
             {path:'/main/mallchildren/set_dd_addkd/:id',name:'set_dd_addkd',component:resolve=>require(['../views/mall/set/set_dd/set_kdfh/kdfh_add'],resolve)},
             {path:'/main/mallchildren/set_jy',name:'set_jy',component:resolve=>require(['../views/mall/set/set_jy'],resolve)},
             {path:'/main/mallchildren/set_dp',name:'set_dp',component:resolve=>require(['../views/mall/set/set_dp/index'],resolve)},
-            {path:'/main/mallchildren/set_dprz/:phone/:name',name:'set_dprz',component:resolve=>require(['../views/mall/set/set_dp/set_dpxx/set_dprz'],resolve)}
+            {path:'/main/mallchildren/set_dprz/:phone/:name',name:'set_dprz',component:resolve=>require(['../views/mall/set/set_dp/set_dpxx/set_dprz'],resolve)},
+            {path:'/main/mallchildren/order',name:'order',component:resolve=>require(['../views/mall/order/index'],resolve)},
+            {path:'/main/mallchildren/order_details/:id',name:'order_details',component:resolve=>require(['../views/mall/order/order_qbdd/qbdd_details'],resolve)},
           ]
         }
       ]

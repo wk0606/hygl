@@ -102,7 +102,7 @@
     cursor: pointer;
 }
 /* 两行超出省略 */
-.eellipsis2rows{
+.ellipsis2rows{
     overflow:hidden; 
     
     text-overflow:ellipsis;

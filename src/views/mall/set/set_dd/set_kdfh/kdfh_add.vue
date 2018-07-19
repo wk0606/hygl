@@ -88,7 +88,7 @@ export default {
       return {
           load:false,
           navs:[
-              {label:'订单设置',path:'/main/mallchildren/set_dd/kdfh'},
+              {label:'订单设置',path:'/main/mallchildren/set_dd'},
               {label:'编辑模板'}
           ],
           jfList:[
@@ -195,7 +195,7 @@ export default {
                 this.details.jjdw=this.details.jffs?'千克':'个';
                 this.$http('/api/x6/HySetKdmbSave.do',this.details).then(res=>{
                     this.$message(this.$route.params.id!=='-1'?'编辑成功':'新增成功');
-                    this.$router.push('/main/mallchildren/set_dd/kdfh');
+                    this.$router.push('/main/mallchildren/set_dd');
                     res.VO.show=true;
                     this.$util.setCache('KDMB',res.VO);
                     this.load=false;
@@ -212,12 +212,12 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                this.$router.push('/main/mallchildren/set_dd/kdfh');
+                this.$router.push('/main/mallchildren/set_dd');
             }).catch(() => {
                     
             });
           }else{
-              this.$router.push('/main/mallchildren/set_dd/kdfh');
+              this.$router.push('/main/mallchildren/set_dd');
           }
       }
   },

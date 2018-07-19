@@ -15,7 +15,7 @@
           </div>
       </div>
       <div class="kdfh-add">
-          <el-button size="small" type="success" @click="openAdd(-1)">新增运费模板</el-button>
+          <el-button size="small" type="success" @click="openAdd(-1,-1)">新增运费模板</el-button>
       </div>
       <div
         class="kdfh-table"
@@ -27,7 +27,7 @@
               <div>
                   <div>最后编辑时间 {{data.zdrq}}</div>
                   <span>-</span>
-                  <el-button size="mini" type="text" @click.stop="openAdd(data.id)">修改</el-button>
+                  <el-button size="mini" type="text" @click.stop="openAdd(data.id,index)">修改</el-button>
                   <span>-</span>
                   <el-button size="mini" type="text" @click.stop="remove(data,index)">删除</el-button>
                   <i class="el-icon-caret-top"></i>
@@ -41,7 +41,7 @@
                     <el-table-column
                         v-for="item in colModel"
                         :key="item.prop"
-                        :label="item.label"
+                        :label="setLabel(index,item.prop)"
                         :prop="item.prop"
                         header-align="center"
                         :align="item.align || 'center'"
@@ -72,10 +72,28 @@ export default {
           List:[],
           dialog:{
               show:false
-          }
+          },
+          currentIndex:-1
       }
   },
+  computed:{
+      
+  },
   methods:{
+      setLabel(index,prop){
+          if(prop=='dq')
+            return '可配送区域';
+          else if(prop=='firstje'||prop=='secondje')
+            return '运费（元）';
+          else{
+              var temp;
+              if(prop=='firstsl')
+                temp=this.List[index].jffs?'首重':'首件';
+              if(prop=='secondsl')
+                temp=this.List[index].jffs?'续重':'续件';
+              return `${temp}（${this.List[index].jjdw}）`;
+          }
+      },
       updateZtStatus(){
           this.$http('/api/x6/updateKdgnzt.do',{
               kdkqzt:this.openKt?1:0
@@ -94,8 +112,9 @@ export default {
       formatDp(val){
           return val.join(',');
       },
-      openAdd(id){
+      openAdd(id,index){
         this.$router.push(`/main/mallchildren/set_dd_addkd/${id}`);  
+        this.currentIndex=index;
       },
       remove(row,index){
         this.$confirm('此操作将永久删除该模板, 是否继续?', '提示', {
@@ -118,10 +137,16 @@ export default {
       this.getList();
   },
   activated(){
+      console.log(this.currentIndex)
       var row=this.$util.getCache('KDMB');
       if(row){
           row.data=JSON.parse(row.data);
-          this.List.push(row);
+          if(this.currentIndex==-1){
+              this.List.push(row);
+          }else{
+              row.show=this.List[this.currentIndex].show;
+              this.List.splice(this.currentIndex,1,row);
+          }
           this.$util.removeCache('KDMB');
       }
   },

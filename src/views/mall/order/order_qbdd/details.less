@@ -1,0 +1,138 @@
+@border-color:#ddd;
+.details-body{
+    height: ~"calc(100% - 35px)";
+    overflow-y: auto;
+    .details-body-top{
+        margin-bottom: 15px;
+        span{margin-right: 20px;}
+    }
+    .order-body-jy{
+        border: 1px solid @border-color;
+        >div:nth-child(1){
+            display: flex;
+            >div{
+                box-sizing: border-box;
+                padding: 20px;
+            }
+            .order-body-jy-left{
+                width: 40%;
+                border-right:1px solid @border-color;
+                display: inline-flex;
+                align-items: center;
+                b{font-size: 20px;color: #555}
+            }
+            .order-body-jy-right{
+                width: 60%;
+            }
+        }
+        >div:nth-child(2){
+            padding: 15px;
+            border-top: 1px solid @border-color;
+            color:#999;
+            display: flex;
+            align-items: flex-start;
+            span{margin-right: 5px;flex-shrink: 0;line-height: 18px;}
+            div{line-height: 18px;}
+        }
+    }
+    .order-body-lxr{
+        box-sizing: border-box;
+        padding: 15px;
+        border: 1px solid @border-color;
+        background: #f8f8f8;
+        margin-top: 15px;
+        display: flex;
+        >div{
+            width: 33.3%;
+        }
+        b{color: #555;}
+        ul{
+            margin-top: 10px;
+            li{
+                display: flex;
+                align-items: flex-start;
+                color: #999;
+                margin-top: 5px;
+                span{flex-shrink: 0;margin-right: 5px;line-height: 18px;}
+                div{line-height: 18px;}
+            }
+        }
+    }
+    .order-body-table{
+        border: 1px solid @border-color;
+        border-bottom: none;
+        margin-top: 15px;
+        user-select: none;
+        .order-body-table-row{border-bottom: 1px solid @border-color;}
+        .order-body-table-item{
+            display: flex;
+            >div{
+                box-sizing: border-box;
+                padding: 10px;
+            }
+        }
+        .order-body-table-header{
+            background: #f8f8f8;
+            box-sizing: border-box;
+            padding: 0px;
+            >div{text-align: center;}
+        }
+        .order-body-table-body{
+            >div{height: 80px;}
+            >div:nth-child(1){
+                width: 30%;
+                display: inline-flex;
+                align-items: flex-start;
+                img{
+                    width: 60px;
+                    height: 60px;
+                    flex-shrink: 0;
+                    margin-right: 5px;
+                }
+                span{line-height: 18px;}
+            }
+            >div:nth-child(n+2){
+                display: inline-flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                width: 10%;
+            }
+            >div:nth-child(2){
+                width: 20%;
+                span{margin: 5px 0;}
+            }
+            >div:nth-child(3){width:13%;}
+            >div:nth-child(5){width:15%;}
+            >div:nth-child(6){width:12%;}
+            .order-body-table-border{border-right: 1px solid @border-color;}
+            .order-body-table-btn{
+                width: 100%;
+                max-width: 100px;
+                text-align: center;
+                padding: 5px 0;
+                border: 1px solid @border-color;
+                cursor: pointer;
+                color: #999;
+            }
+            .order-body-table-disabled{
+                cursor: not-allowed;
+                background: #e8e8e8;
+            }
+        }
+        .order-body-table-footer{
+            display: inline-flex;
+            align-items: flex-start;
+            line-height: 18px;
+            color: #999;
+            box-sizing: border-box;
+            padding: 0 10px 10px 10px;
+            width: 88%;
+            border-right: 1px solid @border-color;
+            span{
+                flex-shrink: 0;
+                margin-right: 5px;
+            }
+        }
+    }
+}

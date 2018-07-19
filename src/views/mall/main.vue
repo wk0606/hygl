@@ -46,7 +46,7 @@ export default {
               {
                   label:'订单',
                   list:[
-                      {label:'网店订单',path:'/main/mallchildren/dd'}
+                      {label:'网店订单',path:'/main/mallchildren/order'}
                   ]
               },
               {
@@ -58,7 +58,7 @@ export default {
               {
                   label:'设置',
                   list:[
-                      {label:'订单设置',path:'/main/mallchildren/set_dd/smzt'},
+                      {label:'订单设置',path:'/main/mallchildren/set_dd'},
                       {label:'支付/交易',path:'/main/mallchildren/set_jy'},
                       {label:'店铺设置',path:'/main/mallchildren/set_dp'}
                   ]

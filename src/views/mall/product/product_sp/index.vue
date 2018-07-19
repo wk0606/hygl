@@ -38,7 +38,7 @@
                     <div class="cell-product">
                         <img :src="scope.row.picurl" alt="">
                         <div>
-                            <div class="eellipsis2rows">{{scope.row.name}}</div>
+                            <div class="ellipsis2rows">{{scope.row.name}}</div>
                             <p>￥{{scope.row.lsj | currency}}</p>
                         </div>
                     </div>

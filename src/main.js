@@ -38,6 +38,8 @@ import {
   Rate,
   Transfer,
   cascader,
+  Steps,
+  Step,
   
   Message,
   MessageBox
@@ -68,6 +70,8 @@ Vue.use(Tag)
 Vue.use(Rate)
 Vue.use(Transfer)
 Vue.use(cascader)
+Vue.use(Steps)
+Vue.use(Step)
 Vue.component(CollapseTransition.name, CollapseTransition)
 /**vuex */
 Vue.prototype.$store=store;

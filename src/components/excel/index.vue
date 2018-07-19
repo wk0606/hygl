@@ -77,7 +77,6 @@ export default {
               this.columns[i].dataType=this.columns[i].isSum?'number':'string';
               this.options.columns.push(Object.assign({},this.colModel,this.columns[i]));
           }
-          console.log(this.options);
           this.$http('/api/x6/exportExcel.do',this.options).then(res=>{
               this.load=false;
               window.location.href=res.url;

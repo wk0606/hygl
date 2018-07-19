@@ -9,39 +9,40 @@
         @click="currentTab=item.component"
       >{{item.label}}</div>
     </div>
-    <div class="set-body">
+    <div class="order-body">
       <component :is="currentTab"></component>
     </div>
   </div>
 </template>
 <script>
-import smzt from './set_smzt/index'
-import kdfh from './set_kdfh/index'
-import jysz from './set_jysz'
+import qbdd from './order_qbdd/index'
+import wdfh from './order_wdfh/index'
+import ddzt from './order_ddzt/index'
 export default {
   data(){
     return {
       tabs:[
-        {label:'上门自提',component:'smzt'},
-        {label:'快递发货',component:'kdfh'},
-        {label:'交易设置',component:'jysz'}
+        {label:'全部订单',component:'qbdd'},
+        {label:'网店发货',component:'wdfh'},
+        {label:'到店自提',component:'ddzt'}
       ],
-      currentTab:'smzt'
+      currentTab:'qbdd'
     }
   },
-  activated(){
+  mounted(){
     
   },
   components:{
-    smzt,
-    kdfh,
-    jysz
+    qbdd,
+    wdfh,
+    ddzt
   }
 }
 </script>
 <style lang="less" scoped>
-  .set-body{
-    height: ~"calc(100% - 47px)";
-    >div{height: 100%;}
-  }
+    .order-body{
+        height: ~"calc(100% - 47px)";
+        overflow-y: auto;
+        >div{height: 100%;}
+    }
 </style>
