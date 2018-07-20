@@ -115,6 +115,7 @@ export default {
      //删除选择的规格大类
      removeSpecs(index){
          if(this.hasSelected[index].name){
+             
              this.$confirm('删除将导致已与该规格关联的商品失效,是否继续?','提示',{
              type:'warning'
          }).then(()=>{
