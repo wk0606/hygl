@@ -34,8 +34,8 @@
       </div>
     </div>
     <div class="g-add-bottom">
-      <el-button size="mini" type="primary">保存</el-button>
-      <el-button size="mini">取消</el-button>
+      <el-button size="mini" type="primary" :loading="load" @click="save">保存</el-button>
+      <el-button size="mini" @click="cancel">取消</el-button>
     </div>
   </div>
 </template>
@@ -51,16 +51,54 @@ export default {
       width:0,
       scrollTop:0,
       name:'',
-      List:[
+      id:-1,
+      List:[],
+      spList:[
         {url:''}
-      ]
+      ],
+      load:false
+    }
+  },
+  methods:{
+    save(){
+      var name=this.name.trim();
+      if(name===''){
+        this.name='';
+        this.$message('名称不能为空','error');
+      }else{
+        this.load=true;
+        this.$http('/api/x6/HySetSpfzSave.do',{
+          id:this.id,
+          name:name
+        }).then(res=>{
+          this.$message(this.id==-1?'新增成功':'修改成功');
+          this.load=false;
+          this.name='';
+        },err=>{
+          this.load=false;
+        });
+      }
+    },
+    cancel(){
+      this.$router.go (-1);
+    },
+    getDetail(){
+      this.$http('/api/x6/getSpfzById.do',{
+        id:this.id
+      }).then(res=>{
+        this.name=res.VO.name;
+      });
     }
   },
   activated(){
     this.width=this.$refs.body.offsetHeight*9/16;
     setTimeout(()=>{
       this.scrollTop=this.$refs.img.offsetHeight;
-    },0)
+    },0);
+    this.id=this.$route.params.id;
+    if(this.id!=='-1'){
+      this.getDetail();
+    }
   },
   components:{
     breadNav

@@ -6,14 +6,20 @@
              <div class="edit-items">
                  <span class="edit-items-required">商品名称</span>
                  <div>
-                     <div><el-input size="mini"></el-input></div>
-                     <div class="tips" v-if="rules.name.show" style="width:300px;">{{rules.name.label}}</div>
+                     <div><el-input size="mini" style="width:300px;"></el-input></div>
+                     <div class="tips" v-if="rules.name.show" >{{rules.name.label}}</div>
                  </div>
              </div>
              <div class="edit-items">
                  <span class="edit-items-required">网店售价</span>
                  <div>
-                     <div class="edit-items-flex"><el-input size="mini" style="width:200px;"></el-input><a>原价 : ￥300.00</a></div>
+                     <div class="edit-items-flex">
+                         <el-input size="mini" style="width:150px;"></el-input>
+                         <div class="edit-items-price">
+                             <span>原价:￥</span>
+                             <input type="text" v-model="details.predj">
+                         </div>
+                     </div>
                      <div class="tips" v-if="rules.name.show">{{rules.name.label}}</div>
                  </div>
              </div>
@@ -84,13 +90,21 @@
                      <!-- <el-button @click="test">click</el-button> -->
                      <el-table
                         :data="details.spList"
+                        :span-method="arraySpanMethod"
+                        border
                      >
                         <el-table-column
                             v-for="item in colModels"
                             :key="item.prop"
                             :label="item.label"
                             :prop="item.prop"
-                        ></el-table-column>
+                            :align="item.align||'center'"
+                            :width="item.width"
+                        >
+                            <template slot-scope="scope">
+                                <span class="cell-span">{{scope.row[item.prop]}}</span>
+                            </template>
+                        </el-table-column>
                      </el-table>
                  </div>
              </div>
@@ -168,17 +182,14 @@ export default {
   data(){
       return{
           rules:{
-                name:{
-                    label:'姓名不可为空',
-                    show:true
-                }
+                name:{label:'姓名不可为空',show:true},
+                name:{label:'姓名不可为空',show:true},
+                name:{label:'姓名不可为空',show:true},
+                name:{label:'姓名不可为空',show:true},
+                name:{label:'姓名不可为空',show:true},
+                name:{label:'姓名不可为空',show:true}
           },
-          group:[
-              {label:'春季新品',value:1},
-              {label:'夏季新品',value:2},
-              {label:'秋季新品',value:3},
-              {label:'冬季新品',value:4}
-          ],
+          group:[],
           type_group:[],
           colModels:[
               {label:'商品名称',prop:'qspmc'},
@@ -217,39 +228,72 @@ export default {
       },
       //规格选择完毕
       handleChange(array){
-          //console.log(array)
           this.type_group=array.filter(item=>{
-              return item.label&&item.value.length;
+              return item.name&&item.value.length;
           });
+          this.type_group=this.type_group.reverse();
           this.colModels=this.colModels.slice(-3);
           for(let obj of this.type_group){
               this.colModels.splice(0,0,{
-                  label:obj.label,
-                  prop:py.GetPY(obj.label)
+                  label:obj.name,
+                  prop:py.GetPY(obj.name),
+                  width:100
               });
           }
-          var obj={};
+          console.log(this.colModels)
+          var temp={};
           var index=0;
           this.details.spList=[];
-          this.tarnsferArray(obj,this.type_group,index,null);
-          console.log(this.details.spList);
+          if(this.type_group.length){
+              this.type_group=this.type_group.reverse();
+              this.tarnsferArray(temp,this.type_group,index,null);
+          }
       },
       //转发规格二维数组为列表形式的一维数组
       tarnsferArray(target,data,row,el){
         for(let i=0;i<data[row].value.length;i++){
-            target[py.GetPY(data[row].label)]=data[row].value[i];
+            target[py.GetPY(data[row].name)]=data[row].value[i];
             var k=row+1;
             if(k>data.length-1){
-                target[py.GetPY(data[row].label)]=data[row].value[i];
+                target[py.GetPY(data[row].name)]=data[row].value[i];
                 this.details.spList.push(JSON.parse(JSON.stringify(target)));
-                delete target[py.GetPY(data[row].label)];
+                delete target[py.GetPY(data[row].name)];
             }else{
-                this.tarnsferArray(target,data,k,data[k-1].label);
+                this.tarnsferArray(target,data,k,data[k-1].name);
             }
             if(i>=data[row].value.length-1){
                 delete target[el];
             }
         }
+      },
+      //合并行的方法
+      arraySpanMethod({ row, column, rowIndex, columnIndex }){
+          for(let i=0;i<this.type_group.length-1;i++){
+              var k=this.type_group.slice(i+1).reduce(function(num,obj){
+                return num*obj.value.length;
+              },1);
+              if(columnIndex == i){
+                  if(rowIndex%k==0){
+                      return [k,1];
+                  }else{
+                      return [0,0];
+                  }
+              }
+          }
+      }
+  },
+  mounted(){
+      var temp=[
+          {name:'颜色',value:[4,6,7]},
+          {name:'内存',value:['2','4']},
+          {name:'制式',value:['全网通','移动','联通']},
+          {name:'大小',value:['3.2','5.0']}
+      ];
+      for(let i=0;i<temp.length-1;i++){
+          var k=temp.slice(i+1).reduce(function(total,obj){
+              return total*obj.value.length;
+          },1)
+          console.log(k)
       }
   },
   components:{

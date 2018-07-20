@@ -308,7 +308,7 @@
 					this.$http('/api/x6/getHyHyxxDetail.do',{
 						id:row.id
 					}).then((res) => {
-						res.hyxx.tags=JSON.parse(res.hyxx.tags);
+						res.hyxx.tags=res.hyxx.tags?JSON.parse(res.hyxx.tags):[];
 						this.editForm.data=res.hyxx;
 						this.editForm.slideBottom=false;
 						this.editForm.show=true;
@@ -322,7 +322,7 @@
 					this.$http('/api/x6/getHyHyxxDetail.do',{
 						id:row.id
 					}).then((res) => {
-						res.hyxx.tags=JSON.parse(res.hyxx.tags);
+						res.hyxx.tags=res.hyxx.tags?JSON.parse(res.hyxx.tags):[];
 						this.editForm.data=res.hyxx;
 						this.editForm.slideBottom=true;
 						this.editForm.show=true;

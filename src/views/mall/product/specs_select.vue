@@ -7,8 +7,9 @@
           <div>
               <el-select
                 size="mini"
-                v-model="item.label"
+                v-model="item.name"
                 @change="handleChangeSpec"
+                @focus="resetAllSpecs"
               >
                 <el-input
                     size="mini"
@@ -18,23 +19,25 @@
                     @input="searchAndCreate"
                 ></el-input>
                 <el-option
-                    v-for="item in List"
-                    :key="item.label"
-                    :label="item.label"
-                    :value="item.label"
+                    v-if="gglx.show"
+                    v-for="gglx in allSpecs"
+                    :key="gglx.name"
+                    :label="gglx.name"
+                    :value="gglx.name"
+                    :disabled="currentSelectGg.indexOf(gglx.name)>-1"
                 ></el-option>
               </el-select>
               <i class="el-icon-circle-close" @click="removeSpecs(index)"></i>
           </div>
           <!-- v-if="item.label" -->
-          <div class="tag-body" v-if="item.label">
+          <div class="tag-body" v-if="item.name">
               <div
                 class="tag-body-item"
                 v-for="tag in item.value"
                 :key="tag"
               >
                   <span>{{tag}}</span>
-                  <i class="el-icon-close"></i>
+                  <i class="el-icon-close" @click="removeTag(item,tag)"></i>
               </div>
               <div class="tag-plus">
                   <el-button icon="el-icon-plus" type="text" size="mini" @click="openTagSelect(item)">添加</el-button>
@@ -50,10 +53,10 @@
                         @change="handleChangeTag"
                     >
                         <el-option
-                            v-for="gg in getTagList(item.label)"
-                            :key="gg"
-                            :label="gg"
-                            :value="gg">
+                            v-for="gg in getTagList(item.name)"
+                            :key="gg.ggname"
+                            :label="gg.ggname"
+                            :value="gg.ggname">
                         </el-option>
                     </el-select>
                     <div style="text-align:right;padding-top:10px;">
@@ -66,7 +69,7 @@
       </div>
       <div class="specs-block specs-block-last">
           <div>
-              <el-button size="small" @click="addSpecs">添加商品规格</el-button>
+              <el-button size="small" :disabled="hasSelected.length>=4" @click="addSpecs">添加商品规格</el-button>
           </div>
       </div>
   </div>
@@ -85,83 +88,184 @@ export default {
   },
   data(){
      return {
-         allSpecs:[
-             {label:'尺寸',value:['3.2','6.4'],show:false},
-             {label:'颜色',value:['红','黑','白'],show:true},
-             {label:'制式',value:[],show:false},
-             {label:'配置',value:[],show:false},
-             {label:'内存',value:[],show:false},
-             {label:'版本',value:[],show:false},
-             {label:'cc',value:[],show:false},
-             {label:'ccc',value:[],show:false}
-         ],
+         //所有的规格列表
+         allSpecs:[],
+         //实际显示的规格
          List:[],
+         //已选择的规格
          hasSelected:[],
          name:'',
          tagName:'',
-         currentSelectTags:[]
+         //当前选择的大类
+         currentSelectGg:[],
+         //当前大类下的小类
+         currentSelectTags:[],
+         currentLabel:''
      }
   },
   methods:{
+      //添加选择的规格大类
      addSpecs(){
          this.hasSelected.push({
-             label:'',
+             name:'',
              value:[],
              show:false
          });
      },
+     //删除选择的规格大类
      removeSpecs(index){
-         this.hasSelected.splice(index,1);
+         if(this.hasSelected[index].name){
+             this.$confirm('删除将导致已与该规格关联的商品失效,是否继续?','提示',{
+             type:'warning'
+         }).then(()=>{
+             this.hasSelected.splice(index,1);
+             this.currentSelectGg=[];
+             for(let obj of this.hasSelected){
+                if(obj.name)
+                    this.currentSelectGg.push(obj.name);
+             }
+             this.$emit('select-change',this.hasSelected);
+         }).catch(()=>{});
+         }else{
+             this.hasSelected.splice(index,1);
+             this.$emit('select-change',this.hasSelected);
+         }
      },
+     //删除规格小类
+     removeTag(item,tag){
+         this.$confirm('删除将导致已与该规格关联的商品失效,是否继续?','提示',{
+             type:'warning'
+         }).then(()=>{
+            item.value=item.value.filter(_t=>{
+                return _t!=tag;
+            });
+            this.$emit('select-change',this.hasSelected);
+         }).catch(()=>{});
+         
+     },
+     //将allspecs中没id的数据给删除掉
+     resetAllSpecs(){
+         //console.log(8877)
+         this.name='';
+         this.allSpecs=this.allSpecs.filter(item=>{
+            return item.id;
+         });
+         for(let obj of this.allSpecs)
+            obj.show=true;
+     },
+     //规格大类输入框输入事件
      searchAndCreate(){
          var needAdd=true;
-         this.List=[];
+         this.allSpecs=this.allSpecs.filter(item=>{
+            return item.id;
+         });
          for(let obj of this.allSpecs){
-             if(obj.label.indexOf(this.name)>-1){
-                 this.List.push(obj);
-             }
-             if(obj.label==this.name)
+             obj.show=obj.name.indexOf(this.name)>-1?true:false;
+             if(obj.name==this.name)
                 needAdd=false;
          }
-         if(needAdd){
-            this.List.splice(0,0,{
-                label:this.name,
-                value:[]
+         if(needAdd&&this.name.trim()!==''){
+            this.allSpecs.splice(0,0,{
+                name:this.name,
+                value:[],
+                show:true
             });
          }
      },
+     //选择规格大类事件
      handleChangeSpec(item){
-         //console.log(item)
+         this.currentSelectGg=[];
+         for(let obj of this.hasSelected){
+             if(obj.name)
+                this.currentSelectGg.push(obj.name);
+         }
+         for(let obj of this.allSpecs){
+             //当选择的规格大类被匹配到同时有id时候
+             if(item==obj.name&&obj.id){
+                 return;
+             }
+         }
+         //当选择的规格大类无法被匹配到时候新增此规格大类
+         this.$http('/api/x6/HySetSpggSave.do',{
+             id:-1,
+             name:this.name.trim(),
+             ggname:''
+         }).then(res=>{
+             this.allSpecs=this.allSpecs.slice(1);
+             this.allSpecs.push({
+                 id:res.VO.id,
+                 name:res.VO.name,
+                 value:[],
+                 show:true
+             });
+         });
      },
+     //选择规格小类事件
      handleChangeTag(item){
-         //console.log(item)
+         var tag=item[item.length-1];
+         var temp;
+         var index=-1;
+         for(let obj of this.allSpecs){
+             index++;
+             if(obj.name==this.currentLabel){
+                 temp=obj;
+                 break;
+             }
+         }
+         for(let obj of temp.value){
+             if(obj.ggname==tag){
+                 return;
+             }
+         }
+         this.$http('/api/x6/HySetSpggSave.do',{
+             id:temp.id,
+             name:temp.name,
+             ggname:tag
+         }).then(res=>{
+             this.allSpecs[index].value=JSON.parse(res.VO.data);
+         });
      },
-     getSpecs(){
-        
+     //获取规格
+     getSpecs(name=''){
+       this.$http('/api/x6/getSpggListByName.do',{
+           name:name
+       }).then(res=>{
+           for(let obj of res.List){
+               obj.value=JSON.parse(obj.data.value);
+               obj.show=true;
+           }
+           this.allSpecs=res.List;
+           this.List=JSON.parse(JSON.stringify(this.allSpecs));
+           this.hasSelected=JSON.parse(JSON.stringify(this.data));
+       });
      },
+     //获取当前选择大类下的小类
      getTagList(label){
          for(let obj of this.allSpecs){
-             if(obj.label==label)
-                return obj.value;
+             if(obj.name==label){
+                 return obj.value;
+             }
          }
      },
+     //点击添加小类
      openTagSelect(item){
-         if(!item.hasOwnProperty('show'))
+        this.currentLabel=item.name;
+        if(!item.hasOwnProperty('show'))
             this.$set(item,'show',false);
         item.show=true;
         this.currentSelectTags=JSON.parse(JSON.stringify(item.value));
      },
+     //点击确定按钮
      saveCurrentTag(item){
          item.value=JSON.parse(JSON.stringify(this.currentSelectTags));
          this.currentSelectTags=[];
          item.show=false;
-         //console.log(this.hasSelected);
+         console.log(this.hasSelected)
          this.$emit('select-change',this.hasSelected);
      }
   },
   mounted(){
-      this.List=JSON.parse(JSON.stringify(this.allSpecs));
-      this.hasSelected=JSON.parse(JSON.stringify(this.data));
+      this.getSpecs();
   }
 }
 </script>
@@ -213,9 +317,10 @@ export default {
                 box-sizing: border-box;
                 padding: 10px;
                 box-shadow: 0 0 2px #dbdbdb;
-                position: relative;
+                position: absolute;
                 left:-35%;
                 background: #fff;
+                z-index: 9;
             }
         }
     }
