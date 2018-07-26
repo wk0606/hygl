@@ -5,7 +5,7 @@
             @current-change="changePage"
             :page-size="data.size" 
             :total="data.rows"
-            :current-page="data.page"
+            :current-page="data.no"
             layout="total,prev, pager, next,jumper"
         ></el-pagination>
     </div>
