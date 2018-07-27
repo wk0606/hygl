@@ -3,7 +3,7 @@
         :style="{width:width+'px'}"
         @click.stop=""
     >
-        <div class="edit-title">
+        <div class="edit-title" v-if="title">
             <slot name="title">
                 <div>
                     <img src="../../assets/paymentedit.png" width="30"/>

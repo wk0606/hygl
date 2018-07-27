@@ -46,7 +46,16 @@
 		</div>
 		<div class="c-main">
 			<!--列表-->
-			<el-table :data='List' border stripe height='100%' style="width:100%" ref="multipleTable" @selection-change="selectdg">
+			<el-table
+				:data='List'
+				border stripe
+				height='100%'
+				style="width:100%"
+				ref="multipleTable"
+				@selection-change="selectdg"
+				@select-all="selectAll"
+				@select="selectOne"
+			>
 				<el-table-column type="selection" width="55" align="center"></el-table-column>
 				<el-table-column
                     v-for="item in columns"
@@ -76,21 +85,6 @@
 							style="cursor:pointer"
 							width="20"
 							@click.stop="item.click(scope.row,scope.$index)"/>
-						<!-- <span
-							class="cell-span"
-							v-else
-							:class="{'cell-span-blue':item.click}"
-							@click.stop="item.click?item.click(scope.row,scope.$index):null"
-						>
-							
-						</span> -->
-                        <!-- <ul class="t-body" v-else>
-                            <li
-                                v-for="(tag,index) in formatTags(scope.row.tags)"
-                                :key="index"
-                                :style="{background:tag.color}"
-                            >{{tag.name}}</li>
-                        </ul> -->
                     </template>
                 </el-table-column>
 				<el-table-column label="硬件信息" align="center" width='120' prop='mac' :render-header="renderMac">
@@ -216,11 +210,33 @@
 						show:false
 					},
 					currentRow:'',//记录当前操作的行
+					hasSelectAll:false,//是否选择全部
+					noSelectedMaps:[],//不选择行的id集合
 					sex0:require('../../assets/sex0.png'),
 					sex1:require('../../assets/sex1.png'),
 				}
 			},
 			methods: {
+				selectAll(rows){
+					this.hasSelectAll=rows.length?true:false;
+					this.noSelectedMaps=[];
+				},
+				selectOne(val,row){
+					var isAdd=false;
+					for(let obj of val){
+						if(obj.id==row.id){
+							isAdd=true;
+							break;
+						}
+					}
+					if(isAdd){
+						this.noSelectedMaps=this.noSelectedMaps.filter(item=>{
+							return item!=row.id;
+						});
+					}else{
+						this.noSelectedMaps.push(row.id);
+					}
+				},
 				clearRow(){
 					this.$refs.multipleTable.clearSelection();
 				},
@@ -283,6 +299,14 @@
 					this.$http('/api/x6/xfzxxReport.do', para).then((res) => {
 						this.pagination.rows = res.totalRows;
 						this.List = res.rows;
+						setTimeout(() => {
+							if(this.hasSelectAll){
+								for(let row of this.List){
+									if(this.noSelectedMaps.indexOf(row.id)==-1)
+										this.$refs.multipleTable.toggleRowSelection(row);
+								}
+							}
+						}, 10);
 					});
 				},
 				handleCurrentChange(page) {

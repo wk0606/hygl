@@ -1,25 +1,38 @@
 <template>
   <edit-model
     width="500"
-    :title="views.data.title"
+    :title="false"
     :views="views"
     class="edit"
   >
     <div slot="content" class="content">
-      <div class="c-rate">
-        <span>评分 : </span>
-        <el-rate
-            v-model="getComments.rate"
-            disabled>
-        </el-rate>
-      </div>
-      <div class="c-text">{{getComments.content}}</div>
-      <div class="c-imgs">
-        <div
-          v-for="item in getComments.pics"
-          :key="item"
-          :style="{backgroundImage:'url('+item+')'}"
-        ></div>
+      <div
+        v-for="(item,index) in views.data"
+        :key="index"
+        class="c-body"
+      >
+        <div class="c-title">
+          <div>
+            <i class="iconfont" :class="item.icon" :style="{color:item.color}"></i>
+            <span>{{item.title}}</span>
+          </div>
+          <i class="el-icon-close" v-if="!index" @click="views.show=false"></i>
+        </div>
+        <div class="c-rate">
+          <span>评分 : </span>
+          <el-rate
+              v-model="item.rate"
+              disabled>
+          </el-rate>
+        </div>
+        <div class="c-text">{{item.content}}</div>
+        <div class="c-imgs">
+          <div
+            v-for="pic in item.pics"
+            :key="pic"
+            :style="{backgroundImage:'url('+pic+')'}"
+          ></div>
+        </div>
       </div>
     </div>
   </edit-model>
@@ -28,18 +41,6 @@
 import editModel from '../../components/editModel/index'
 export default {
   props:['views'],
-  computed:{
-    getComments(){
-      var ratekey='rate'+this.views.index;
-      var pickey='rate'+this.views.index+'pic';
-      var ctxkey='ratecontent'+this.views.index;
-      return {
-        rate:this.views.data[ratekey],
-        content:this.views.data[ctxkey],
-        pics:this.views.data[pickey]?this.views.data[pickey].split(','):[]
-      }
-    }
-  },
   mounted(){
    
   },
@@ -52,6 +53,33 @@ export default {
     @size:50px;
     .content{
       width: 100%;
+      .c-body{
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+      }
+      .c-title{
+        display: flex;
+        padding: 10px 0;
+        font-size: 13px;
+        justify-content: space-between;
+        align-items: center;
+        div{
+          display: inline-flex;
+          align-items: center;
+          i{
+            margin-right: 5px;
+            font-size: 20px;
+          }
+          span{color:#555;}
+        }
+        >i{
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          color: #aaa;
+        }
+      }
       .c-rate{
         display: flex;
         align-items: center;

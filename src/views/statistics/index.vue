@@ -26,11 +26,12 @@
 		<div class="root-title root-title-before">
 			<div>会员看板</div>
 		</div>
+		<!-- :class="{selected:item.check}" -->
 		<div class="chart-menu">
 			<div
 				v-for="(item,index) in chartMenus"
 				:key="index"
-				:class="{selected:item.check}"
+				:style="{borderColor:item.check?charts[item.lx].bgcolor:'#ccc',background:item.check?charts[item.lx].bgcolor:'white'}"
 				@click="resetCharts(item)"
 			>
 				<div>
@@ -135,11 +136,31 @@
 					}
 				],
 				charts:{
-					xsje:'会员消费金额',
-					newHy:'新增会员',
-					totalHy:'会员总数量',
-					hbff:'红包发放数量',
-					hbsy:'红包使用数量'
+					xsje:{
+						label:'会员消费金额',
+						color:'#00BFFF',
+						bgcolor:'rgba(0, 191, 255,.2)'
+					},
+					newHy:{
+						label:'新增会员',
+						color:'#00FF7F',
+						bgcolor:'rgba(0, 255, 127,.2)'
+					},
+					totalHy:{
+						label:'会员总数量',
+						color:'#0000FF',
+						bgcolor:'rgba(0, 0, 255,.2)'
+					},
+					hbff:{
+						label:'红包发放数量',
+						color:'#FF1493',
+						bgcolor:'rgba(255, 20, 147,.2)'
+					},
+					hbsy:{
+						label:'红包使用数量',
+						color:'#00FFFF',
+						bgcolor:'rgba(0, 255, 255,.2)'
+					}
 				}, 
 				activityCharts:[
 					{
@@ -174,7 +195,7 @@
 					}
 				],
 				chartMenusData:{},
-				chartDom:[]
+				chartDom:[],
 			}
 		},
 		computed:{
@@ -266,8 +287,16 @@
 					for(let obj of res.List){
 						for(let key in obj){
 							let _temp={
-								name:this.charts[key],
+								name:this.charts[key].label,
 								type:'line',
+								itemStyle: {
+									normal: {
+										color: this.charts[key].color,
+										lineStyle: {
+											color: this.charts[key].color
+										}
+									}
+								},
 								data:[]
 							};
 							for(let d of obj[key]){
@@ -373,7 +402,7 @@
 						}
 					],
 					series : yData,
-					color:['#00BFFF','#00FF7F','#0000FF','#FF1493','#00FFFF']
+					//color: this.chartColor
 				};
 				if(needLegend)
 					option.legend={data:title}
@@ -428,6 +457,7 @@
 		}
 		.chart-menu{
 			display: flex;
+			justify-content: center;
 			padding: 10px;
 			user-select: none;
 			>div{
@@ -435,7 +465,7 @@
 				height: 150px;
 				border-radius: 4px;
 				border: 1px solid #ccc;
-				margin-right: 10px;
+				margin: 0 10px;
 				box-sizing: border-box;
 				padding: 8px;
 				cursor: pointer;
