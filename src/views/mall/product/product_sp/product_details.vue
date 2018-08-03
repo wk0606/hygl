@@ -1,5 +1,6 @@
 <template>
   <div class="details-body" :style="{height:height+'px'}">
+      xasxasx
       <div
         :style="{width:width+'px'}"
         class="d-preview"
@@ -11,7 +12,13 @@
                 <p>固定样式,显示商品主图、价格等信息</p>
             </div>
             <div class="d-img">
-                
+                <div
+                    v-for="(img,index) in details.xqtp"
+                    :key="index"
+                >
+                    <img :src="img" alt="">
+                    <div class="remove-mask"><i class="el-icon-delete" @click="removeImg(img,index)"></i></div>
+                </div>
             </div>
         </div>
       </div>
@@ -42,27 +49,118 @@
             <el-button
                 size="mini"
                 icon="el-icon-upload"
+                @click="openFile"
+                :loading="imgLoading"
             >上传商品详情图片</el-button>
+            <input type="file" ref="file" multiple="multiple" style="display:none;" @change="uploadImgs">
         </div>
       </div>
   </div>
 </template>
 <script>
 export default {
-  props:['height'],
+  props:['height','details'],
   data(){
       return {
           width:0,
-          details:{
-              spjj:'',
-              spmd:'',
-              sppic:[]
+          imgLoading:false
+      }
+  },
+  methods:{
+      openFile() {
+        this.$refs.file.click();
+      },
+      uploadImgs() {
+        var baseArray=[];
+        var files=[...this.$refs.file.files];
+        files = files.filter(item => {
+            return /^image/.test(item.type);
+        });
+        if(files.length==0){
+            this.$message('您上传的文件的中无图片文件','error');
+            return;
+        }
+        this.imgLoading=true;
+        for(let i=0;i<files.length;i++){
+            lrz(files[i]).then(rst=>{
+                baseArray.push({
+                    imgStr:rst.base64.split(',')[1],
+                    extname:files[i].type.split('/')[1]
+                }); 
+            });
+        }
+        //压缩方法异步处理
+        var ID=setInterval(()=>{
+            if(baseArray.length==files.length){
+                this.$http('/api/x6/saveOtherPicsByBase64.do',{
+                    pics:baseArray
+                }).then(res=>{
+                    this.details.xqtp=this.details.xqtp.concat(res.filePathArray);
+                    this.imgLoading=false;
+                },err=>{
+                    this.imgLoading=false;
+                });
+                clearInterval(ID);
+            }
+        },150);
+      },
+      removeImg(img,index){
+          this.details.xqtp=this.details.xqtp.filter(item=>{
+              return item!=img;
+          });
+      },
+      productUp(){
+          this.save(0);
+      },
+      productDown(){
+          this.save(1);
+      },
+      save(yxbz){
+          if(!this.details.spmd){
+              this.$message('请填写商品卖点','error');
+              return;
           }
+          if(!this.details.xqtp.length){
+              this.$message('请上传详情图片','error');
+              return;
+          }
+          if(this.details.id==-1)
+            this.details.id=-1;
+          if(yxbz!==undefined)
+            this.details.yxbz=yxbz;
+          var params=JSON.parse(JSON.stringify(this.details));
+          if(!params.psfs){
+              //选择到店自提
+              params.tyyfje=0;
+              params.yfmbid=0;
+          }else{
+              if(params.yfsz){
+                  //选择运费模板
+                  params.tyyfje=0;
+              }else{
+                  params.yfmbid=0;
+              }
+          }
+          delete params.spList;
+          this.$http('/api/x6/hySetSpxxSave.do',params).then(res=>{
+            this.removeStorage();
+            this.$message(yxbz===undefined?'编辑成功':yxbz===0?'上架成功':'下架成功');
+            this.$router.push('/main/mallchildren/product_sp');
+          });
+      },
+      removeStorage(){
+        var key1 = this.$route.params.id == -1 ? "MYHZ_SPXX_ADD" : "MYHZ_SPXX_EDIT";
+        var key2 = this.$route.params.id == -1 ? "MYHZ_SPGG_ADD" : "MYHZ_SPGG_EDIT";
+        this.$util.removeCache(key1);
+        this.$util.removeCache(key2);
+        this.$util.removeCache('MYHZ_PRODUCT_TAB');
       }
   },
   mounted(){
       this.width=9*this.height/16;
-      console.log(this.width)
+  },
+  activated(){
+      this.width=9*this.height/16;
   }
 }
 </script>
@@ -80,6 +178,7 @@ export default {
             height: 100%;
             margin: 0 10px;
             box-sizing: border-box;
+            overflow-y: auto;
         }
         //border: 1px solid @bgcolor;
         .d-preview{
@@ -111,6 +210,34 @@ export default {
                     padding: 10px;
                     display: flex;
                     flex-direction: column;
+                    div{
+                        position: relative;
+                        .remove-mask{
+                            width: 100%;
+                            height: 100%;
+                            position: absolute;
+                            top:0;
+                            left: 0;
+                            background: rgba(0,0,0,.5);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            transition: all .1s;
+                            opacity: 0;
+                            visibility: hidden;
+                            i{
+                                font-size: 25px;
+                                color: #fff;
+                                cursor: pointer;
+                            }
+                        }  
+                        &:hover{
+                            .remove-mask{
+                                opacity: 1;
+                                visibility: visible;
+                            }
+                        } 
+                    }
                     img{
                         width: 100%;
                         height: auto;

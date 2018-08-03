@@ -5,10 +5,10 @@
     要在调用的地方自行定义scroll的宽和搞-->
   <div class="scroll" ref="scroll" @mouseenter="show2=true" @mouseleave="show2=false"> 
       <slot class="scroll-main"></slot>
-      <div class="scroll-bar" v-show="needMouseControl?show2&&show:show">
+      <div class="scroll-bar" v-show="needMouseControl?show2&&show:show" :style="{background:scrollColor}">
           <div
             ref="bar"
-            :style="{height:height+'px'}"
+            :style="{height:height+'px',background:barColor}"
             @mousedown="down"
           ></div>
       </div>
@@ -20,6 +20,12 @@ export default {
     //是否添加鼠标控制显示/隐藏
     needMouseControl: {
       default: false
+    },
+    barColor:{
+      default:'rgba(255, 255, 255, 0.5)'
+    },
+    scrollColor:{
+      default:'#fff'
     }
   },
   data() {
@@ -78,6 +84,8 @@ export default {
       this.target = this.$refs.scroll.children[0];
       var H = this.$refs.scroll.offsetHeight;
       var h = this.$refs.scroll.children[0].offsetHeight;
+      console.log(this.$refs.scroll.children[0].offsetHeight)
+      console.log(H,h)
       if (h - H > 0) {
         this.show = true;
         this.height = 2 * H - h < 20 ? 20 : 2 * H - h;
@@ -93,7 +101,9 @@ export default {
     }
   },
   mounted() {
-    this.initSrollBar();
+    setTimeout(()=>{
+      this.initSrollBar();
+    },0);
     window.addEventListener("resize", this.resize);
   },
   destroyed() {
@@ -115,7 +125,6 @@ export default {
   .scroll-bar {
     width: 4px;
     height: 100%;
-    background: rgba(255, 255, 255, 0.5);
     position: absolute;
     top: 0;
     right: 5px;
@@ -133,7 +142,6 @@ export default {
       border-top-right-radius: 3px;
       border-bottom-left-radius: 3px;
       border-bottom-right-radius: 3px;
-      background: #fff;
       cursor: pointer;
     }
   }

@@ -91,8 +91,8 @@ Vue.prototype.$alert=function(msg,title='提示',type='warning'){
   });
 }
 Vue.prototype.$confirm=MessageBox.confirm;
+Vue.prototype.$prompt = MessageBox.prompt;
 Vue.prototype.$dialog=function(msg='',options={}){
-  console.log(options)
   MessageBox.confirm(msg,'提示',{
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -104,6 +104,18 @@ Vue.prototype.$dialog=function(msg='',options={}){
 /**END */
 Vue.prototype.$util=util
 Vue.config.productionTip = false
+// 拦截响应response，并做一些错误处理
+// axios.interceptors.response.use(response=>{
+//   console.log(response)
+//   if(response.data.result=='ok'){
+//     return response;
+//   }
+// },error=>{
+//   console.log(error)
+//   if(error.response){
+//     console.log(error.response);
+//   }
+// });
 //http方法
 axios.defaults.baseURL = util.getBaseUrl();
 axios.defaults.headers.common['token'] = util.getTokenid();

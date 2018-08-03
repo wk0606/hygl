@@ -7,6 +7,7 @@ axios.defaults.timeout = 1000 * 60;
 export function $http(url, options){
     var promise = new Promise(function (resolve, reject) {
         axios.post(url, options).then((res) => {
+            console.log(res)
             if (res.data.result == 'ok') {
                 resolve(res.data)
             } else {
@@ -17,6 +18,7 @@ export function $http(url, options){
                 reject(res.data)
             }
         }).catch((err) => {
+            console.log(err)
             Message({
                 message:'未知错误',
                 type:'error'

@@ -14,7 +14,7 @@
                 <el-input
                     size="mini"
                     prefix-icon="el-icon-search"
-                    style="width:90%;margin-left:5%;"
+                    style="width:90%;margin-left:5%;margin-bottom:5px;"
                     v-model="name"
                     @input="searchAndCreate"
                 ></el-input>
@@ -59,7 +59,7 @@
                             :value="gg.ggname">
                         </el-option>
                     </el-select>
-                    <div style="text-align:right;padding-top:10px;">
+                    <div class="tag-select-btn">
                         <div class="tag-btn tag-btn-primary" v-if="currentSelectTags.length" @click="saveCurrentTag(item)">确定</div>
                         <div class="tag-btn tag-btn-text" @click="item.show=false;">取消</div>
                     </div>
@@ -103,6 +103,16 @@ export default {
          currentLabel:''
      }
   },
+  watch:{
+      data:{
+          handler:function(nv){
+              this.hasSelected=JSON.parse(JSON.stringify(nv));
+              for(let obj of this.hasSelected)
+                this.currentSelectGg.push(obj.name);
+          },
+          deep:true
+      }
+  },
   methods:{
       //添加选择的规格大类
      addSpecs(){
@@ -115,7 +125,6 @@ export default {
      //删除选择的规格大类
      removeSpecs(index){
          if(this.hasSelected[index].name){
-             
              this.$confirm('删除将导致已与该规格关联的商品失效,是否继续?','提示',{
              type:'warning'
          }).then(()=>{
@@ -187,7 +196,7 @@ export default {
              }
          }
          //当选择的规格大类无法被匹配到时候新增此规格大类
-         this.$http('/api/x6/HySetSpggSave.do',{
+         this.$http('/api/x6/hySetSpggSave.do',{
              id:-1,
              name:this.name.trim(),
              ggname:''
@@ -199,6 +208,11 @@ export default {
                  value:[],
                  show:true
              });
+         },err=>{
+             this.hasSelected=this.hasSelected.filter(item=>{
+                 return item.name!=this.name.trim();
+             });
+             this.allSpecs=this.allSpecs.slice(1);
          });
      },
      //选择规格小类事件
@@ -218,12 +232,14 @@ export default {
                  return;
              }
          }
-         this.$http('/api/x6/HySetSpggSave.do',{
+         this.$http('/api/x6/hySetSpggSave.do',{
              id:temp.id,
              name:temp.name,
              ggname:tag
          }).then(res=>{
              this.allSpecs[index].value=JSON.parse(res.VO.data);
+         },err=>{
+             this.currentSelectTags=this.currentSelectTags.slice(0,this.currentSelectTags.length-1);
          });
      },
      //获取规格
@@ -261,7 +277,6 @@ export default {
          item.value=JSON.parse(JSON.stringify(this.currentSelectTags));
          this.currentSelectTags=[];
          item.show=false;
-         console.log(this.hasSelected)
          this.$emit('select-change',this.hasSelected);
      }
   },
@@ -313,15 +328,22 @@ export default {
             width:auuo;
             height: auto;
             background: #fff;
-            >div:nth-child(2){
-                width: 150px;
+            .tag-select{
+                width: auto;
                 box-sizing: border-box;
                 padding: 10px;
                 box-shadow: 0 0 2px #dbdbdb;
                 position: absolute;
-                left:-35%;
+                transform: translateX(-50%);
+                //left:-50%;
                 background: #fff;
                 z-index: 9;
+                display: flex;
+                align-items: center;
+                .el-select{
+                    width: 200px;
+                }
+                .tag-select-btn{flex-shrink: 0;margin-left: 10px; }
             }
         }
     }

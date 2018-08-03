@@ -14,18 +14,25 @@
         ref="cascader"
     >
     </el-cascader>
-    <dialog-list v-if="dialog.show" :views="dialog" @selected="handleSelected"></dialog-list>
+    <dialog-list
+        v-if="dialog.show"
+        :views="dialog"
+        type="qspmc"
+        @selected="handleSelected"
+    ></dialog-list>
   </div>
 </template>
 <script>
 import dialogList from './dialog'
 export default {
-  props: {},
+  props: {
+      changeOnSelect:{default:true},//是否可以选择任意一级选项(如果此值为false，意味着在弹窗选择的中只包含lx为全称的项)
+  },
   data() {
     return {
-      options: [],
+      options: [],//数据源
       List: [],
-      selected: [],
+      selected: [],//初始的值
       dialog: {
         show: false,
         data: null
@@ -39,7 +46,8 @@ export default {
             splx:val[0]||'',
             pp:val[1]||'',
             spmc:val[2]||'',
-            spdm:val[3]||0
+            spdm:val[3]||0,
+            qspmc:this.$refs.cascader.currentLabels.pop()
         }
         this.$emit('change',temp);
     },
@@ -63,10 +71,12 @@ export default {
         this.$http("/api/x6/getPpListBySplx.do", {
           splx: item[0]
         }).then(res => {
-          target.push({
-              label: `全部${label}`,
-              value: '',
-          });
+          if(this.changeOnSelect){
+            target.push({
+                label: `全部${label}`,
+                value: '',
+            });
+          }
           for (let obj of res.ppList) {
             target.push({
               label: obj.pp,
@@ -84,10 +94,12 @@ export default {
                 splx:item[0],
                 pp:item[1]
             }).then(res=>{
-                target.push({
-                    label:`全部${item[1]}`,
-                    value:''
-                });
+                if(this.changeOnSelect){
+                    target.push({
+                        label:`全部${item[1]}`,
+                        value:''
+                    });
+                }
                 this.createGroupBySpmc(res.spList,target);
             });
         }
@@ -105,10 +117,12 @@ export default {
             });
         }
         for(let key in temp){
-            temp[key].splice(0,0,{
-                label:`全部${key}`,
-                value:''
-            })
+            if(this.changeOnSelect){
+                temp[key].splice(0,0,{
+                    label:`全部${key}`,
+                    value:''
+                });
+            }
             target.push({
                 value:key,
                 label:key,
@@ -123,7 +137,7 @@ export default {
     handleSelected(obj){
         this.$refs.cascader.inputValue=obj.qspmc;
         var temp=Object.assign({},obj);
-        delete temp.qspmc;
+        //delete temp.qspmc;
         this.$emit('change',temp);
     }
   },
@@ -144,4 +158,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+    .el-cascader{
+        width: 100%;
+    }
 </style>

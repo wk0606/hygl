@@ -11,7 +11,7 @@
           <div class="order-search-item">
               <span>{{getSerachLabel}}</span>
               <el-select
-                v-model="params.sslx"
+                v-model="params.lx"
                 size="mini"
                 class="order-search-item-select"
               >
@@ -44,15 +44,15 @@
           <div class="order-search-item">
               <span>自提点</span>
               <el-select
-                v-model="params.ddzt"
+                v-model="params.thmd"
                 size="mini"
                 class="order-search-item-select-small"
               >
                 <el-option
-                    v-for="item in ddType"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    v-for="item in ztdList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
                 ></el-option>
               </el-select>
               <span>自提状态</span>
@@ -127,16 +127,16 @@
   </div>
 </template>
 <script>
-import { search } from "../component.js"
+import { search } from "../serachFilter.js"
 export default {
   mixins: [search],
   data() {
     return {
       searchType: [
-        { label: "订单号", value: "1", name: "订单搜索" },
-        { label: "商品名称", value: "2", name: "商品搜索" },
-        { label: "收货人姓名", value: "3", name: "收货人搜索" },
-        { label: "收货人手机号", value: "4", name: "收货人搜索" }
+        { label: "订单号", value: 0, name: "订单搜索" },
+        { label: "商品名称", value: 1, name: "商品搜索" },
+        { label: "收货人姓名", value: 2, name: "收货人搜索" },
+        { label: "收货人手机号", value: 3, name: "收货人搜索" }
       ],
       ddType: [
         { label: "全部", value: 0 },
@@ -149,6 +149,7 @@ export default {
         { label: "带自提", value: 1 },
         { label: "已自提", value: 2 }
       ],
+      ztdList:[],
       thm:''
     };
   },
@@ -156,24 +157,23 @@ export default {
     //初始化查询条件
     initSearchParams() {
       this.params = {};
-      this.$set(this.params, "sslx", "1");
+      this.$set(this.params, "lx", 0);
       this.$set(this.params, "value", "");
       this.$set(this.params, "xdsj", []);
-      this.$set(this.params, "ddzt", 0);
+      this.$set(this.params, "thmd", -1);
       this.$set(this.params, "ztzt", 0);
+      this.ztdList=this.$util.getCache('ztdList');
+      this.ztdList.splice(0,0,{
+        id:-1,
+        name:'全部'
+      });
     }
   },
   mounted() {
     this.initSearchParams();
   },
-  computed: {
-    getSerachLabel() {
-      for (let obj of this.searchType) {
-        if (obj.value == this.params.sslx) {
-          return obj.name;
-        }
-      }
-    }
+  activated(){
+    this.initSearchParams();
   }
 };
 </script>

@@ -43,10 +43,23 @@ export const search = {
             ]
         }
     },
+    computed:{
+        getSerachLabel(){
+            for(let obj of this.searchType){
+                if(obj.value==this.params.lx){
+                    return obj.name;
+                }
+            }
+        }
+    },
     methods: {
         //执行筛选
         search() {
-            console.log(this.params)
+            var params=JSON.parse(JSON.stringify(this.params));
+            params.zdrqs=params.xdsj[0]||'';
+            params.zdrqz=params.xdsj[1]||'';
+            delete params.xdsj;
+            this.$http('/api/x6/getAllOrdersByCondition.do',params);
         },
         exportExcel() {
             var exportDatas = {

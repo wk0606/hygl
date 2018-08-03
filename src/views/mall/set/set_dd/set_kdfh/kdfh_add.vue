@@ -212,12 +212,12 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                this.$router.push('/main/mallchildren/set_dd');
+                this.$router.go(-1);
             }).catch(() => {
                     
             });
           }else{
-              this.$router.push('/main/mallchildren/set_dd');
+              this.$router.go(-1);
           }
       }
   },

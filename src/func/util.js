@@ -83,11 +83,12 @@ var util = {
         return sessionStorage.getItem('serverurl');
     },
     setCache(name, data) {
-        if (typeof data == 'string') {
-            sessionStorage.setItem(name, data);
-        } else {
-            sessionStorage.setItem(name, JSON.stringify(data));
-        }
+        sessionStorage.setItem(name, JSON.stringify(data));
+        // if (typeof data == 'string') {
+        //     sessionStorage.setItem(name, data);
+        // } else {
+        //     sessionStorage.setItem(name, JSON.stringify(data));
+        // }
     },
     getCache(name) {
         return JSON.parse(sessionStorage.getItem(name));

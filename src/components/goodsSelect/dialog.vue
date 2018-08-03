@@ -35,7 +35,7 @@
                 height="100%"
                 :highlight-current-row="true"
                 @cell-click="cellClick"
-                @cell-dbclick="cellDbClick"
+                @cell-dblclick="cellDbClick"
             >
                 <el-table-column label="序号" width="70" align="center">
                     <template slot-scope="scope">
@@ -71,6 +71,9 @@ export default {
   props: {
     views: {
       required: true
+    },
+    type:{
+      default:'all'//返回全部类型或者只包含全称
     }
   },
   data() {
@@ -87,7 +90,9 @@ export default {
         no: 1,
         size: 20,
         rows: 0
-      }
+      },
+      URL:'',
+      currentTime:0
     };
   },
   methods: {
@@ -98,7 +103,7 @@ export default {
       };
       if (this.name) params.value = this.name;
       if (this.currentLetter) params.capletter = this.currentLetter;
-      this.$http("/api/x6/getLocalSpxxPage.do", params).then(res => {
+      this.$http(this.URL, params).then(res => {
         this.List = res.VO.rows;
         this.page.rows = res.VO.totalRows;
       });
@@ -129,9 +134,18 @@ export default {
         this.views.show = false;
       }
     },
-    filterByName() {},
+    filterByName() {
+      const T=150;//单位-毫秒
+      var _t=new Date().getTime();
+      if(_t-this.currentTime>T){
+        this.currentTime=_t;
+        this.page.no=1;
+        this.getListByCondition();
+      }
+    },
     filterByLetter(value) {
       this.currentLetter = value;
+      this.page.no=1;
       this.getListByCondition();
     },
     reset() {
@@ -141,6 +155,7 @@ export default {
     }
   },
   mounted() {
+    this.URL=this.type=='all'?'/api/x6/getLocalSpxxPage.do':'/api/x6/getLocalDmsSpxxPage.do';
     this.getListByCondition();
   },
   components: {

@@ -65,7 +65,7 @@ export default {
                 _this.$http('/api/x6/getProvinceListWithCity.do').then(res=>{
                     _this.$util.setCache('map',res.list);
                 });
-                _this.$http('/api/x6/getAllCache.do').then(res=>{
+                _this.$http('/api/x6/getAllHyCache.do').then(res=>{
                     for(let key in res){
                         if(key!='message'&&key!='result'){
                             _this.$util.setCache(key,res[key]);

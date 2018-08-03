@@ -41,7 +41,7 @@ export default new Router({
           redirect:'/main/mallchildren/set_dd',
           children:[
             {path:'/main/mallchildren/product_sp',name:'product_sp',component:resolve=>require(['../views/mall/product/index'],resolve)},
-            {path:'/main/mallchildren/product_edit',name:'product_edit',component:resolve=>require(['../views/mall/product/product_sp/product_edit'],resolve)},
+            {path:'/main/mallchildren/product_edit/:id/:yxbz',name:'product_edit',component:resolve=>require(['../views/mall/product/product_sp/product_edit'],resolve)},
             {path:'/main/mallchildren/product_group_add/:id',name:'product_group_add',component:resolve=>require(['../views/mall/product/product_group/product_group_add'],resolve)},
             {path:'/main/mallchildren/asset_jy',name:'asset_jy',component:resolve=>require(['../views/mall/asset/index'],resolve)},
             {path:'/main/mallchildren/set_dd',name:'set_dd',component:resolve=>require(['../views/mall/set/set_dd/index'],resolve)},

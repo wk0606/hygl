@@ -283,9 +283,6 @@ export default {
       this.hasSelectedSj.splice(index,1);
       this.addInfo.jdrq.splice(index,1);
     },
-    tansferJdrq(row){
-
-    },
     //地理解析
     parseAddressToLng(){
       var dz=this.addInfo.province+this.addInfo.city+this.addInfo.town+this.addInfo.dz;

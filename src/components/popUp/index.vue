@@ -18,7 +18,7 @@
                 </div>
                 <div class="p-footer">
                     <slot name="footer"></slot>
-                    <el-button type="primary" size="mini" v-if="confirm" @click="confirm" :loading="loading">{{confirmText}}</el-button>
+                    <el-button type="primary" size="mini" v-if="confirm" @click="confirm" :loading="loading" :disabled="disabled">{{confirmText}}</el-button>
                     <el-button size="mini" @click="close">{{cancelText}}</el-button>
                 </div>
             </div>
@@ -34,6 +34,7 @@ export default {
       confirm:{default:null},
       cancel:{default:null},
       loading:{default:false},
+      disabled:{default:false},
       cancelText:{
           default:'关闭'
       },

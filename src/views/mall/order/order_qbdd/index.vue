@@ -4,7 +4,7 @@
           <div class="order-search-item">
               <span>{{getSerachLabel}}</span>
               <el-select
-                v-model="params.sslx"
+                v-model="params.lx"
                 size="mini"
                 class="order-search-item-select"
               >
@@ -118,27 +118,28 @@
   </div>
 </template>
 <script>
-import { search } from "../component.js"
+import { search } from "../serachFilter.js"
 export default {
   mixins: [search],
   data(){
       return {
           searchType:[
-              {label:'订单号',value:'1',name:'订单搜索'},
-              {label:'商品名称',value:'2',name:'商品搜索'},
-              {label:'收货人姓名',value:'3',name:'收货人搜索'},
-              {label:'收货人手机号',value:'4',name:'收货人搜索'}
+              {label:'订单号',value:0,name:'订单搜索'},
+              {label:'商品名称',value:1,name:'商品搜索'},
+              {label:'收货人姓名',value:2,name:'收货人搜索'},
+              {label:'收货人手机号',value:3,name:'收货人搜索'}
           ],
           ddType:[
-              {label:'全部',value:0},
-              {label:'待付款',value:1},
-              {label:'待发货',value:2},
-              {label:'已完成',value:3}
+            {label:'全部',value:-1},
+            {label:'已下单',value:0},
+            {label:'已付款',value:1},
+            {label:'已发货',value:2},
+            {label:'已完成',value:3}
           ],
           psType:[
-              {label:'全部',value:0},
-              {label:'快递',value:1},
-              {label:'自提',value:2}
+              {label:'全部',value:-1},
+              {label:'快递',value:0},
+              {label:'自提',value:1}
           ]
       }
   },
@@ -146,24 +147,15 @@ export default {
       //初始化查询条件
       initSearchParams(){
           this.params={};
-          this.$set(this.params,'sslx','1');
+          this.$set(this.params,'lx',0);
           this.$set(this.params,'value','');
           this.$set(this.params,'xdsj',[]);
-          this.$set(this.params,'ddzt',0);
-          this.$set(this.params,'psfs',0);
+          this.$set(this.params,'ddzt',-1);
+          this.$set(this.params,'psfs',-1);
       }
   },
   mounted(){
      this.initSearchParams(); 
-  },
-  computed:{
-      getSerachLabel(){
-          for(let obj of this.searchType){
-              if(obj.value==this.params.sslx){
-                  return obj.name;
-              }
-          }
-      }
   }
 }
 </script>

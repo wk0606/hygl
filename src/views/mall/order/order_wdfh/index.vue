@@ -4,7 +4,7 @@
           <div class="order-search-item">
               <span>{{getSerachLabel}}</span>
               <el-select
-                v-model="params.sslx"
+                v-model="params.lx"
                 size="mini"
                 class="order-search-item-select"
               >
@@ -37,15 +37,15 @@
           <div class="order-search-item">
               <span>仓库门店</span>
               <el-select
-                v-model="params.ddzt"
+                v-model="params.xtgsid"
                 size="mini"
                 class="order-search-item-select-small"
               >
                 <el-option
-                    v-for="item in ddType"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    v-for="item in ckList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
                 ></el-option>
               </el-select>
               <span>发货状态</span>
@@ -120,53 +120,48 @@
   </div>
 </template>
 <script>
-import { search } from "../component.js"
+import { search } from "../serachFilter.js"
 export default {
   mixins: [search],
   data(){
       return {
           searchType:[
-              {label:'订单号',value:'1',name:'订单搜索'},
-              {label:'商品名称',value:'2',name:'商品搜索'},
-              {label:'收货人姓名',value:'3',name:'收货人搜索'},
-              {label:'收货人手机号',value:'4',name:'收货人搜索'}
-          ],
-          ddType:[
-              {label:'全部',value:0},
-              {label:'待付款',value:1},
-              {label:'待发货',value:2},
-              {label:'已完成',value:3}
+              {label:'订单号',value:0,name:'订单搜索'},
+              {label:'商品名称',value:1,name:'商品搜索'},
+              {label:'收货人姓名',value:2,name:'收货人搜索'},
+              {label:'收货人手机号',value:3,name:'收货人搜索'},
+              {label:'发货单号',value:4,name:'发货单搜索'}
           ],
           fhType:[
-              {label:'全部',value:0},
+              {label:'全部',value:-1},
               {label:'未发货',value:1},
               {label:'已发货',value:2},
-              {label:'无需发货',value:3}
-          ]
+              {label:'无需发货',value:0}
+          ],
+          ckList:[]
       }
   },
   methods:{
       //初始化查询条件
       initSearchParams(){
           this.params={};
-          this.$set(this.params,'sslx','1');
+          this.$set(this.params,'lx',0);
           this.$set(this.params,'value','');
           this.$set(this.params,'xdsj',[]);
-          this.$set(this.params,'ddzt',0);
-          this.$set(this.params,'fhzt',0);
-      }
+          this.$set(this.params,'xtgsid',-1);
+          this.$set(this.params,'fhzt',-1);
+          this.ckList=this.$util.getCache('ksckList');
+          this.ckList.splice(0,0,{
+              id:-1,
+              name:'全部'
+          });
+      },
   },
   mounted(){
      this.initSearchParams(); 
   },
-  computed:{
-      getSerachLabel(){
-          for(let obj of this.searchType){
-              if(obj.value==this.params.sslx){
-                  return obj.name;
-              }
-          }
-      }
+  activated(){
+     this.initSearchParams(); 
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
-  <div class="input-number">
+  <div class="input-number" :class="{border:border}">
       <i v-if="icon" :class="icon"></i>
-      <p><input type="number" v-model="val" @change="changeValue" :style="{textAlign:align}"></p>
+      <p><input type="number" v-model="val" @input="emitInput" @change="changeValue" :style="{textAlign:align}"></p>
       <div v-if="arrowControl">
           <i class="el-icon-caret-top" @click="calc('add')"></i>
           <i class="el-icon-caret-bottom" @click="calc('sub')"></i>
@@ -18,7 +18,8 @@ export default {
       max:{default:null},
       min:{default:0},
       align:{default:'left'},
-      arrowControl:{default:true}
+      arrowControl:{default:true},
+      border:{default:true},
   },
   data(){
       return {
@@ -52,6 +53,9 @@ export default {
           }  
           this.$emit('input',this.val);
       },
+      emitInput(){
+          this.$emit('input',parseFloat(this.val));
+      },
       changeValue(){
           this.val=parseFloat(this.val);
           var max=parseFloat(this.max);
@@ -78,7 +82,6 @@ export default {
         align-items: center;
         width: 60px;
         height: 28px;
-        border: 1px solid #dcdfe6;
         border-radius: 4px;
         box-sizing: border-box;
         padding: 5px;
@@ -102,5 +105,8 @@ export default {
                 }
             }
         }
+    }
+    .border{
+        border: 1px solid #dcdfe6;
     }
 </style>

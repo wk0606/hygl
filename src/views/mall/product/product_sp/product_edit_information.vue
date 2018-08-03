@@ -6,7 +6,7 @@
              <div class="edit-items">
                  <span class="edit-items-required">商品名称</span>
                  <div>
-                     <div><el-input size="mini" style="width:300px;"></el-input></div>
+                     <div><el-input size="mini" style="width:300px;" v-model.trim="details.name"></el-input></div>
                      <div class="tips" v-if="rules.name.show" >{{rules.name.label}}</div>
                  </div>
              </div>
@@ -14,37 +14,43 @@
                  <span class="edit-items-required">网店售价</span>
                  <div>
                      <div class="edit-items-flex">
-                         <el-input size="mini" style="width:150px;"></el-input>
+                         <!-- <el-input size="mini" style="width:150px;" v-model="details.spdj"></el-input> -->
+                         <input-number
+                            :arrow-control="false"
+                            v-model="details.spdj"
+                            style="width:150px;"
+                         ></input-number>
                          <div class="edit-items-price">
                              <span>原价:￥</span>
-                             <input type="text" v-model="details.predj">
+                             <input-number
+                                v-model="details.predj"
+                                :arrow-control="false"
+                                :border="false"
+                             ></input-number>
                          </div>
                      </div>
-                     <div class="tips" v-if="rules.name.show">{{rules.name.label}}</div>
+                     <div class="tips" v-if="rules.spdj.show">{{rules.spdj.label}}</div>
                  </div>
              </div>
              <div class="edit-items">
                  <span class="edit-items-required">商品分组</span>
                  <div>
-                     <div class="edit-items-flex">
+                     <div>
                          <el-select
                             size="mini"
-                            v-model="details.group"
+                            v-model="details.spfz"
+                            placeholder="请选择商品分组"
                          >
                             <el-option
-                                v-for="item in group"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value"
+                                v-for="item in spfz"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id"
                             ></el-option>
                          </el-select>
-                         <div>
-                             <el-button size="mini" type="text">刷新</el-button>
-                             <span style="color:#409eff;">|</span>
-                             <el-button size="mini" type="text">新建分组</el-button>
-                         </div>
+                         <a @click="openGroupAdd" style="color:#409eff;margin-left:10px;">新建分组</a>
                      </div>
-                     <div class="tips" v-if="rules.name.show">{{rules.name.label}}</div>
+                     <div class="tips" v-if="rules.spfz.show">{{rules.spfz.label}}</div>
                  </div>
              </div>
              <div class="edit-items">
@@ -53,23 +59,28 @@
                      <div class="edit-items-flex edit-items-start">
                          <div style="diaplay:inline-flex;" v-if="details">
                             <draggable
-                                v-model="details.pics"
-                                :options="{group:'people'}"
+                                v-model="details.sptp"
                                 @start="drag=true"
                                 @end="drag=false"
                             >
                                 <div
-                                    v-for="pic in details.pics"
+                                    v-for="pic in details.sptp"
                                     :key="pic"
                                     class="edit-items-pic"
                                     :style="{backgroundImage:'url('+pic+')'}"
-                                ><i class="el-icon-circle-close"></i></div>
+                                ><i class="el-icon-circle-close close" @click="removImg(pic)"></i></div>
                             </draggable>
-                            
                          </div>
-                         <div class="edit-items-pic edit-items-plus" @click="uploadImgs">+加图</div>
+                         <div
+                            class="edit-items-pic edit-items-plus"
+                            @click="openFile"
+                            v-if="details.sptp&&details.sptp.length<4"
+                         >
+                            <i :class="imgLoading?'el-icon-loading':'el-icon-plus'"></i>加图
+                         </div>
+                         <input type="file" ref="file" multiple="multiple" style="display:none;" @change="uploadImgs">
                      </div>
-                     <div class="tips" v-if="rules.name.show">{{rules.name.label}}</div>
+                     <div class="tips" v-if="rules.sptp.show">{{rules.sptp.label}}</div>
                      <div style="color:#ccc;margin-top:5px;">建议尺寸: 640*640,可以拖拽图片调整顺序</div>
                  </div>
              </div>
@@ -87,11 +98,11 @@
              <div class="edit-items">
                  <span>规格信息</span>
                  <div>
-                     <!-- <el-button @click="test">click</el-button> -->
                      <el-table
                         :data="details.spList"
                         :span-method="arraySpanMethod"
                         border
+                        
                      >
                         <el-table-column
                             v-for="item in colModels"
@@ -102,10 +113,46 @@
                             :width="item.width"
                         >
                             <template slot-scope="scope">
-                                <span class="cell-span">{{scope.row[item.prop]}}</span>
+                                <span class="cell-span" v-if="item.prop!='spdm'&&item.prop!='dyjg'">{{scope.row[item.prop]}}</span>
+                                <el-button
+                                    size="mini"
+                                    type="text"
+                                    v-if="item.prop=='spdm'"
+                                    @click="openGoodsDialog(scope.row,scope.$index)"
+                                >{{scope.row.qspmc||'选择商品库商品'}}</el-button>
+                                <input-number
+                                    v-if="item.prop=='dyjg'"
+                                    v-model="scope.row.dyjg"
+                                    icon="iconfont icon-qian1"
+                                    :arrow-control="false"
+                                    style="width:100px;"
+                                ></input-number>
                             </template>
                         </el-table-column>
                      </el-table>
+                     <div class="table-footer">
+                         <span>批量设置 ：</span>
+                         <el-button
+                          style="line-height:normal"
+                          size="mini"
+                          type="text"
+                          :disabled="details.spList===undefined||details.spList!==undefined&&!details.spList.length"
+                          @click="openPrompt"
+                        >价格</el-button>
+                     </div>
+                     <div class="tips" v-if="rules.ggspgx.show" style="width:300px;">{{rules.ggspgx.label}}</div>
+                 </div>
+             </div>
+             <div class="edit-items">
+                 <span>库存预警数量</span>
+                 <div>
+                     <div>
+                         <input-number :arrow-control="false" v-model="details.kcyjsl" style="width:100px;margin-right:10px;"></input-number>
+                         <div class="edit-items-price">
+                             <span>全部可售库存 :</span>
+                             <span style="margin-left:10px;">{{calcKcTotal}}</span>
+                         </div>
+                     </div>
                  </div>
              </div>
          </div>
@@ -117,43 +164,44 @@
                  <span class="edit-items-required">配送方式</span>
                  <div>
                      <div style="line-height:28px;">
-                        <el-checkbox v-model="iskdps">快递配送</el-checkbox>
-                        <el-checkbox v-model="isddzt">到店自提</el-checkbox>
+                        <el-radio v-model="details.psfs" :label="1">快递配送</el-radio>
+                        <el-radio v-model="details.psfs" :label="0">到店自提</el-radio>
                      </div>
-                     <div class="tips" v-if="rules.name.show" style="width:300px;">{{rules.name.label}}</div>
+                     <!-- <div class="tips" v-if="rules.name.show" style="width:300px;">{{rules.name.label}}</div> -->
                  </div>
              </div>
-             <div class="edit-items">
+             <div class="edit-items" v-show="details.psfs">
                  <span class="edit-items-required">运费设置</span>
                  <div>
                      <div>
                         <div class="edit-items-yysz" style="margin-bottom:25px;">
-                            <el-radio v-model="details.yysz" label="1">统一运费</el-radio>
+                            <el-radio v-model="details.yfsz" :label="0">统一运费</el-radio>
                             <input-number
-                                v-model="details.yfje"
+                                v-model="details.tyyfje"
                                 icon="iconfont icon-qian1"
                                 :arrow-control="false"
                                 style="margin-left:20px;width:150px;"
                             ></input-number>
                         </div>
                         <div class="edit-items-yysz">
-                            <el-radio v-model="details.yysz" label="2">运费模板</el-radio>
+                            <el-radio v-model="details.yfsz" :label="1">运费模板</el-radio>
                             <el-select
                                 size="mini"
-                                v-model="details.yfmb"
+                                v-model="details.yfmbid"
+                                placeholder="请选择运费模板"
                                 style="margin-left:20px;width:150px;"
                             >
                                 <el-option
                                     v-for="item in yfmb"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id"
                                 ></el-option>
                             </el-select>
-                            <router-link tag="a" to="/main/mallchildren/set_dd_addkd">新建</router-link>
+                            <router-link tag="a" to="/main/mallchildren/set_dd_addkd/-1">新建模板</router-link>
                         </div>
                      </div>
-                     <div class="tips" v-if="rules.name.show" style="width:300px;">{{rules.name.label}}</div>
+                     <div class="tips" v-if="rules.yfsz.show" style="width:300px;">{{rules.yfsz.label}}</div>
                  </div>
              </div>
              <div class="edit-items">
@@ -161,7 +209,7 @@
                  <div>
                      <div style="line-height:28px;">
                         <input-number
-                            v-model="details.mrxg"
+                            v-model="details.xgsl"
                             :arrow-control="false"
                             style="width:150px;"
                         ></input-number>
@@ -171,138 +219,405 @@
              </div>
          </div>
      </div>
+     <goods-select
+      v-if="dialog.show"
+      :views="dialog"
+      type="qspmc"
+      @selected="goodsSelected"
+     ></goods-select>
  </div> 
 </template>
 <script>
-import draggable from 'vuedraggable'
-import ggSelect from '../specs_select'
-import py from '../../../../func/pinyin'
-import inputNumber from '../../../../components/inputNumber/index'
+import draggable from "vuedraggable";
+import ggSelect from "../specs_select";
+import py from "../../../../func/pinyin";
+import inputNumber from "../../../../components/inputNumber/index";
+import goodsSelect from "../../../../components/goodsSelect/dialog";
+import lrz from "lrz";
 export default {
-  data(){
-      return{
-          rules:{
-                name:{label:'姓名不可为空',show:true},
-                name:{label:'姓名不可为空',show:true},
-                name:{label:'姓名不可为空',show:true},
-                name:{label:'姓名不可为空',show:true},
-                name:{label:'姓名不可为空',show:true},
-                name:{label:'姓名不可为空',show:true}
-          },
-          group:[],
-          type_group:[],
-          colModels:[
-              {label:'商品名称',prop:'qspmc'},
-              {label:'网店售价',prop:'wdsj'},
-              {label:'可售库存',prop:'kskc'}
-          ],
-          details:{
-              name:'',
-              group:1,
-              pics:[
-                  'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1531378662716&di=67e477b20dc69efd4bb6fbdcc82c1f05&imgtype=0&src=http%3A%2F%2Fg.hiphotos.baidu.com%2Fimage%2Fpic%2Fitem%2F2f738bd4b31c870147b3a6182b7f9e2f0608ffc3.jpg',
-                  'http://img2.imgtn.bdimg.com/it/u=2239146502,165013516&fm=27&gp=0.jpg',
-                  'http://img5.imgtn.bdimg.com/it/u=1893461451,2619342480&fm=27&gp=0.jpg',
-                  'http://img0.imgtn.bdimg.com/it/u=2316242837,3672164063&fm=27&gp=0.jpg'
-              ],
-              spList:[],
-              psfs:1,
-              yfje:0,
-              yysz:'1',
-              yfmb:1,
-              mrxg:0
-          },
-          radio:"1",
-          iskdps:true,
-          isddzt:false,
-          yfmb:[
-              {label:'华东地区',value:1},
-              {label:'华南地区',value:2},
-              {label:'华北地区',value:3}
-          ]
-      }
+  props:['details'],
+  data() {
+    return {
+      rules: {
+        name: { label: "姓名不可为空", show: false },
+        spdj: { label: "售价不可为空", show: false },
+        spfz: { label: "分组不可为空", show: false },
+        sptp: { label: "商品图片不可为空", show: false },
+        ggspgx: { label: "请添加规格后选择商品", show: false },
+        yfsz: { label: "运费模板不可为空", show: false }
+      },
+      type_group: [], //规格分组
+      colModels: [
+        { label: "商品名称", prop: "spdm" },
+        { label: "网店售价", prop: "dyjg" },
+        { label: "可售库存", prop: "kskc" }
+      ],
+      iskdps: true,
+      isddzt: false,
+      spfz: [],
+      yfmb: [],
+      dialog: { show: false },
+      currentIndex: "",
+      imgLoading: false //图片是否再上传中
+    };
   },
-  methods:{
-      uploadImgs(){
-          console.log(this.details.pics)
-      },
-      //规格选择完毕
-      handleChange(array){
-          this.type_group=array.filter(item=>{
-              return item.name&&item.value.length;
-          });
-          this.type_group=this.type_group.reverse();
-          this.colModels=this.colModels.slice(-3);
-          for(let obj of this.type_group){
-              this.colModels.splice(0,0,{
-                  label:obj.name,
-                  prop:py.GetPY(obj.name),
-                  width:100
-              });
+  watch: {
+    details: {
+      handler: function(nv) {
+        if (nv.name !== "") this.rules.name.show = false;
+        if (nv.spdj !== "") this.rules.spdj.show = false;
+        if (nv.spfz !== "") this.rules.spfz.show = false;
+        if (nv.sptp.length) this.rules.sptp.show = false;
+        if (nv.ggspgx.length) this.rules.ggspgx.show = false;
+        if (nv.psfs) {
+          if (!nv.yfsz && this.details.tyyfje !== "") {
+            this.rules.yfsz.show = false;
           }
-          console.log(this.colModels)
-          var temp={};
-          var index=0;
-          this.details.spList=[];
-          if(this.type_group.length){
-              this.type_group=this.type_group.reverse();
-              this.tarnsferArray(temp,this.type_group,index,null);
+          if (nv.yfsz && this.details.yfmbid) {
+            this.rules.yfsz.show = false;
           }
-      },
-      //转发规格二维数组为列表形式的一维数组
-      tarnsferArray(target,data,row,el){
-        for(let i=0;i<data[row].value.length;i++){
-            target[py.GetPY(data[row].name)]=data[row].value[i];
-            var k=row+1;
-            if(k>data.length-1){
-                target[py.GetPY(data[row].name)]=data[row].value[i];
-                this.details.spList.push(JSON.parse(JSON.stringify(target)));
-                delete target[py.GetPY(data[row].name)];
-            }else{
-                this.tarnsferArray(target,data,k,data[k-1].name);
-            }
-            if(i>=data[row].value.length-1){
-                delete target[el];
-            }
         }
       },
-      //合并行的方法
-      arraySpanMethod({ row, column, rowIndex, columnIndex }){
-          for(let i=0;i<this.type_group.length-1;i++){
-              var k=this.type_group.slice(i+1).reduce(function(num,obj){
-                return num*obj.value.length;
-              },1);
-              if(columnIndex == i){
-                  if(rowIndex%k==0){
-                      return [k,1];
-                  }else{
-                      return [0,0];
-                  }
-              }
+      deep: true
+    }
+  },
+  computed:{
+    calcKcTotal(){
+      if(this.details.spList){
+        var sum=0;
+        for(let obj of this.details.spList){
+          sum+=obj.kskc||0;
+        }
+        return sum;
+      }else{
+        return 0;
+      }
+    }
+  },
+  methods: {
+    openGroupAdd(){
+        //this.saveDetailsToStorage();
+        this.$router.push('/main/mallchildren/product_group_add/-1');
+    },
+    openFile() {
+      if (!this.imgLoading) {
+        this.$refs.file.click();
+      }
+    },
+    uploadImgs() {
+      var baseArray = [];
+      var files = [...this.$refs.file.files];
+      files = files.filter(item => {
+        return /^image/.test(item.type);
+      });
+      if (files.length == 0) {
+        this.$message("您上传的文件的中无图片文件", "error");
+        return;
+      }
+      if (files.length > 4) {
+        this.$message("最多上传四张图片", "warning");
+        files = files.slice(0, 4);
+      }
+      this.imgLoading = true;
+      for (let i = 0; i < files.length; i++) {
+        lrz(files[i]).then(rst => {
+          baseArray.push({
+            imgStr: rst.base64.split(",")[1],
+            extname: files[i].type.split("/")[1]
+          });
+        });
+      }
+      //压缩方法异步处理
+      var ID = setInterval(() => {
+        if (baseArray.length == files.length) {
+          this.$http("/api/x6/saveOtherPicsByBase64.do", {
+            pics: baseArray
+          }).then(
+            res => {
+              var temp = res.filePathArray.slice(
+                0,
+                4 - this.details.sptp.length
+              );
+              this.details.sptp = this.details.sptp.concat(temp);
+              this.imgLoading = false;
+            },
+            err => {
+              this.imgLoading = false;
+            }
+          );
+          clearInterval(ID);
+        }
+      }, 150);
+    },
+    //删除图片
+    removImg(pic) {
+      this.details.sptp = this.details.sptp.filter(item => {
+        return item != pic;
+      });
+    },
+    //打开商品选
+    openGoodsDialog(row, index) {
+      this.currentIndex = index;
+      this.dialog.show = true;
+    },
+    //商品选择完毕
+    goodsSelected(item) {
+      this.details.spList[this.currentIndex].spdm = item.spdm;
+      this.details.spList[this.currentIndex].qspmc = item.qspmc;
+    },
+    //统一设置价格
+    openPrompt(){
+      this.$prompt('请输入价格', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /\d/,
+        inputErrorMessage: '价格格式不正确'
+      }).then(({ value }) => {
+        var price=parseFloat(value);
+        for(let obj of this.details.spList)
+          obj.dyjg=price;
+      }).catch(() => {
+               
+      });
+    },
+    //检验表单
+    vartifyForm() {
+      var flag = true;
+      var keys1 = ["name", "spdj", "spfz"]; //此类检验是否为空
+      //开始验证之前先把所有验证信息关闭
+      for (let key in this.rules) {
+        this.rules[key].show = false;
+      }
+      //开始验证
+      for (let key of keys1) {
+        if (this.details[key] === "") {
+          this.rules[key].show = true;
+        }
+      }
+      if (!this.details.sptp.length) {
+        this.rules.sptp.show = true;
+      }
+      if (!this.details.spList.length) {
+        this.rules.ggspgx.show = true;
+      }
+      //验证运费这一块
+      //如果选择快递配送
+      if (this.details.psfs) {
+        //如果选择统一运费 验证是否为空
+        if (!this.details.yfsz && this.details.tyyfje === "") {
+          this.rules.yfsz.label = "运费不能为空";
+          this.rules.yfsz.show = true;
+        }
+        //如果选择运费模板
+        if (this.details.yfsz && !this.details.yfmbid) {
+          this.rules.yfsz.label = "请选择运费模板";
+          this.rules.yfsz.show = true;
+        }
+      }
+      for (let key in this.rules) {
+        if (this.rules[key].show) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    },
+    //检验商品选择
+    vartifyTable() {
+      var temp=this.details.spList.filter(item=>{
+        return item.spdm;
+      });
+      if(!temp.length){
+        this.$message('请至少关联一个商品','error');
+        return false;
+      }else{
+        for (let obj of temp) {
+          if (obj.dyjg === "") {
+            this.$message(`规格为 ${this.setMessage(obj)} 行未填写售价`, "error");
+            return false;
           }
+        } 
       }
-  },
-  mounted(){
-      var temp=[
-          {name:'颜色',value:[4,6,7]},
-          {name:'内存',value:['2','4']},
-          {name:'制式',value:['全网通','移动','联通']},
-          {name:'大小',value:['3.2','5.0']}
-      ];
-      for(let i=0;i<temp.length-1;i++){
-          var k=temp.slice(i+1).reduce(function(total,obj){
-              return total*obj.value.length;
-          },1)
-          console.log(k)
+      return true;
+    },
+    //拼装提示
+    setMessage(obj) {
+      var temp = ["dyjg", "kskc", "qspmc", "spdm"];
+      var array = [];
+      for (let key in obj) {
+        if (temp.indexOf(key) == -1) array.push(key + ":" + obj[key]);
       }
+      return array.join(" ");
+    },
+    //
+    createGgxx(target){
+      target.ggspgx = [];
+      var notNeedKeys = ["dyjg", "kskc", "qspmc", "spdm"];
+      for (let obj of target.spList) {
+        var temp = [];
+        var keys = Object.keys(obj).filter(item => {
+          return notNeedKeys.indexOf(item) == -1;
+        });
+        for (let key of keys) {
+          temp.push({
+            name: key,
+            value: obj[key]
+          });
+        }
+        target.ggspgx.push({
+          spgg: temp,
+          spdm: obj.spdm,
+          qspmc: obj.qspmc,
+          kskc: obj.kskc,
+          dyjg: obj.dyjg
+        });
+      }
+    },
+    save() {
+      //将splist转成需要的ggspgx格式并插入
+      if (this.vartifyForm()) {
+        if (this.vartifyTable()) {
+          this.createGgxx(this.details);
+          this.$emit("next-step");
+        }
+      } else {
+        this.$message("请先完善信息", "error");
+      }
+    },
+    //规格选择完毕
+    handleChange(array) {
+      this.type_group = array.filter(item => {
+        return item.name && item.value.length;
+      });
+      this.type_group = this.type_group.reverse();
+      this.colModels = this.colModels.slice(-3);
+      for (let obj of this.type_group) {
+        this.colModels.splice(0, 0, {
+          label: obj.name,
+          prop: obj.name,
+          width: 100
+        });
+      }
+      var temp = {};
+      var index = 0;
+      this.details.spList = [];
+      if (this.type_group.length) {
+        this.type_group = this.type_group.reverse();
+        this.tarnsferArray(temp, this.type_group, index, null);
+      }
+      //每一行中添加其他属性
+      for (let obj of this.details.spList) {
+        this.$set(obj, "spdm", 0);
+        this.$set(obj, "qspmc", "");
+        this.$set(obj, "dyjg", "");
+        this.$set(obj, "kskc", 0);
+      }
+    },
+    //转发规格二维数组为列表形式的一维数组
+    tarnsferArray(target, data, row, el) {
+      for (let i = 0; i < data[row].value.length; i++) {
+        target[data[row].name] = data[row].value[i];
+        var k = row + 1;
+        if (k > data.length - 1) {
+          target[data[row].name] = data[row].value[i];
+          this.details.spList.push(JSON.parse(JSON.stringify(target)));
+          delete target[data[row].name];
+        } else {
+          this.tarnsferArray(target, data, k, data[k - 1].name);
+        }
+        if (i >= data[row].value.length - 1) {
+          delete target[el];
+        }
+      }
+    },
+    //合并行的方法
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      for (let i = 0; i < this.type_group.length - 1; i++) {
+        var k = this.type_group.slice(i + 1).reduce(function(num, obj) {
+          return num * obj.value.length;
+        }, 1);
+        if (columnIndex == i) {
+          if (rowIndex % k == 0) {
+            return [k, 1];
+          } else {
+            return [0, 0];
+          }
+        }
+      }
+    },
+    resetPage() {
+      if(this.details.ggspgx.length){
+        var ggspgx=this.details.ggspgx;
+        //在这里需要将ggspgx中的值转成当前需要的spList和type_group
+        this.type_group = [];
+        var _type_group = {};
+        for (let obj of ggspgx) {
+          var spgg = obj.spgg;
+          for (let gg of spgg) {
+            if (!_type_group.hasOwnProperty(gg.name)) _type_group[gg.name] = [];
+            if (_type_group[gg.name].indexOf(gg.value) == -1)
+              _type_group[gg.name].push(gg.value);
+          }
+        }
+        for (let key in _type_group) {
+          this.type_group.push({
+            name: key,
+            value: _type_group[key],
+            show: false
+          });
+        }
+        var temp = JSON.parse(JSON.stringify(this.type_group)).reverse();
+        //在这里要构建colmodels
+        this.colModels = [
+          { label: "商品名称", prop: "spdm" },
+          { label: "网店售价", prop: "dyjg" },
+          { label: "可售库存", prop: "kskc" }
+        ];
+        for (let obj of temp) {
+          this.colModels.splice(0, 0, {
+            label: obj.name,
+            prop: obj.name,
+            width: 100
+          });
+        }
+      }
+      this.spfz=this.$util.getCache('spfzList');
+      this.yfmb=this.$util.getCache('kdmbList');
+    },
+    saveDetailsToStorage() {
+      //在这里之判断当填写了商品名称的时候才去做缓存
+      if (this.details.name) {
+        var key1 = this.$route.params.id == -1 ? "MYHZ_SPXX_ADD" : "MYHZ_SPXX_EDIT";
+        var key2 = this.$route.params.id == -1 ? "MYHZ_SPGG_ADD" : "MYHZ_SPGG_EDIT";
+        //将此信息保存到sessionStorage中 留待填写详情页面使用
+        this.$util.setCache(key1, this.details);
+        //保存规格信息
+        this.$util.setCache(key2, this.type_group);
+      }
+    }
   },
-  components:{
-      draggable,
-      ggSelect,
-      inputNumber
+  mounted() {
+    this.resetPage();
+  },
+  activated() {
+    this.resetPage();
+  },
+  destroyed() {
+    //this.$emit('clear-tab')
+    //this.saveDetailsToStorage();
+  },
+  deactivated() {
+    //this.$emit('clear-tab')
+    //this.saveDetailsToStorage();
+  },
+  components: {
+    draggable,
+    ggSelect,
+    inputNumber,
+    goodsSelect
   }
-}
+};
 </script>
 <style lang="less" scoped>
-    @import './information';
+@import "./information";
 </style>
