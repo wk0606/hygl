@@ -82,6 +82,26 @@ var util = {
     getServerUrl() {
         return sessionStorage.getItem('serverurl');
     },
+    requestAllCache(http,callback){
+        http('/api/x6/getAllHyCache.do').then(res=>{
+            for(let key in res){
+                if(key!='message'&&key!='result'){
+                    this.setCache(key,res[key]);
+                }
+            }
+            if(callback)
+                callback();
+        });
+    },
+    setStorage(name,data){
+        localStorage.setItem(name,JSON.stringify(data));
+    },
+    getStorage(name){
+        return JSON.parse(localStorage.getItem(name));
+    },
+    removeStorage(name){
+        localStorage.removeItem(name);
+    },
     setCache(name, data) {
         sessionStorage.setItem(name, JSON.stringify(data));
         // if (typeof data == 'string') {
@@ -98,6 +118,29 @@ var util = {
     },
     clearCache(storage = sessionStorage) {
         storage.clear();
+    },
+    /**
+     * 
+     * @param {*} lx 缓存类型
+     * @param {*} insert 如果找不到key是否新增
+     * @param {*} key  （可选）where条件key
+     * @param {*} value （可选）where条件value
+     */
+    updateCache(lx,key,value,data,insert){
+        var temp=this.getCache(lx);
+        var hasContains=false;
+        for(let i=0;i<temp.length;i++){
+            if(temp[i][key]==value){
+                hasContains=true;
+                temp.splice(i,1,data);
+                break;
+            }
+        }
+        console.log(hasContains)
+        if(!hasContains&&insert){
+            temp.push(data);
+        }
+        this.setCache(lx,temp);
     },
     //根据key（默认id）取出公司信息
     getCompanyInfo(value, key = 'id', data) {
@@ -275,6 +318,12 @@ var util = {
     windowResize(callback, route) {
         callback();
         window.onresize = function () {
+            if (window.location.hash.indexOf(route) > 0)
+                callback();
+        }
+    },
+    windowUnload(callback,route){
+        window.onbeforeunload=function(){
             if (window.location.hash.indexOf(route) > 0)
                 callback();
         }

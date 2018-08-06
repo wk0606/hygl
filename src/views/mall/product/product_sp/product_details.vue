@@ -1,6 +1,5 @@
 <template>
   <div class="details-body" :style="{height:height+'px'}">
-      xasxasx
       <div
         :style="{width:width+'px'}"
         class="d-preview"

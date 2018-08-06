@@ -210,8 +210,9 @@ export default {
           delete temp.pct;
           this.$http('/api/x6/HySetZtdSave.do',temp).then(res=>{
             this.saveload=false;
-            this.$message('新增成功');
+            this.$message(temp.id==-1?'新增成功':'编辑成功'); 
             this.views.show=false;
+            this.$util.requestAllCache(this.$http);
             this.$emit('success');
           },err=>{
             this.saveload=false;
@@ -319,7 +320,7 @@ export default {
       this.addInfo=JSON.parse(JSON.stringify(this.views.data));
       this.addInfo.ismdjd=this.addInfo.ismdjd?true:false;
       this.addInfo.ztsjxz=this.addInfo.ztsjxz?true:false;
-      this.addInfo.ztdzp=this.addInfo.ztdp;
+      this.addInfo.ztdzp=this.addInfo.ztdzp;
       this.addInfo.jdrq=JSON.parse(this.addInfo.jdrq.value);
       this.hasSelectWd=[];
       this.hasSelectedSj=[];

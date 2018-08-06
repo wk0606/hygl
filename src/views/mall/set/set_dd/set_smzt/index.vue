@@ -123,6 +123,7 @@ export default {
               this.$refs.table.clearSelection();
               this.getZtdList();
               this[load]=false;
+              this.$util.requestAllCache(this.$http);
           },err=>{
               this[load]=false;
           });
@@ -133,6 +134,7 @@ export default {
           }).then(res=>{
               this.getZtdList();
               this.$message('删除成功');
+              this.$util.requestAllCache(this.$http);
           });
       },
       openAdd(){

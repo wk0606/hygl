@@ -74,6 +74,7 @@ export default {
           this.$message(this.id==-1?'新增成功':'修改成功');
           this.load=false;
           this.name='';
+          this.$util.requestAllCache(this.$http);
         },err=>{
           this.load=false;
         });

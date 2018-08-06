@@ -2,7 +2,8 @@
   <div>
     <div class="topDetail">
       <div class="detail-wrapper" ref="detailWrapper">
-         <span class="title">客流量
+         <span class="title">
+           <span>客流量<i class="iconfont icon-bangzhu" title="一小时内盒子监听到客户数（同一客户不重复记录）" style="margin-left:5px;"></i></span>
         <i class="sl">{{control.allKh}}</i>
       </span>
         <span class="title">新客户
@@ -20,7 +21,13 @@
     <div class="table">
       <p>
         <span>时间段</span>
-        <span>客流量</span>
+        <span>
+          客流量
+          <i
+            class="iconfont icon-bangzhu"
+            title="时间段内监听到的客户数（同一客户重复记录）"
+            style="margin-left:2px;font-size:12px !important;"></i>
+        </span>
       </p>
       <p v-for="(obj,i) in showDatas" :key="i">
         <span>{{obj.sjd}}</span>

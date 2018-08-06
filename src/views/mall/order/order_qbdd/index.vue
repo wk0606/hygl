@@ -1,6 +1,11 @@
 <template>
   <div>
-      <div class="order-search">
+      <p
+        v-for="item in searchType"
+        :key="item.value"
+      >{{item.label}}</p>
+      <el-button @click="test">click</el-button>
+      <!-- <div class="order-search">
           <div class="order-search-item">
               <span>{{getSerachLabel}}</span>
               <el-select
@@ -63,8 +68,8 @@
               </el-select>
           </div>
           <div class="order-search-item order-search-footer">
-              <el-button size="mini" type="primary" @click="search">筛选</el-button>
-              <el-button size="mini" @click="exportExcel">导出报表</el-button>
+              <el-button size="mini" type="primary" @click="search" :loading="load1">筛选</el-button>
+              <el-button size="mini" @click="exportExcel" :loading="load2">导出报表</el-button>
               <el-button size="mini" type="text" @click="initSearchParams">清空筛选条件</el-button>
           </div>
       </div>
@@ -93,28 +98,28 @@
             :key="row.id"
           >
               <div>
-                  <img :src="row.sppic" alt="">
-                  <span class="cell-span cell-span-blue" @click="openDetails(row.id)">{{row.name}}</span>
+                  <img :src="row.sptpfirst" alt="">
+                  <span class="cell-span cell-span-blue" @click="openDetails(row.id)">{{row.spname}}</span>
               </div>
               <div class="order-table-row-border">
-                  <div>￥{{row.dj | currency}}</div>
+                  <div>￥{{row.spdj | currency}}</div>
                   <div>{{row.sl}}</div>
               </div>
               <div class="order-table-row-border">
                   <div>{{row.mjname}}</div>
-                  <div>{{row.shrname}} {{row.shrphone}}</div>
+                  <div>{{row.shr}} {{row.shrlxfs}}</div>
               </div>
               <div class="order-table-row-border">
-                  <span>{{row.psfs}}</span>
+                  <span>{{row.psfs?'自提':'快递'}}</span>
               </div>
               <div class="order-table-row-border">
-                  <span>{{row.sfje}}</span>
+                  <span>{{row.je}}</span>
               </div>
               <div class="order-table-row-border">
                   <span>{{row.ddzt}}</span>
               </div>
           </div>
-      </div>
+      </div> -->
   </div>
 </template>
 <script>
@@ -144,6 +149,10 @@ export default {
       }
   },
   methods:{
+      test(){
+          //this.searchType[2].label="test"
+          [this.searchType[2].label,this.searchType[3].label]=[this.searchType[3].label,this.searchType[2].label]
+      },
       //初始化查询条件
       initSearchParams(){
           this.params={};

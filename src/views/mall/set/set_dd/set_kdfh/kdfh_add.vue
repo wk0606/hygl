@@ -197,7 +197,10 @@ export default {
                     this.$message(this.$route.params.id!=='-1'?'编辑成功':'新增成功');
                     this.$router.push('/main/mallchildren/set_dd');
                     res.VO.show=true;
-                    this.$util.setCache('KDMB',res.VO);
+                    this.$util.requestAllCache(this.$http,()=>{
+                        this.$util.setCache('KDMB',res.VO);
+                    });
+                    //
                     this.load=false;
                 },err=>{
                     this.load=false;

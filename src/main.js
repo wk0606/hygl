@@ -225,7 +225,6 @@ Vue.filter('currency', function (value) {
     return value
   }
 });
-
 /* eslint-disable no-new */
 new Vue({
   el: '#root',

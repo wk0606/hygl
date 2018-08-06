@@ -166,6 +166,7 @@ export default {
               isb2c:row.isb2c?0:1
           }).then(res=>{
               row.isb2c=row.isb2c?0:1;
+              this.$util.requestAllCache(this.$http);
           });
       },
       saveRowsStatus(status){
@@ -178,6 +179,7 @@ export default {
               ids:keys.join(','),
               isb2c:status
           }).then(res=>{
+             this.$util.requestAllCache(this.$http);
              for(let obj of this.allList){
                  if(keys.indexOf(obj.id)>-1)
                     obj.isb2c=status;

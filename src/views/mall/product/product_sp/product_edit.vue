@@ -161,8 +161,25 @@ export default {
                 });
             }
         }else{
-            this.resetForm();
-            this.currentTab=this.$util.getCache('MYHZ_PRODUCT_TAB')||'information';
+            if(this.$util.getStorage(this.CACHE_KEY)){
+                this.$confirm('恢复数据吗','提示',{
+                    confirmButtonText:'继续编辑',
+                    cancelButtonText:'重新开始',
+                    type:'warning'
+                }).then(res=>{
+                    this.form=this.$util.getStorage(this.CACHE_KEY);
+
+                    this.$util.removeStorage(this.CACHE_KEY);
+                    this.currentTab=this.$util.getCache('MYHZ_PRODUCT_TAB')||'information';
+                }).catch(err=>{
+                    this.resetForm();
+                    this.$util.removeStorage(this.CACHE_KEY);
+                    this.currentTab=this.$util.getCache('MYHZ_PRODUCT_TAB')||'information';
+                });
+            }else{
+                this.resetForm();
+                this.currentTab=this.$util.getCache('MYHZ_PRODUCT_TAB')||'information';
+            }
         }
       },
       resetForm(){
@@ -191,10 +208,20 @@ export default {
   activated(){
     this.CACHE_KEY = this.$route.params.id == -1 ? "MYHZ_SPXX_ADD" : "MYHZ_SPXX_EDIT";
     this.resetPage();
+    this.$util.windowUnload(()=>{
+        if(this.form.id == -1 && this.form.name){
+            this.$refs.component.createGgxx(this.form);
+            this.$util.setStorage(this.CACHE_KEY,this.form);
+        }
+    },'product_edit');
   },
   deactivated(){
       if(this.form.id == -1){
-          //保存数据到后台
+          //保存到本地
+          if(this.form.name){
+              this.$refs.component.createGgxx(this.form);
+              this.$util.setStorage(this.CACHE_KEY,this.form);
+          }
       }else{
           //保存到本地
           if(this.currentTab=='information')

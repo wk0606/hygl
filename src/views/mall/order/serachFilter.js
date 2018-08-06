@@ -5,7 +5,7 @@ export const search = {
         return {
             params: {},
             colModel: [
-                { label: '商品', prop: 'name', width: '30%' },
+                { label: '商品', prop: 'spname', width: '30%' },
                 { label: '单价(元)/数量', prop: 'dj', width: '10%', align: 'center' },
                 { label: '买家/收货人', prop: 'mj', width: '20%', align: 'center' },
                 { label: '配送方式', prop: 'psfs', width: '10%', align: 'center' },
@@ -13,34 +13,15 @@ export const search = {
                 { label: '订单状态', prop: 'ddzt', width: '10%', align: 'center' },
                 { label: '操作', prop: 'cz', width: '10%', align: 'center' }
             ],
-            List: [
-                {
-                    id: 1,
-                    sppic: 'http://img0.imgtn.bdimg.com/it/u=2382110381,2382599939&fm=27&gp=0.jpg',
-                    name: 'iphne X 64g 红 全网通-2018 世界杯特别版',
-                    dj: 3200,
-                    sl: 1,
-                    mjname: '13459876652',
-                    shrname: '赵普',
-                    shrphone: '13678987655',
-                    psfs: '快递',
-                    sfje: 3200,
-                    ddzt: '交易成功'
-                },
-                {
-                    id: 2,
-                    sppic: 'http://img0.imgtn.bdimg.com/it/u=2382110381,2382599939&fm=27&gp=0.jpg',
-                    name: 'iphne X 64g 红 全网通-2018 世界杯特别版',
-                    dj: 3200,
-                    sl: 1,
-                    mjname: '13459876652',
-                    shrname: '赵普',
-                    shrphone: '13678987655',
-                    psfs: '快递',
-                    sfje: 3200,
-                    ddzt: '交易成功'
-                }
-            ]
+            List: [],
+            allList:[],
+            page:{
+                no:1,
+                size:20,
+                rows:0
+            },
+            load1:false,
+            load2:false
         }
     },
     computed:{
@@ -53,13 +34,25 @@ export const search = {
         }
     },
     methods: {
+        //
+        changPage(page){
+            this.page.no=page;
+            this.List=this.allList.slice((this.page.no-1)*this.page.size,this.page.no*this.page.size);
+        },
         //执行筛选
         search() {
+            this.load=true;
             var params=JSON.parse(JSON.stringify(this.params));
             params.zdrqs=params.xdsj[0]||'';
             params.zdrqz=params.xdsj[1]||'';
             delete params.xdsj;
-            this.$http('/api/x6/getAllOrdersByCondition.do',params);
+            this.$http('/api/x6/getOrderListByCondition.do',params).then(res=>{
+                this.load=false;
+                this.allList=res.List;
+                this.changPage(1);
+            },err=>{
+                this.load=false;
+            });
         },
         exportExcel() {
             var exportDatas = {

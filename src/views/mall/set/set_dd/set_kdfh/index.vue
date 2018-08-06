@@ -127,6 +127,7 @@ export default {
           }).then(res=>{
             this.List.splice(index,1);
             this.$message('删除成功');
+            this.$util.requestAllCache(this.$http);
           });
         }).catch(() => {
                   
