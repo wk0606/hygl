@@ -1,24 +1,33 @@
 import axios from 'axios'
 import util from './util'
 import {Message} from 'element-ui'
-axios.defaults.headers.common['token'] = util.getTokenid();
-axios.defaults.baseURL = util.getServerUrl()||'https://b.miya365.com/x3.0';
-axios.defaults.timeout = 1000 * 60;
-export function $http(url, options){
+
+const service=axios.create({
+    baseURL:util.getBaseUrl(),
+    timeout:60000,
+    headers:{
+        token:util.getTokenid()
+    }
+});
+
+const HttpService=function(url, options){
     var promise = new Promise(function (resolve, reject) {
-        axios.post(url, options).then((res) => {
-            console.log(res)
+        service.post(url,options).then(res=>{
             if (res.data.result == 'ok') {
                 resolve(res.data)
-            } else {
+            }else if(res.data.result == 'timeout'){
+              Message({
+                  message:'登录超时,请重新登录365',
+                  type:'error'
+              });
+            }else {
                 Message({
                     message:res.data.message,
                     type:'error'
                 });
                 reject(res.data)
             }
-        }).catch((err) => {
-            console.log(err)
+        }).catch(err=>{
             Message({
                 message:'未知错误',
                 type:'error'
@@ -28,3 +37,4 @@ export function $http(url, options){
     });
     return promise;
 }
+export default HttpService;

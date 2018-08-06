@@ -46,6 +46,9 @@ export const search = {
             params.zdrqs=params.xdsj[0]||'';
             params.zdrqz=params.xdsj[1]||'';
             delete params.xdsj;
+            // this.$service('/api/x6/getOrderListByCondition.do',params).then(res=>{
+
+            // });
             this.$http('/api/x6/getOrderListByCondition.do',params).then(res=>{
                 this.load=false;
                 this.allList=res.List;
