@@ -1,11 +1,6 @@
 <template>
   <div>
-      <p
-        v-for="item in searchType"
-        :key="item.value"
-      >{{item.label}}</p>
-      <el-button @click="test">click</el-button>
-      <!-- <div class="order-search">
+      <div class="order-search">
           <div class="order-search-item">
               <span>{{getSerachLabel}}</span>
               <el-select
@@ -119,7 +114,7 @@
                   <span>{{row.ddzt}}</span>
               </div>
           </div>
-      </div> -->
+      </div>
   </div>
 </template>
 <script>
@@ -149,10 +144,6 @@ export default {
       }
   },
   methods:{
-      test(){
-          //this.searchType[2].label="test"
-          [this.searchType[2].label,this.searchType[3].label]=[this.searchType[3].label,this.searchType[2].label]
-      },
       //初始化查询条件
       initSearchParams(){
           this.params={};

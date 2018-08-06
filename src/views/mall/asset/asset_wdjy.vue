@@ -22,6 +22,7 @@
                     v-for="item in datePickes"
                     :key="item.value"
                     class="span-btn"
+                    @click="selectDate(item.value)"
                 >{{item.label}}</span>
               </div>
               <div>
@@ -120,6 +121,10 @@ export default {
     }
   },
   methods:{
+      //日期快捷选择
+      selectDate(d) {
+        this.date = [this.$util.getDateByDistance(d), this.$util.getCurrentDate()];
+      },
       calcTotal(){
           var temp={
               fsrq:'总计',
@@ -146,7 +151,7 @@ export default {
           this.exportDatas.condition=this.date.join('--');
           var cols=[
             {label:'日期',prop:'fsrq'},
-            {label:'净销售金额',prop:'xsje'},
+            {label:'净销售金额',prop:'xsje',isNum:true},
             {label:'销售小计',prop:'xsxj'},
             {label:'退款小计',prop:'tkxj'}
           ];
