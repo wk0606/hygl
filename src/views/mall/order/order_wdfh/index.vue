@@ -75,53 +75,60 @@
             :style="{width:item.width,textAlign:item.align}"
           >{{item.label}}</div>
       </div>
-      <div class="order-table-body">
+      <div
+        class="order-table-body"
+        v-for="row in List"
+        :key="row.ddh"
+      >
           <div class="order-table-title">
               <div>
-                  <span>订单号 : E97876544489099</span>
-                  <span>下单时间 : 2018-09-09 12:23:34</span>
+                  <span>订单号 : {{row.ddh}}</span>
+                  <span>下单时间 : {{row.zdrq}}</span>
               </div>
               <div>
-                  <b>已发货</b>
+                  <b @click="openFh(row.id)">已发货</b>
                   <i>-</i>
-                  <b>查看详情</b>
+                  <b @click="openDetails(row.id)">查看详情</b>
                   <i>-</i>
                   <b>备注</b>
               </div>
           </div>
           <div
             class="order-table-item order-table-row"
-            v-for="row in List"
+            v-for="row in row.details"
             :key="row.id"
           >
               <div>
-                  <img :src="row.sppic" alt="">
-                  <span class="cell-span cell-span-blue" @click="openDetails(row.id)">{{row.name}}</span>
+                  <img :src="row.sptpfirst" alt="">
+                  <span class="cell-span">{{row.spname}}</span>
               </div>
-              <div>
-                  <div>￥{{row.dj | currency}}</div>
+              <div class="order-table-row-border">
+                  <div>￥{{row.spdj | currency}}</div>
                   <div>{{row.sl}}</div>
               </div>
-              <div>
+              <div class="order-table-row-border">
                   <div>{{row.mjname}}</div>
-                  <div>{{row.shrname}} {{row.shrphone}}</div>
+                  <div>{{row.shr}} {{row.shrlxfs}}</div>
               </div>
-              <div>
-                  <span>{{row.psfs}}</span>
+              <div class="order-table-row-border">
+                  <span>{{row.psfs?'自提':'快递'}}</span>
               </div>
-              <div>
-                  <span>{{row.sfje}}</span>
+              <div class="order-table-row-border">
+                  <span>{{row.je}}</span>
               </div>
-              <div>
+              <div class="order-table-row-border">
                   <span>{{row.ddzt}}</span>
               </div>
           </div>
       </div>
+      <order-fh v-if="dialog.show" :views="dialog"></order-fh>
   </div>
 </template>
 <script>
 import { search } from "../serachFilter.js"
+import orderFh from './order_fh'
 export default {
+  props:['page'],
   mixins: [search],
   data(){
       return {
@@ -138,7 +145,11 @@ export default {
               {label:'已发货',value:2},
               {label:'无需发货',value:0}
           ],
-          ckList:[]
+          ckList:[],
+          dialog:{
+              show:false,
+              lx:0,//0 无串号 1 有串号
+          }
       }
   },
   methods:{
@@ -156,15 +167,22 @@ export default {
               name:'全部'
           });
       },
+      openFh(id){
+          this.dialog.show=true;
+          this.dialog.lx=1;
+      }
   },
   mounted(){
      this.initSearchParams(); 
   },
   activated(){
      this.initSearchParams(); 
+  },
+  components:{
+      orderFh
   }
 }
 </script>
 <style lang="less" scoped>
-    @import '../component.less';
+    @import '../order.less';
 </style>

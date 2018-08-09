@@ -75,26 +75,30 @@
             :style="{width:item.width,textAlign:item.align}"
           >{{item.label}}</div>
       </div>
-      <div class="order-table-body">
+      <div
+        class="order-table-body"
+        v-for="row in List"
+        :key="row.ddh"
+      >
           <div class="order-table-title">
               <div>
-                  <span>订单号 : E97876544489099</span>
-                  <span>下单时间 : 2018-09-09 12:23:34</span>
+                  <span>订单号 : {{row.ddh}}</span>
+                  <span>下单时间 : {{row.zdrq}}</span>
               </div>
               <div>
-                  <b>查看详情</b>
+                  <b @click="openDetails(row.ddh)">查看详情</b>
                   <i>-</i>
                   <b>备注</b>
               </div>
           </div>
           <div
             class="order-table-item order-table-row"
-            v-for="row in List"
+            v-for="row in row.details"
             :key="row.id"
           >
               <div>
                   <img :src="row.sptpfirst" alt="">
-                  <span class="cell-span cell-span-blue" @click="openDetails(row.id)">{{row.spname}}</span>
+                  <span class="cell-span">{{row.spname}}</span>
               </div>
               <div class="order-table-row-border">
                   <div>￥{{row.spdj | currency}}</div>
@@ -120,6 +124,7 @@
 <script>
 import { search } from "../serachFilter.js"
 export default {
+  props:['page'],
   mixins: [search],
   data(){
       return {
@@ -143,7 +148,17 @@ export default {
           ]
       }
   },
+  computed:{
+      getCount(){
+          return this.$store.state.count;
+      }
+  },
   methods:{
+      add(){
+          var c=this.$store.state.count;
+          c+=1;
+          this.$store.commit('updateCount',c);
+      },
       //初始化查询条件
       initSearchParams(){
           this.params={};
@@ -160,5 +175,5 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-    @import '../component.less';
+    @import '../order.less';
 </style>

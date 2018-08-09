@@ -50,7 +50,7 @@ export default new Router({
             {path:'/main/mallchildren/set_dp',name:'set_dp',component:resolve=>require(['../views/mall/set/set_dp/index'],resolve)},
             {path:'/main/mallchildren/set_dprz/:phone/:name',name:'set_dprz',component:resolve=>require(['../views/mall/set/set_dp/set_dpxx/set_dprz'],resolve)},
             {path:'/main/mallchildren/order',name:'order',component:resolve=>require(['../views/mall/order/index'],resolve)},
-            {path:'/main/mallchildren/order_details/:id',name:'order_details',component:resolve=>require(['../views/mall/order/order_qbdd/qbdd_details'],resolve)},
+            {path:'/main/mallchildren/order_details/:ddh',name:'order_details',component:resolve=>require(['../views/mall/order/order_qbdd/qbdd_details'],resolve)},
           ]
         }
       ]

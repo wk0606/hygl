@@ -100,7 +100,8 @@ export default {
          currentSelectGg:[],
          //当前大类下的小类
          currentSelectTags:[],
-         currentLabel:''
+         currentLabel:'',
+         flag:true
      }
   },
   watch:{
@@ -124,34 +125,65 @@ export default {
      },
      //删除选择的规格大类
      removeSpecs(index){
-         if(this.hasSelected[index].name){
-             this.$confirm('删除将导致已与该规格关联的商品失效,是否继续?','提示',{
-             type:'warning'
-         }).then(()=>{
-             this.hasSelected.splice(index,1);
-             this.currentSelectGg=[];
-             for(let obj of this.hasSelected){
-                if(obj.name)
-                    this.currentSelectGg.push(obj.name);
-             }
-             this.$emit('select-change',this.hasSelected);
-         }).catch(()=>{});
+         if(this.flag){
+            if(this.hasSelected[index].name&&this.hasSelected[index].value.length){
+                this.$confirm('删除将导致已与该规格关联的商品失效,是否继续?','提示',{
+                    type:'warning'
+                }).then(()=>{
+                    this.hasSelected.splice(index,1);
+                    this.currentSelectGg=[];
+                    for(let obj of this.hasSelected){
+                        if(obj.name)
+                            this.currentSelectGg.push(obj.name);
+                    }
+                    this.flag=false;
+                    this.$emit('select-change',JSON.parse(JSON.stringify(this.hasSelected)));
+                }).catch(()=>{});
+            }else{
+                this.hasSelected.splice(index,1);
+                this.currentSelectGg=[];
+                    for(let obj of this.hasSelected){
+                        if(obj.name)
+                            this.currentSelectGg.push(obj.name);
+                    }
+            }
          }else{
-             this.hasSelected.splice(index,1);
-             this.$emit('select-change',this.hasSelected);
+             if(this.hasSelected[index].name){
+                this.hasSelected.splice(index,1);
+                this.currentSelectGg=[];
+                for(let obj of this.hasSelected){
+                    if(obj.name)
+                        this.currentSelectGg.push(obj.name);
+                }
+                this.$emit('select-change',JSON.parse(JSON.stringify(this.hasSelected)));
+            }else{
+                this.hasSelected.splice(index,1);
+                this.currentSelectGg=[];
+                    for(let obj of this.hasSelected){
+                        if(obj.name)
+                            this.currentSelectGg.push(obj.name);
+                    }
+            }
          }
      },
      //删除规格小类
      removeTag(item,tag){
-         this.$confirm('删除将导致已与该规格关联的商品失效,是否继续?','提示',{
-             type:'warning'
-         }).then(()=>{
+        if(this.flag){
+            this.$confirm('删除将导致已与该规格关联的商品失效,是否继续?','提示',{
+                type:'warning'
+            }).then(()=>{
+                item.value=item.value.filter(_t=>{
+                    return _t!=tag;
+                });
+                this.$emit('select-change',this.hasSelected);
+                this.flag=false;
+            }).catch(()=>{});
+        }else{
             item.value=item.value.filter(_t=>{
                 return _t!=tag;
             });
             this.$emit('select-change',this.hasSelected);
-         }).catch(()=>{});
-         
+        } 
      },
      //将allspecs中没id的数据给删除掉
      resetAllSpecs(){

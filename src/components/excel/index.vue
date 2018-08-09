@@ -14,8 +14,8 @@
                   <div style="margin-bottom:18px;"><b>文件兼容格式</b></div>
                   <div>
                     <el-radio-group v-model="options.rptype">
-                        <el-radio :label="2007">Office 2007</el-radio>
-                        <el-radio :label="2003">Office 2003</el-radio>
+                        <el-radio label="2007">Office 2007</el-radio>
+                        <el-radio label="2003">Office 2003</el-radio>
                     </el-radio-group>
                   </div>
               </div>
@@ -53,7 +53,7 @@ export default {
               data:null,
               fileName:'',
               title:'',
-              rptype:2007,
+              rptype:"2007",
               rowOffset:1
           },
           load:false
@@ -61,10 +61,11 @@ export default {
   },
   methods:{
       save(){
-          if(!this.columns.length||!this.data.length){
+          if(!this.data.length&&!this.exportFlag){
               this.$message('没有要导出的数据','error');
               return;
           }
+          const URL=this.exportFlag?this.url:'/api/x6/exportExcel.do';
           this.load=true;
           this.options.condition=this.condition||'';
           this.options.fileName=this.fileName||'';
@@ -77,7 +78,11 @@ export default {
               this.columns[i].dataType=this.columns[i].isSum?'number':'string';
               this.options.columns.push(Object.assign({},this.colModel,this.columns[i]));
           }
-          this.$http('/api/x6/exportExcel.do',this.options).then(res=>{
+          if(this.exportFlag){
+              delete this.options.data;
+              this.options.paramData=this.paramData;
+          }
+          this.$http(URL,this.options).then(res=>{
               this.load=false;
               window.location.href=res.url;
               this.close();

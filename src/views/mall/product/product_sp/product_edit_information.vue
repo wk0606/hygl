@@ -40,6 +40,7 @@
                             size="mini"
                             v-model="details.spfz"
                             placeholder="请选择商品分组"
+                            @focus="getCache('spfzList')"
                          >
                             <el-option
                                 v-for="item in spfz"
@@ -48,7 +49,7 @@
                                 :value="item.id"
                             ></el-option>
                          </el-select>
-                         <a @click="openGroupAdd" style="color:#409eff;margin-left:10px;">新建分组</a>
+                         <a @click="openRouter('/main/mallchildren/product_group_add/-1')" style="color:#409eff;margin-left:10px;">新建分组</a>
                      </div>
                      <div class="tips" v-if="rules.spfz.show">{{rules.spfz.label}}</div>
                  </div>
@@ -113,7 +114,7 @@
                             :width="item.width"
                         >
                             <template slot-scope="scope">
-                                <span class="cell-span" v-if="item.prop!='spdm'&&item.prop!='dyjg'">{{scope.row[item.prop]}}</span>
+                                <span class="cell-span" v-if="item.prop!='spdm'&&item.prop!='dyjg'&&item.prop!='kskc'">{{scope.row[item.prop]}}</span>
                                 <el-button
                                     size="mini"
                                     type="text"
@@ -121,12 +122,13 @@
                                     @click="openGoodsDialog(scope.row,scope.$index)"
                                 >{{scope.row.qspmc||'选择商品库商品'}}</el-button>
                                 <input-number
-                                    v-if="item.prop=='dyjg'"
+                                    v-if="item.prop=='dyjg'&&scope.row.spdm"
                                     v-model="scope.row.dyjg"
                                     icon="iconfont icon-qian1"
                                     :arrow-control="false"
                                     style="width:100px;"
                                 ></input-number>
+                                <span class="cell-span" v-if="item.prop=='kskc'&&scope.row.spdm">{{scope.row.kskc}}</span>
                             </template>
                         </el-table-column>
                      </el-table>
@@ -147,7 +149,8 @@
                  <span>库存预警数量</span>
                  <div>
                      <div>
-                         <input-number :arrow-control="false" v-model="details.kcyjsl" style="width:100px;margin-right:10px;"></input-number>
+                         <input-number :arrow-control="false" v-model="details.kcyjsl" style="width:100px;"></input-number>
+                         <i class="el-icon-question" style="margin-right:10px;cursor:pointer;" title="当可售库存到达设置的数量，将受到通知，0代表不预警"></i>
                          <div class="edit-items-price">
                              <span>全部可售库存 :</span>
                              <span style="margin-left:10px;">{{calcKcTotal}}</span>
@@ -190,6 +193,7 @@
                                 v-model="details.yfmbid"
                                 placeholder="请选择运费模板"
                                 style="margin-left:20px;width:150px;"
+                                @focus="getCache('kdmbList')"
                             >
                                 <el-option
                                     v-for="item in yfmb"
@@ -198,7 +202,7 @@
                                     :value="item.id"
                                 ></el-option>
                             </el-select>
-                            <router-link tag="a" to="/main/mallchildren/set_dd_addkd/-1">新建模板</router-link>
+                            <a @click="openRouter('/main/mallchildren/set_dd_addkd/-1')">新建模板</a>
                         </div>
                      </div>
                      <div class="tips" v-if="rules.yfsz.show" style="width:300px;">{{rules.yfsz.label}}</div>
@@ -295,9 +299,16 @@ export default {
     }
   },
   methods: {
-    openGroupAdd(){
-        //this.saveDetailsToStorage();
-        this.$router.push('/main/mallchildren/product_group_add/-1');
+    getCache(key){
+      if(key=='spfzList')
+        this.spfz=this.$util.getCache(key);
+      else
+        this.yfmb=this.$util.getCache(key);
+    },
+    openRouter(path){
+        this.$router.push(path);
+        this.$util.setCache('NEEDBACK',1);//新增完分组/模板后返回此页
+        this.$util.setCache('NOTCONFIRM',1);//进入页面有缓存情况下是否不需要提示
     },
     openFile() {
       if (!this.imgLoading) {
@@ -364,6 +375,7 @@ export default {
     goodsSelected(item) {
       this.details.spList[this.currentIndex].spdm = item.spdm;
       this.details.spList[this.currentIndex].qspmc = item.qspmc;
+      this.details.spList[this.currentIndex].kskc=item.kskc;
     },
     //统一设置价格
     openPrompt(){
@@ -581,8 +593,8 @@ export default {
           });
         }
       }
-      this.spfz=this.$util.getCache('spfzList');
-      this.yfmb=this.$util.getCache('kdmbList');
+      //this.spfz=this.$util.getCache('spfzList');
+      //this.yfmb=this.$util.getCache('kdmbList');
     },
     saveDetailsToStorage() {
       //在这里之判断当填写了商品名称的时候才去做缓存

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :style="{width:width}">
     <el-cascader
         size="mini"
         :options="options"
@@ -8,7 +8,7 @@
         suffix-icon="el-icon-search"
         @icon-click="iconClick"
         clearable
-        :change-on-select="true"
+        :change-on-select="changeOnSelect"
         v-model="selected"
         @change="handleChange"
     >
@@ -21,8 +21,9 @@
 import panel from './dialog'
 export default {
   props:{
-    needCk:{default:false},
-    value:{default:''}
+    value:{default:''},
+    changeOnSelect:{default:true},
+    width:{default:'auto'}
   },
   data(){
       return {
@@ -119,5 +120,5 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-
+  .el-cascader{width: 100%;}
 </style>

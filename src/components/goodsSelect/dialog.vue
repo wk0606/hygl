@@ -30,7 +30,6 @@
         <div style="height:350px;">
             <el-table
                 :data="List"
-                stripe
                 border
                 height="100%"
                 :highlight-current-row="true"
@@ -50,7 +49,9 @@
                     <template slot-scope="scope">
                         <div class="table-row">
                             <span>{{scope.row.value}}</span>
+                            <span v-if="type!=='all'" style="color:#999;">可售库存 {{scope.row.kskc}}</span>
                             <span
+                                v-else
                                 :class="scope.row.lx=='品牌'?'pp':scope.row.lx=='机型'?'jx':'qc'"
                             >{{scope.row.lx}}</span>
                         </div>
@@ -130,6 +131,8 @@ export default {
             spdm:this.currentRow.lx == '全称' ? this.currentRow.id : '',
             qspmc:this.currentRow.value
         };
+        if(this.type!='all')
+          temp.kskc=this.currentRow.kskc;
         this.$emit("selected", temp);
         this.views.show = false;
       }

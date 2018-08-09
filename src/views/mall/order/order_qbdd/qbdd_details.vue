@@ -4,20 +4,20 @@
       <div class="details-body">
           <div class="details-body-top">
               <span>订单号 ：{{details.ddh}}</span>
-              <span>下单时间 ：{{details.xdsj}}</span>
+              <span>下单时间 ：{{step[0].time}}</span>
           </div>
           <div class="order-body-jy">
             <div>
                 <div class="order-body-jy-left">
-                    <b>{{details.ddzt[details.ddzt.length-1].label}}</b>
+                    <b>{{step[details.ddzt].label}}</b>
                 </div>
                 <div class="order-body-jy-right">
-                    <el-steps :active="details.ddzt.length" align-center>
+                    <el-steps :active="details.ddzt+1" align-center>
                         <el-step
                             v-for="(item,index) in step"
                             :key="index"
-                            :title="item"
-                            :description="details.ddzt[index]?details.ddzt[index].sj:''"
+                            :title="item.label"
+                            :description="item.time"
                             icon="el-icon-circle-check"
                         ></el-step>
                     </el-steps>
@@ -98,7 +98,13 @@ export default {
           {label:'全部订单',path:'/main/mallchildren/order'},
           {label:'订单详情'}
         ],  
-        step:['买家下单','买家付款','商家发货','交易完成'],
+        //'买家下单','买家付款','商家发货','交易完成'
+        step:[
+            {label:'买家下单',time:''},
+            {label:'买家付款',time:''},
+            {label:'商家发货',time:''},
+            {label:'交易完成',time:''}
+        ],
         lxrInfo:[
             {
                 label:'联系人信息',
@@ -109,7 +115,7 @@ export default {
             },{
                 label:'付款信息',
                 infos:[
-                    {label:'实付金额',prop:'sfje'},
+                    {label:'实付金额',prop:'zfje'},
                     {label:'支付方式',prop:'zffs'},
                     {label:'付款时间',prop:'fksj'}
                 ]
@@ -122,35 +128,16 @@ export default {
             }
         ],
         details:{
-            ddh:'E8766677989328930',
-            xdsj:'2018-09-09 12:23:34',
-            ddzt:[
-                {label:'买家下单',sj:'2018-09-09 12:23:34'},
-                {label:'买家付款',sj:'2018-09-09 12:23:34'},
-                // {label:'商家发货',sj:'2018-09-09 12:23:34'},
-                // {label:'交易完成',sj:'2018-09-09 12:23:34'}
-            ],
-            sjbz:'首次出场',
+            ddh:'',
+            ddzt:0,
+            sjbz:'',
             lxrname:'赵普',
-            lxrphone:'13546765433',
-            zfje:3444,
+            lxrphone:'',
+            zfje:0,
             zffs:'微信支付',
-            fksj:'2018-09-09 12:23:34',
-            mjname:'13456786544',
-            mjly:'买家留言你好买家留言你好买家留言你好',
-            spList:[
-                {
-                    sppic:'http://img0.imgtn.bdimg.com/it/u=2382110381,2382599939&fm=27&gp=0.jpg',
-                    name:'iphne X 64g 红 全网通-2018 世界杯特别版',
-                    dj:3200,
-                    sl:1,
-                    fhzt:'已发货',
-                    tkzt:1,
-                    yhje:108.76,
-                    sply:'买家留言你好买家留言你好买家留言你好',
-                    id:1
-                }
-            ]
+            mjname:'',
+            mjly:'',
+            spList:[]
         },
         colModel:[
             {label:'商品',prop:'name',width:'30%'},
@@ -166,6 +153,54 @@ export default {
       getOrderStatus(){
 
       }
+  },
+  methods:{
+      formatDetails(obj){
+          var row=obj.List[0];
+          var shrxx=JSON.parse(row.shrxx);
+          var mjxx=JSON.parse(row.extend);
+          this.details.ddh=row.ddh;
+          this.details.ddzt=row.ddzt;
+          this.details.sjbz=row.sjbz;
+          this.details.lxrname=shrxx.shr;
+          this.details.lxrphone=shrxx.shrlxfs;
+          this.details.mjname=mjxx.mjname;
+          this.details.fksj=row.zfsj;
+          this.details.mjly=mjxx.mjlx;
+          this.step[0].time=row.zdrq;
+          this.step[1].time=row.zfrq;
+          this.step[2].time=row.fhrq;
+          this.step[3].time=row.wcrq;
+          this.details.zfje=obj.List.reduce((total,item)=>{
+              return total+item.je;
+          },0);
+          this.details.spList=[];
+          for(let item of obj.List){
+              var sp=JSON.parse(item.spdetail);
+              this.details.spList.push({
+                  sppic:sp.sptpFirst,
+                  name:sp.spname,
+                  dj:sp.spdj,
+                  xj:item.sl,
+                  fhzt:item.fhzt?'已发货':'未发货',
+                  tkzt:item.tkzt,
+                  yhje:0,
+                  sply:''
+              });
+          }
+      },
+      getDetails(ddh){
+          this.$http('/api/x6/getOrderByDdh.do',{
+              ddh:ddh
+          }).then(res=>{
+              this.formatDetails(res.VO);
+          })
+      }
+  },
+  mounted(){
+      var ddh=this.$route.params.ddh;
+      console.log(this.$route)
+      this.getDetails(ddh);
   },
   components:{
       breadNav

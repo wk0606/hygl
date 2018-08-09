@@ -20,6 +20,10 @@
     color: #409EFF;
     cursor: pointer;
 }
+.cell-span-gray{
+    color: #aaa;
+    cursor: pointer;
+}
 .el-table-drak-head{background-color: #f0f0f0 !important;}
 .pagination{
     padding: 10px 0;

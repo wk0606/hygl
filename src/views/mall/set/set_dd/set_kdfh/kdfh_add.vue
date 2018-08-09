@@ -191,6 +191,15 @@ export default {
       save(){
           this.$refs.form.validate(valid=>{
             if (valid) {
+                var flag=false;
+                for(let obj of this.details.data){
+                    if(obj.firstje)
+                        flag=true;
+                }
+                if(!flag){
+                    this.$message('至少填写一个首件金额','error');
+                    return;
+                }
                 this.load=true;
                 this.details.jjdw=this.details.jffs?'千克':'个';
                 this.$http('/api/x6/HySetKdmbSave.do',this.details).then(res=>{
@@ -202,6 +211,9 @@ export default {
                     });
                     //
                     this.load=false;
+                    if(this.$util.getCache('NEEDBACK')==1)
+                        this.$router.go (-1);
+                    this.$util.removeCache('NEEDBACK');
                 },err=>{
                     this.load=false;
                 });

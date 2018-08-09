@@ -11,20 +11,23 @@
           >
             <el-table-column
                 slot="table-column"
-                width="80"
+                width="120"
                 label="操作"
                 align="center"
             >
                 <template slot-scope="scope">
-                    <el-button size="small" type="text" style="padding:0;">预览</el-button>
+                    <el-button size="mini" style="padding:3px 5px;" type="primary" @click="openView(scope.row)">预览</el-button>
+                    <el-button v-if="scope.row.id!=1" size="mini" style="padding:3px 5px;" type="danger" @click="openView(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
           </m-table>
       </div>
+      <preview v-if="dialog.show" :views="dialog"></preview>
   </div>
 </template>
 <script>
 import mTable from "../../../../components/table/index";
+import preview from "../product_sp/preview";
 export default {
   data() {
     return {
@@ -35,16 +38,29 @@ export default {
           prop: "name",
           align: "left",
           render: true,
-          click: this.openAdd
+          click: this.openAdd,
+          class:this.getClass
         },
-        { label: "商品数", prop: "spsl" },
+        { label: "商品数", prop: "spsl", render: true },
         { label: "创建时间", prop: "zdrq" }
-      ]
+      ],
+      dialog: {
+        show: false,
+        data: null,
+        type: 3
+      }
     };
   },
   methods: {
-    openView() {
-      console.log(row);
+    getClass(row){
+      if(row.id==1)
+        return 'cell-span-gray';
+      else
+        return 'cell-span-blue';
+    },
+    openView(row) {
+      this.dialog.show = true;
+      this.dialog.data = row.name;
     },
     openAdd(row, id) {
       var id = row ? row.id : -1;
@@ -65,7 +81,8 @@ export default {
     this.getList();
   },
   components: {
-    mTable
+    mTable,
+    preview
   }
 };
 </script>

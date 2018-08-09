@@ -27,7 +27,7 @@
         <template slot-scope="scope">
             <span
               class="cell-span"
-              :class="{'cell-span-blue':row.click}"
+              :class="row.class?row.class(scope.row):row.click?'cell-span-blue':''"
               @click="row.click?row.click(scope.row,scope.row[row.prop]):null"
             >{{scope.row[row.prop]}}</span>
         </template>

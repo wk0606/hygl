@@ -125,7 +125,6 @@
       </div>
       <div class="wdsp-footer">
           <div>
-            
             <el-button size="mini" v-if="currentValue!=2" :disabled="!selectRows.length" @click="batchUpOrDown">{{currentValue?'上架':'下架'}}</el-button>
             <el-button size="mini" :disabled="!selectRows.length" @click="batchDelele">删除</el-button>
           </div>
@@ -179,7 +178,7 @@ export default {
     editIndex(row){
         var index=parseInt(this.currentIndex);
         if(!index){
-            this.$message('请输入正整数','error');
+            this.$message('序号只能大于0','error');
         }else{
             this.$http('/api/x6/updataSpfzxh.do',{
                 id:row.id,
@@ -294,15 +293,19 @@ export default {
     },
     //批量删除
     batchDelele(){
-        var ids=[];
-        for(let obj of this.selectRows)
-            ids.push(obj.id);
-        this.$http('/api/x6/hySetSpxxDel.do',{
-            ids:ids.join(',')
-        }).then(res=>{
-            this.$message('删除成功');
-            this.getList(this.currentValue);
-        });
+        this.$confirm('删除商品后不可恢复,确认删除吗','提示',{
+            type:'warning'
+        }).then(()=>{
+            var ids=[];
+            for(let obj of this.selectRows)
+                ids.push(obj.id);
+            this.$http('/api/x6/hySetSpxxDel.do',{
+                ids:ids.join(',')
+            }).then(res=>{
+                this.$message('删除成功');
+                this.getList(this.currentValue);
+            });
+        }).catch(()=>{});
     },
     //预览操作
     preview(){

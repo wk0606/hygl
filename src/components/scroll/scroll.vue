@@ -3,9 +3,9 @@
     调用的时候形如<scroll><div>...</div></scroll> 
     scroll里面只能由一个子元素！！！！
     要在调用的地方自行定义scroll的宽和搞-->
-  <div class="scroll" ref="scroll" @mouseenter="show2=true" @mouseleave="show2=false"> 
+  <div class="scroll" ref="scroll"> 
       <slot class="scroll-main"></slot>
-      <div class="scroll-bar" v-show="needMouseControl?show2&&show:show" :style="{background:scrollColor}">
+      <div class="scroll-bar" v-show="!hideBar&&show" :style="{background:scrollColor}">
           <div
             ref="bar"
             :style="{height:height+'px',background:barColor}"
@@ -18,8 +18,8 @@
 export default {
   props: {
     //是否添加鼠标控制显示/隐藏
-    needMouseControl: {
-      default: false
+    hideBar:{
+      default:false
     },
     barColor:{
       default:'rgba(255, 255, 255, 0.5)'
@@ -31,7 +31,6 @@ export default {
   data() {
     return {
       show: false,
-      show2: false,
       height: 0,
       sy: 0,
       initTop: 0, //slot的初始top
@@ -79,13 +78,11 @@ export default {
     resize() {
       this.initSrollBar();
     },
-    //初始化操作
-    initSrollBar() {
-      this.target = this.$refs.scroll.children[0];
+    setHeightAndTop(){
       var H = this.$refs.scroll.offsetHeight;
       var h = this.$refs.scroll.children[0].offsetHeight;
-      console.log(this.$refs.scroll.children[0].offsetHeight)
-      console.log(H,h)
+      this.$refs.bar.style.top=0;
+      this.target.style.transform='translateY(0)';
       if (h - H > 0) {
         this.show = true;
         this.height = 2 * H - h < 20 ? 20 : 2 * H - h;
@@ -98,12 +95,32 @@ export default {
         this.target.style.transform = "translateY(0)";
         this.target.removeEventListener("mousewheel", this.wheel);
       }
+    },
+    //初始化操作
+    initSrollBar() {
+      this.target = this.$refs.scroll.children[0];
+      var imgArray=this.target.querySelectorAll('img');
+      if(imgArray.length>0){
+        var count=0;
+        for(let img of imgArray){
+          img.onload=function(){
+            count++;
+          };
+        }
+        var id=setInterval(()=>{
+          if(count==imgArray.length){
+            clearInterval(id);
+            this.setHeightAndTop();
+          }
+        },10);
+      }else{
+        this.setHeightAndTop();
+      }
+      
     }
   },
   mounted() {
-    setTimeout(()=>{
-      this.initSrollBar();
-    },0);
+    this.initSrollBar();
     window.addEventListener("resize", this.resize);
   },
   destroyed() {

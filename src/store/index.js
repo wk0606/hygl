@@ -4,11 +4,15 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state:{
-        filterTable:{}
+        filterTable:{},
+        count:1
     },
     mutations:{
         updateFilterTable(state,obj){
             state.filterTable[obj.key]=obj.data;
+        },
+        updateCount(state,value){
+            state.count=value;
         }
     }
 });

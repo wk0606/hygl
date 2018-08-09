@@ -11,6 +11,69 @@
         border-top:1px solid @border-color; 
         border-bottom:1px solid @border-color 
     }
+    .mall-header{
+        border-bottom: none;
+        >div:nth-child(1){
+            display: flex;
+            align-items: center;
+            justify-content: space-between;  
+            >div{
+                display: inline-flex;
+                align-items: center;
+                b{
+                    font-size: 16px;
+                    margin-right: 10px;
+                }
+                div{
+                    padding: 3px 5px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+                .success{border-color:#67C23A;color:#67C23A;}
+                .error{border-color:#F56C6C;color:#F56C6C;}
+            }
+            img{cursor: pointer;}
+        }
+        .mall-header-config{
+            margin-top: 10px;
+            >div:nth-child(1){
+                box-sizing: border-box;
+                padding: 10px;
+                background: @border-color;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 13px;
+                i{cursor: pointer;}
+            }
+            >div:nth-child(2){
+                box-sizing: border-box;
+                //padding: 5px 0;
+                border-bottom: 1px solid @border-color;
+                display: flex;
+                align-items: center;
+                .mall-config-left{
+                    flex-shrink: 0;
+                    padding-right: 20px;
+                    border-right:1px solid @border-color;
+                    >div{
+                        margin: 15px 0;
+                        >span:nth-child(1){width: 200px;display: inline-block;}
+                        .success{color:#67C23A;}
+                        .error{color:#F56C6C;}
+                    }
+                }
+                .mall-config-right{
+                    flex-grow: 1;
+                    box-sizing: border-box;
+                    padding: 0 10px;
+                    display: inline-flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+            }
+        }
+    }
     .mall-title{
         display: flex;
         justify-content: space-between;

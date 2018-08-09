@@ -26,7 +26,7 @@
                 >{{item.label}}</span>
               </div>
               <div>
-                  <el-button size="mini" type="primary">查询</el-button>
+                  <el-button size="mini" type="primary" @click="getList">查询</el-button>
                   <el-button size="mini" @click="exportExcel">导出</el-button>
               </div>
           </div>
@@ -50,7 +50,7 @@
                 align="left"
             >
                 <template slot-scope="scope">
-                    <span class="cell-span">{{scope.row.xsje | currency}}</span>
+                    <span class="cell-span">{{scope.row.jxsxj | currency}}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -60,19 +60,19 @@
                 header-align="left"
             >
                 <template slot-scope="scope">
-                    <p><span class="cell-span">{{scope.row.xsxj.je | currency}}元</span></p>
-                    <p><span class="cell-span">{{scope.row.xsxj.sl}}笔</span></p>
+                    <p v-if="List.length"><span class="cell-span">{{scope.row.xsxj | currency}}元</span></p>
+                    <p v-if="List.length"><span class="cell-span">{{scope.row.xssl}}笔</span></p>
                 </template>
             </el-table-column>
             <el-table-column
                 label="退款小计"
-                prop="xsxj"
+                prop="tkxj"
                 align="left"
                 header-align="left"
             >
                 <template slot-scope="scope">
-                    <p><span class="cell-span">{{scope.row.tkxj.je | currency}}元</span></p>
-                    <p><span class="cell-span">{{scope.row.tkxj.sl}}笔</span></p>
+                    <p v-if="List.length"><span class="cell-span">{{scope.row.tkxj | currency}}元</span></p>
+                    <p v-if="List.length"><span class="cell-span">{{scope.row.tksl}}笔</span></p>
                 </template>
             </el-table-column>
           </el-table>
@@ -88,11 +88,6 @@ import {excel} from '../../../func/excel'
 export default {
   data(){
     return {
-      tabs:[
-        {label:'网点交易',component:'wdjy'},
-        {label:'交易明细',component:'jymx'}
-      ],
-      currentTab:'wdjy',
       date:[],
       datePickes:[
           {label:'今',value:0},
@@ -103,20 +98,18 @@ export default {
       page:{
           no:1,
           size:10,
-          rows:23
+          rows:0
       },
-      List:[
-          {fsrq:'2018-09-12',xsje:766,xsxj:{je:76,sl:4},tkxj:{je:17,sl:7}},
-          {fsrq:'2018-09-12',xsje:766,xsxj:{je:76,sl:4},tkxj:{je:17,sl:7}},
-          {fsrq:'2018-09-12',xsje:766,xsxj:{je:76,sl:4},tkxj:{je:17,sl:7}},
-          {fsrq:'2018-09-12',xsje:766,xsxj:{je:76,sl:4},tkxj:{je:17,sl:7}}
-      ],
+      List:[],
       exportDatas: {
         fileName: "网店交易",
         title: "网店交易",
         data: [],
         columns: [],
-        condition: ''
+        condition: '',
+        exportFlag:1,
+        paramData:{},
+        url:'/api/x6/exportWdjyExcel.do'
       }
     }
   },
@@ -124,6 +117,17 @@ export default {
       //日期快捷选择
       selectDate(d) {
         this.date = [this.$util.getDateByDistance(d), this.$util.getCurrentDate()];
+      },
+      getList(){
+          this.$http('/api/x6/getWdjyList.do',{
+              fsrqs:this.date[0]||'',
+              fsrqz:this.date[1]||'',
+              pageSize:this.page.size,
+              pageNo:this.page.no
+          }).then(res=>{
+              this.List=res.rows;
+              this.page.rows=res.totalRows;
+          });
       },
       calcTotal(){
           var temp={
@@ -150,32 +154,34 @@ export default {
       exportExcel(){
           this.exportDatas.condition=this.date.join('--');
           var cols=[
-            {label:'日期',prop:'fsrq'},
-            {label:'净销售金额',prop:'xsje',isNum:true},
-            {label:'销售小计',prop:'xsxj'},
-            {label:'退款小计',prop:'tkxj'}
+            {label:'日期',colLx:'fsrq'},
+            {label:'净销售金额',colLx:'jxsxj',isSum:1,align:'right'},
+            {label:'销售金额小计',colLx:'xsxj',isSum:1,align:'right'},
+            {label:'销售数量小计',colLx:'xssl',isSum:1,align:'right'},
+            {label:'退货金额小计',colLx:'tkxj',isSum:1,align:'right'},
+            {label:'退货数量小计',colLx:'tksl',isSum:1,align:'right'}
           ];
           for(let obj of cols){
-            this.exportDatas.columns.push({colName: obj.label});
+            var temp = {};
+            temp.colName = obj.label;
+            temp.colLx=obj.colLx;
+            if (obj.hasOwnProperty('isSum'))
+                temp.isSum = obj.isSum;
+            if (obj.hasOwnProperty('align'))
+                temp.align = obj.align;
+            this.exportDatas.columns.push(temp);
           }
-          for(let row of this.List){
-            let _temp=[];
-            for(let obj of cols){
-              if(obj.prop=='xsxj'||obj.prop=='tkxj'){
-                  _temp.push(`${row[obj.prop].je}元 / ${row[obj.prop].sl}笔`);
-              }else{
-                  _temp.push(row[obj.prop]||0);
-              }
-            }
-            this.exportDatas.data.push(_temp);
-          }
+          this.exportDatas.paramData={
+              fsrqs:this.date[0]||'',
+              fsrqz:this.date[1]||''
+          };
           excel.open(this.exportDatas);
       }
   },
   mounted(){
       this.date.push(this.$util.getDateByDistance(-7));
       this.date.push(this.$util.getCurrentDate());
-      this.calcTotal();
+      //this.calcTotal();
   },
   components:{
       pagination

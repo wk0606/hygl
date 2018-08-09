@@ -161,25 +161,33 @@ export default {
                 });
             }
         }else{
-            if(this.$util.getStorage(this.CACHE_KEY)){
-                this.$confirm('恢复数据吗','提示',{
-                    confirmButtonText:'继续编辑',
-                    cancelButtonText:'重新开始',
-                    type:'warning'
-                }).then(res=>{
-                    this.form=this.$util.getStorage(this.CACHE_KEY);
-
-                    this.$util.removeStorage(this.CACHE_KEY);
-                    this.currentTab=this.$util.getCache('MYHZ_PRODUCT_TAB')||'information';
-                }).catch(err=>{
+            setTimeout(()=>{
+                if(this.$util.getStorage(this.CACHE_KEY)){
+                    if(this.$util.getCache('NOTCONFIRM')!='1'){
+                        this.$confirm('检测到有未保存数据,你可以选择','提示',{
+                            confirmButtonText:'继续编辑',
+                            cancelButtonText:'重新开始',
+                            type:'warning'
+                        }).then(res=>{
+                            this.form=this.$util.getStorage(this.CACHE_KEY);
+                            this.$util.removeStorage(this.CACHE_KEY);
+                            this.currentTab='information';
+                        }).catch(err=>{
+                            this.resetForm();
+                            this.$util.removeStorage(this.CACHE_KEY);
+                            this.currentTab='information';
+                        });
+                    }else{
+                        this.form=this.$util.getStorage(this.CACHE_KEY);
+                        this.$util.removeStorage(this.CACHE_KEY);
+                        this.$util.removeCache('NOTCONFIRM');
+                        this.currentTab='information';
+                    }
+                }else{
                     this.resetForm();
-                    this.$util.removeStorage(this.CACHE_KEY);
-                    this.currentTab=this.$util.getCache('MYHZ_PRODUCT_TAB')||'information';
-                });
-            }else{
-                this.resetForm();
-                this.currentTab=this.$util.getCache('MYHZ_PRODUCT_TAB')||'information';
-            }
+                    this.currentTab='information';
+                }
+            },0);
         }
       },
       resetForm(){
@@ -207,6 +215,7 @@ export default {
   },
   activated(){
     this.CACHE_KEY = this.$route.params.id == -1 ? "MYHZ_SPXX_ADD" : "MYHZ_SPXX_EDIT";
+    console.log(this.CACHE_KEY)
     this.resetPage();
     this.$util.windowUnload(()=>{
         if(this.form.id == -1 && this.form.name){

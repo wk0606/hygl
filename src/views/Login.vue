@@ -57,17 +57,22 @@ export default {
         xhr.onreadystatechange=function(){
             if(xhr.readyState==4&&xhr.status==200){
                 var obj=JSON.parse(xhr.response);
-                _this.$util.setCache('user',obj.VO);
-                //_this.$util.setCache('tokenid',obj.tokenid);
-                _this.$util.setTokenid(obj.tokenid);
-                _this.$util.setCache('serverurl',obj.url);
-                localStorage.setItem('safeyzm',obj.safeyzm);
-                _this.$http('/api/x6/getProvinceListWithCity.do').then(res=>{
-                    _this.$util.setCache('map',res.list);
-                });
-                _this.$util.requestAllCache(_this.$http,function(){
-                    _this.$router.push('/main');
-                })
+                console.log(obj)
+                if(obj.result=='error'){
+                    _this.$message(obj.message,'error');
+                }else{
+                    _this.$util.setCache('user',obj.VO);
+                    //_this.$util.setCache('tokenid',obj.tokenid);
+                    _this.$util.setTokenid(obj.tokenid);
+                    _this.$util.setCache('serverurl',obj.url);
+                    localStorage.setItem('safeyzm',obj.safeyzm);
+                    _this.$http('/api/x6/getProvinceListWithCity.do').then(res=>{
+                        _this.$util.setCache('map',res.list);
+                    });
+                    _this.$util.requestAllCache(_this.$http,function(){
+                        _this.$router.push('/main');
+                    })
+                }
             }else{
                 //console.log()
             }

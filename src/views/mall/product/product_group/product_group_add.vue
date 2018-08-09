@@ -9,19 +9,19 @@
         </div>
         <div class="g-add-main">
           <div>
-            <img src="../../../../assets/help2.png" alt="">
+            <img src="../../../../assets/mob3.jpg" alt="">
             <div class="g-footer">￥ 999.00</div>
           </div>
           <div>
-            <img src="../../../../assets/help2.png" alt="">
+            <img src="../../../../assets/mob3.jpg" alt="">
             <div class="g-footer">￥ 999.00</div>
           </div>
           <div>
-            <img src="../../../../assets/help2.png" alt="">
+            <img src="../../../../assets/mob3.jpg" alt="">
             <div class="g-footer">￥ 999.00</div>
           </div>
           <div>
-            <img src="../../../../assets/help2.png" alt="">
+            <img src="../../../../assets/mob3.jpg" alt="">
             <div class="g-footer">￥ 999.00</div>
           </div>
         </div>
@@ -29,7 +29,7 @@
       <div :style="{width:width+'px'}" class="g-add-right">
         <div :style="{top:scrollTop+'px'}">
           <span><i style="color:red;">*</i>分组名称 ：</span>
-          <el-input size="mini" v-model="name" style="width:150px;"></el-input>
+          <el-input size="mini" v-model="name" style="width:150px;" :disabled="id==1"></el-input>
         </div>
       </div>
     </div>
@@ -75,6 +75,9 @@ export default {
           this.load=false;
           this.name='';
           this.$util.requestAllCache(this.$http);
+          if(this.$util.getCache('NEEDBACK')==1)
+            this.$router.go (-1);
+          this.$util.removeCache('NEEDBACK');
         },err=>{
           this.load=false;
         });
@@ -82,6 +85,8 @@ export default {
     },
     cancel(){
       this.$router.go (-1);
+      if(this.$util.getCache('NEEDBACK')==1)
+        this.$util.removeCache('NEEDBACK');
     },
     getDetail(){
       this.$http('/api/x6/getSpfzById.do',{

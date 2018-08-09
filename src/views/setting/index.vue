@@ -16,6 +16,7 @@
 				stripe
 				:data="List"
 				height="100%"
+				:highlight-current-row="true"
 			>
 				<el-table-column
 					v-for="item in colModel"

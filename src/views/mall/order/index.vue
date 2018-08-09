@@ -6,11 +6,14 @@
         v-for="item in tabs"
         :key="item.component"
         :class="{'set-tab-select':item.component==currentTab}"
-        @click="currentTab=item.component"
+        @click="changeTab(item.component)"
       >{{item.label}}</div>
     </div>
     <div class="order-body">
-      <component :is="currentTab"></component>
+      <component :is="currentTab" :page="page" class="order-body-component"></component>
+      <div>
+        <pagination :small="true" :data="page"></pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -18,6 +21,7 @@
 import qbdd from './order_qbdd/index'
 import wdfh from './order_wdfh/index'
 import ddzt from './order_ddzt/index'
+import pagination from '../../../components/pagination/index'
 export default {
   data(){
     return {
@@ -26,7 +30,19 @@ export default {
         {label:'网店发货',component:'wdfh'},
         {label:'到店自提',component:'ddzt'}
       ],
-      currentTab:'qbdd'
+      currentTab:'qbdd',
+      page:{
+          no:1,
+          size:20,
+          rows:0
+      }
+    }
+  },
+  methods:{
+    changeTab(tab){
+      this.page.no=1;
+      this.page.rows=0;
+      this.currentTab=tab;
     }
   },
   mounted(){
@@ -35,7 +51,8 @@ export default {
   components:{
     qbdd,
     wdfh,
-    ddzt
+    ddzt,
+    pagination
   }
 }
 </script>
@@ -43,6 +60,6 @@ export default {
     .order-body{
         height: ~"calc(100% - 47px)";
         overflow-y: auto;
-        >div{height: 100%;}
+        .order-body-component{height: auto;}
     }
 </style>

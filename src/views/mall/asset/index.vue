@@ -1,14 +1,5 @@
 <template>
   <div>
-    <div class="set-tab">
-      <div
-        class="set-tab-item"
-        v-for="item in tabs"
-        :key="item.component"
-        :class="{'set-tab-select':item.component==currentTab}"
-        @click="currentTab=item.component"
-      >{{item.label}}</div>
-    </div>
     <div class="asset-body">
       <component :is="currentTab"></component>
     </div>
@@ -16,7 +7,7 @@
 </template>
 <script>
 import wdjy from './asset_wdjy'
-import jymx from './asset_jymx'
+//import jymx from './asset_jymx'
 export default {
   data(){
     return {
@@ -44,14 +35,13 @@ export default {
       this.date.push(this.$util.getCurrentDate());
   },
   components:{
-      wdjy,
-      jymx
+      wdjy
   }
 }
 </script>
 <style lang="less" scoped>
   .asset-body{
-    height: ~"calc(100% - 47px)";
+    height: 100%;
     overflow-y: auto;
     >div{height: 100%;}
   }
