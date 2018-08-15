@@ -10,7 +10,7 @@
       >{{item.label}}</div>
     </div>
     <div class="order-body">
-      <component :is="currentTab" :page="page" class="order-body-component"></component>
+      <component :is="currentTab" :current-tab="currentTab" :page="page" class="order-body-component"></component>
       <div>
         <pagination :small="true" :data="page"></pagination>
       </div>
@@ -30,7 +30,7 @@ export default {
         {label:'网店发货',component:'wdfh'},
         {label:'到店自提',component:'ddzt'}
       ],
-      currentTab:'qbdd',
+      currentTab:'wdfh',
       page:{
           no:1,
           size:20,

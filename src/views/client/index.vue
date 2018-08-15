@@ -13,7 +13,7 @@
 		<div class="cnt-top" ref="top">
 			<div class="top-left">
 				<span>关键字：</span>
-				<el-input v-model="searchkey" auto-complete="off" placeholder="请输入姓名 / 号码关键字进行检索" style="width:260px;" @input="getList" size="small">
+				<el-input v-model="searchkey" auto-complete="off" placeholder="请输入姓名 / 号码关键字进行检索" style="width:260px;" @input="searchHy" size="small">
 				</el-input>
 				<div class="top-filter" @click.stop="showFilter = true">
 					<img src="../../assets/icon_sort.png" width="22" height="22" @click.stop="showFilter = true" /><i class="text" @click.stop="showFilter = true">排序</i>
@@ -37,6 +37,7 @@
 							</div>
 						</div>
 				</div>
+				<el-button type="primary" size="small" style="margin-left:20px" @click.stop="openHighSearch">高级检索</el-button>
 				<el-button type="warning" size="small" style="margin-left:20px" @click.stop="sendMessage">发短信</el-button>
 			</div>
 			<div class="top-right">
@@ -53,8 +54,6 @@
 				style="width:100%"
 				ref="multipleTable"
 				@selection-change="selectdg"
-				@select-all="selectAll"
-				@select="selectOne"
 			>
 				<el-table-column type="selection" width="55" align="center"></el-table-column>
 				<el-table-column
@@ -110,6 +109,7 @@
 			></el-pagination>
 		</div>
 		<component :is="dialog.name" v-if="dialog.show" :views="dialog" @callback="getList" @send-success="clearRow"></component>
+		<high-search v-if="paramsDialog.show" :views="paramsDialog" @selected="searchByParams"></high-search>
 	</div>
 </template>
 <script>
@@ -120,6 +120,7 @@
 	import sendSms from '../main/sendMessage'
 	import editMember from './editMember'
 	import detailMember from './detailMember'
+	import highSearch from './highSearch'
 	export default {
 		name:'hy_client',
 		data() {
@@ -179,7 +180,7 @@
 					sels: [], //列表选中列
 					isshow: true,
 					pagination:{
-						size:20,
+						size:21,
 						page:1,
 						rows:0
 					},
@@ -207,8 +208,11 @@
 					},
 					dialog:{
 						name:'',
-						show:false
+						show:false,
+						 needConfirm:false,
+						 sl:0
 					},
+					paramsDialog:{show:false},
 					currentRow:'',//记录当前操作的行
 					hasSelectAll:false,//是否选择全部
 					noSelectedMaps:[],//不选择行的id集合
@@ -217,26 +221,6 @@
 				}
 			},
 			methods: {
-				selectAll(rows){
-					this.hasSelectAll=rows.length?true:false;
-					this.noSelectedMaps=[];
-				},
-				selectOne(val,row){
-					var isAdd=false;
-					for(let obj of val){
-						if(obj.id==row.id){
-							isAdd=true;
-							break;
-						}
-					}
-					if(isAdd){
-						this.noSelectedMaps=this.noSelectedMaps.filter(item=>{
-							return item!=row.id;
-						});
-					}else{
-						this.noSelectedMaps.push(row.id);
-					}
-				},
 				clearRow(){
 					this.$refs.multipleTable.clearSelection();
 				},
@@ -284,7 +268,18 @@
 						item.orderType = item.orderType == 1 || item.orderType == -1 ? 0 : -1
 					}
 				},
-				getList() {
+				openHighSearch(){
+					this.paramsDialog.show=true;
+				},
+				searchByParams(params){
+					console.log(params)
+					this.getList(params);
+				},
+				searchHy(){
+					this.pagination.page=1;
+					this.getList();
+				},
+				getList(params) {
 					this.getTableSort()
 					this.isshow = true;
 					this.sendShow.isall = false;//??
@@ -296,17 +291,11 @@
 						value:this.searchkey,
 						sortStr:this.sortStr
 					}
+					if(params)
+						para=Object.assign({},para,params);
 					this.$http('/api/x6/xfzxxReport.do', para).then((res) => {
 						this.pagination.rows = res.totalRows;
 						this.List = res.rows;
-						setTimeout(() => {
-							if(this.hasSelectAll){
-								for(let row of this.List){
-									if(this.noSelectedMaps.indexOf(row.id)==-1)
-										this.$refs.multipleTable.toggleRowSelection(row);
-								}
-							}
-						}, 10);
 					});
 				},
 				handleCurrentChange(page) {
@@ -404,6 +393,7 @@
 					}
 				},
 				selectdg(row) {
+					console.log(row)
 					this.recordSender=row;
 				},
 				//短信购买
@@ -421,6 +411,7 @@
 					this.dialog.name='sendSms';
 					this.dialog.show=true;
 					this.dialog.datas=this.recordSender;
+					this.dialog.sl=this.pagination.rows;
 				},
 				addSuccess(){
 					this.xfzxxReport();
@@ -461,7 +452,8 @@
 				redbag,
 				sendSms,
 				editMember,
-				detailMember
+				detailMember,
+				highSearch
 			},
 			activated() {
                 this.getList();

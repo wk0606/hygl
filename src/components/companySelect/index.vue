@@ -11,6 +11,7 @@
         :change-on-select="changeOnSelect"
         v-model="selected"
         @change="handleChange"
+        ref="cascader"
     >
       <i slot="suffix" class="el-input__icon el-icon-date"></i>
     </el-cascader>
@@ -23,7 +24,8 @@ export default {
   props:{
     value:{default:''},
     changeOnSelect:{default:true},
-    width:{default:'auto'}
+    width:{default:'auto'},
+    text:{default:''}
   },
   data(){
       return {
@@ -37,6 +39,11 @@ export default {
             data:null
           }
       }
+  },
+  watch:{
+    text(nv){
+      this.setSelectedName(nv);
+    }
   },
   methods:{
     iconClick(){
@@ -59,6 +66,9 @@ export default {
       this.findParents(value,this.List,temp);
       this.selected=temp.reverse().slice(1);
       this.selected.push(value);
+    },
+    setSelectedName(name){
+      this.$refs.cascader.inputValue=name;
     },
     createOptions(){
       this.List=this.$util.getMyGsList();

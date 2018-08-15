@@ -43,7 +43,7 @@
                 </el-table-column>
                 <el-table-column
                     label="名称"
-                    prop="value"
+                    prop="qspmc"
                     header-align="center"
                 > 
                     <template slot-scope="scope">
@@ -129,10 +129,13 @@ export default {
             pp:this.currentRow.pp,
             spmc:this.currentRow.lx == "机型" ? this.currentRow.id : '',
             spdm:this.currentRow.lx == '全称' ? this.currentRow.id : '',
-            qspmc:this.currentRow.value
+            qspmc:this.currentRow.value,
+            isch:this.currentRow.isch
         };
-        if(this.type!='all')
+        if(this.type!='all'){
           temp.kskc=this.currentRow.kskc;
+          temp.isch=this.currentRow.isch;
+        }
         this.$emit("selected", temp);
         this.views.show = false;
       }

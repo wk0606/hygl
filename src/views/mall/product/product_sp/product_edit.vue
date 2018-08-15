@@ -30,221 +30,230 @@
   </div>
 </template>
 <script>
-import breadNav from '../../../../components/breadNav/index'
-import information from './product_edit_information'
-import editDetails from './product_details'
+import breadNav from "../../../../components/breadNav/index";
+import information from "./product_edit_information";
+import editDetails from "./product_details";
 export default {
-  data(){
-      return {
-          navs:[
-              {label:'网店商品',path:'/main/mallchildren/product_sp'},
-              {label:'编辑商品'}
-          ],
-          tabs:[
-              {
-                label:'1. 编辑基本信息',
-                value:'information'
-              },
-              {
-                label:'2. 编辑商品详情',
-                value:'editDetails'
-              }
-          ],
-          currentTab:'',
-          height:0,
-          //这是表单数据
-          form: {
-            id: -1,
-            name: "",
-            spdj: "",
-            predj: 0,
-            spfz: "",
-            kcyjsl: 0,
-            sptp: [],
-            ggspgx: [],
-            spList: [], //表格商品列表
-            psfs: 1,
-            yfsz: 0,
-            tyyfje: "",
-            yfmbid: "",
-            xgsl: 0,
-            spjj: "",
-            spmd: "",
-            xqtp: [],
-            yxbz:0
-          },
-          CACHE_KEY:''
-      }
+  data() {
+    return {
+      navs: [
+        { label: "网店商品", path: "/main/mallchildren/product_sp" },
+        { label: "编辑商品" }
+      ],
+      tabs: [
+        {
+          label: "1. 编辑基本信息",
+          value: "information"
+        },
+        {
+          label: "2. 编辑商品详情",
+          value: "editDetails"
+        }
+      ],
+      currentTab: "",
+      height: 0,
+      //这是表单数据
+      form: {
+        id: -1,
+        name: "",
+        spdj: "",
+        predj: 0,
+        spfz: "",
+        kcyjsl: 0,
+        sptp: [],
+        ggspgx: [],
+        spList: [], //表格商品列表
+        psfs: 1,
+        yfsz: 0,
+        tyyfje: "",
+        yfmbid: "",
+        xgsl: 0,
+        spjj: "",
+        spmd: "",
+        xqtp: [],
+        yxbz: 0
+      },
+      CACHE_KEY: ""
+    };
   },
-  computed:{
-    disabled(){
-        return this.$route.params.id==-1?true:false;
+  computed: {
+    disabled() {
+      return this.$route.params.id == -1 ? true : false;
     },
-    upShow(){
-        return this.$route.params.yxbz!=2&&this.$route.params.yxbz==0?true:false;
+    upShow() {
+      return this.$route.params.yxbz != 2 && this.$route.params.yxbz == 0
+        ? true
+        : false;
     },
-    downShow(){
-        return this.$route.params.yxbz!=2&&this.$route.params.yxbz==1?true:false;
+    downShow() {
+      return this.$route.params.yxbz != 2 && this.$route.params.yxbz == 1
+        ? true
+        : false;
     }
   },
-  watch:{
-    currentTab(nv){
-        this.$util.setCache('MYHZ_PRODUCT_TAB',nv);
-    }  
+  watch: {
+    currentTab(nv) {
+      this.$util.setCache("MYHZ_PRODUCT_TAB", nv);
+    }
   },
-  methods:{
-      nextStep(){
-          this.$refs.component.save();
-      },
-      openNext(){
-          this.currentTab='editDetails';
-      },
-      productUp(){
-          this.$refs.component.productUp();
-      },
-      productDown(){
-          this.$refs.component.productDown();
-      },
-      productSave(){
-          this.$refs.component.save();
-      },
-      //这里设置返回的数据格式化成form格式
-      formattingForm(obj) {
-        var data = JSON.parse(obj.data);
-        var ggspgx = JSON.parse(obj.ggspgx);
-        var wl = JSON.parse(obj.wl);
-        this.form.name = obj.name;
-        this.form.spdj = obj.spdj;
-        this.form.predj = obj.predj;
-        this.form.spfz = obj.spfz;
-        this.form.kcyjsl = data.kcyjsl;
-        this.form.sptp = data.sptp;
-        this.form.ggspgx = ggspgx;
-        this.form.spList = [];
-        this.form.psfs = wl.psfs;
-        this.form.yfsz = wl.yfsz;
-        this.form.tyyfje = wl.tyyfje;
-        this.form.yfmbid = wl.yfmbid;
-        this.form.xgsl = data.xgsl;
-        this.form.spjj = data.spjj;
-        this.form.spmd = data.spmd;
-        this.form.xqtp = data.xqtp;
-        this.form.yxbz = obj.yxbz;
-        for (let obj of ggspgx) {
-          var spgg = obj.spgg;
-          var temp = {};
-          for (let gg of spgg) {
-            temp[gg.name] = gg.value;
-          }
-          temp.dyjg = obj.dyjg;
-          temp.kskc = obj.kskc;
-          temp.spdm = obj.spdm;
-          temp.qspmc = obj.qspmc;
-          this.form.spList.push(temp);
+  methods: {
+    nextStep() {
+      this.$refs.component.save();
+    },
+    openNext() {
+      this.currentTab = "editDetails";
+    },
+    productUp() {
+      this.$refs.component.productUp();
+    },
+    productDown() {
+      this.$refs.component.productDown();
+    },
+    productSave() {
+      this.$refs.component.save();
+    },
+    //这里设置返回的数据格式化成form格式
+    formattingForm(obj) {
+      var data = JSON.parse(obj.data);
+      var ggspgx = JSON.parse(obj.ggspgx);
+      var wl = JSON.parse(obj.wl);
+      this.form.name = obj.name;
+      this.form.spdj = obj.spdj;
+      this.form.predj = obj.predj;
+      this.form.spfz = obj.spfz;
+      this.form.kcyjsl = data.kcyjsl;
+      this.form.sptp = data.sptp;
+      this.form.ggspgx = ggspgx;
+      this.form.spList = [];
+      this.form.psfs = wl.psfs;
+      this.form.yfsz = wl.yfsz;
+      this.form.tyyfje = wl.tyyfje;
+      this.form.yfmbid = wl.yfmbid;
+      this.form.xgsl = data.xgsl;
+      this.form.spjj = data.spjj;
+      this.form.spmd = data.spmd;
+      this.form.xqtp = data.xqtp;
+      this.form.yxbz = obj.yxbz;
+      for (let obj of ggspgx) {
+        var spgg = obj.spgg;
+        var temp = {};
+        for (let gg of spgg) {
+          temp[gg.name] = gg.value;
         }
-      },
-      //这里进行一些初始化操作
-      resetPage(){
-        this.height=this.$refs.container.offsetHeight-120;
-        if (this.$route.params.id != -1) {
-            this.form.id = this.$route.params.id;
-            //先判断是否有缓存
-            if(this.$util.getCache(this.CACHE_KEY)){
-                this.form=this.$util.getCache(this.CACHE_KEY);
-                this.currentTab=this.$util.getCache('MYHZ_PRODUCT_TAB')||'information';
-            }else{
-                this.$http("/api/x6/getHySetSpxxByid.do", {
-                    id: this.form.id
-                }).then(res => {
-                    this.formattingForm(res.VO);
-                    this.currentTab=this.$util.getCache('MYHZ_PRODUCT_TAB')||'information';
+        temp.dyjg = obj.dyjg;
+        temp.kskc = obj.kskc;
+        temp.spdm = obj.spdm;
+        temp.qspmc = obj.qspmc;
+        temp.isch = obj.isch;
+        this.form.spList.push(temp);
+      }
+    },
+    //这里进行一些初始化操作
+    resetPage() {
+      this.height = this.$refs.container.offsetHeight - 120;
+      if (this.$route.params.id != -1) {
+        this.form.id = this.$route.params.id;
+        //先判断是否有缓存
+        if (this.$util.getCache(this.CACHE_KEY)) {
+          this.form = this.$util.getCache(this.CACHE_KEY);
+          this.currentTab =
+            this.$util.getCache("MYHZ_PRODUCT_TAB") || "information";
+        } else {
+          this.$http("/api/x6/getHySetSpxxByid.do", {
+            id: this.form.id
+          }).then(res => {
+            this.formattingForm(res.VO);
+            this.currentTab =
+              this.$util.getCache("MYHZ_PRODUCT_TAB") || "information";
+          });
+        }
+      } else {
+        setTimeout(() => {
+          if (this.$util.getStorage(this.CACHE_KEY)) {
+            if (this.$util.getCache("NOTCONFIRM") != "1") {
+              this.$confirm("检测到有未保存数据,你可以选择", "提示", {
+                confirmButtonText: "继续编辑",
+                cancelButtonText: "重新开始",
+                type: "warning"
+              })
+                .then(res => {
+                  this.form = this.$util.getStorage(this.CACHE_KEY);
+                  this.$util.removeStorage(this.CACHE_KEY);
+                  this.currentTab = "information";
+                })
+                .catch(err => {
+                  this.resetForm();
+                  this.$util.removeStorage(this.CACHE_KEY);
+                  this.currentTab = "information";
                 });
+            } else {
+              this.form = this.$util.getStorage(this.CACHE_KEY);
+              this.$util.removeStorage(this.CACHE_KEY);
+              this.$util.removeCache("NOTCONFIRM");
+              this.currentTab = "information";
             }
-        }else{
-            setTimeout(()=>{
-                if(this.$util.getStorage(this.CACHE_KEY)){
-                    if(this.$util.getCache('NOTCONFIRM')!='1'){
-                        this.$confirm('检测到有未保存数据,你可以选择','提示',{
-                            confirmButtonText:'继续编辑',
-                            cancelButtonText:'重新开始',
-                            type:'warning'
-                        }).then(res=>{
-                            this.form=this.$util.getStorage(this.CACHE_KEY);
-                            this.$util.removeStorage(this.CACHE_KEY);
-                            this.currentTab='information';
-                        }).catch(err=>{
-                            this.resetForm();
-                            this.$util.removeStorage(this.CACHE_KEY);
-                            this.currentTab='information';
-                        });
-                    }else{
-                        this.form=this.$util.getStorage(this.CACHE_KEY);
-                        this.$util.removeStorage(this.CACHE_KEY);
-                        this.$util.removeCache('NOTCONFIRM');
-                        this.currentTab='information';
-                    }
-                }else{
-                    this.resetForm();
-                    this.currentTab='information';
-                }
-            },0);
-        }
-      },
-      resetForm(){
-          this.form={
-            id: -1,
-            name: "",
-            spdj: "",
-            predj: 0,
-            spfz: "",
-            kcyjsl: 0,
-            sptp: [],
-            ggspgx: [],
-            spList: [], //表格商品列表
-            psfs: 1,
-            yfsz: 0,
-            tyyfje: "",
-            yfmbid: "",
-            xgsl: 0,
-            spjj: "",
-            spmd: "",
-            xqtp: [],
-            yxbz:0
-          };
-      }
-  },
-  activated(){
-    this.CACHE_KEY = this.$route.params.id == -1 ? "MYHZ_SPXX_ADD" : "MYHZ_SPXX_EDIT";
-    console.log(this.CACHE_KEY)
-    this.resetPage();
-    this.$util.windowUnload(()=>{
-        if(this.form.id == -1 && this.form.name){
-            this.$refs.component.createGgxx(this.form);
-            this.$util.setStorage(this.CACHE_KEY,this.form);
-        }
-    },'product_edit');
-  },
-  deactivated(){
-      if(this.form.id == -1){
-          //保存到本地
-          if(this.form.name){
-              this.$refs.component.createGgxx(this.form);
-              this.$util.setStorage(this.CACHE_KEY,this.form);
+          } else {
+            this.resetForm();
+            this.currentTab = "information";
           }
-      }else{
-          //保存到本地
-          if(this.currentTab=='information')
-            this.$refs.component.createGgxx(this.form);
-          this.$util.setCache(this.CACHE_KEY, this.form);
+        }, 0);
       }
-      this.currentTab='';
+    },
+    resetForm() {
+      this.form = {
+        id: -1,
+        name: "",
+        spdj: "",
+        predj: 0,
+        spfz: "",
+        kcyjsl: 0,
+        sptp: [],
+        ggspgx: [],
+        spList: [], //表格商品列表
+        psfs: 1,
+        yfsz: 0,
+        tyyfje: "",
+        yfmbid: "",
+        xgsl: 0,
+        spjj: "",
+        spmd: "",
+        xqtp: [],
+        yxbz: 0
+      };
+    }
   },
-  components:{
-      breadNav,
-      information,
-      editDetails
+  activated() {
+    this.CACHE_KEY =
+      this.$route.params.id == -1 ? "MYHZ_SPXX_ADD" : "MYHZ_SPXX_EDIT";
+    this.resetPage();
+    this.$util.windowUnload(() => {
+      if (this.form.id == -1 && this.form.name) {
+        this.$refs.component.createGgxx(this.form);
+        this.$util.setStorage(this.CACHE_KEY, this.form);
+      }
+    }, "product_edit");
+  },
+  deactivated() {
+    if (this.form.id == -1) {
+      //保存到本地
+      if (this.form.name) {
+        this.$refs.component.createGgxx(this.form);
+        this.$util.setStorage(this.CACHE_KEY, this.form);
+      }
+    } else {
+      //保存到本地
+      if (this.currentTab == "information")
+        this.$refs.component.createGgxx(this.form);
+      this.$util.setCache(this.CACHE_KEY, this.form);
+    }
+    this.currentTab = "";
+  },
+  components: {
+    breadNav,
+    information,
+    editDetails
   }
-}
+};
 </script>
 <style lang="less" scoped>
     @gray:#f8f8f8;

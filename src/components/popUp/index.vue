@@ -19,7 +19,7 @@
                 <div class="p-footer">
                     <slot name="footer"></slot>
                     <el-button type="primary" size="mini" v-if="confirm" @click="confirm" :loading="loading" :disabled="disabled">{{confirmText}}</el-button>
-                    <el-button size="mini" @click="close">{{cancelText}}</el-button>
+                    <el-button size="mini" v-if="!hideCancel" @click="close">{{cancelText}}</el-button>
                 </div>
             </div>
         </div>
@@ -29,10 +29,13 @@
 export default {
   props:{
       title:{default:'提示'},
-      titleSub:{default:''},
+      titleSub:{default:''},//副标题
       width:{default:500},
-      confirm:{default:null},
-      cancel:{default:null},
+      confirm:{default:null},//确认回调
+      cancel:{default:null},//关闭回调
+      hideCancel:{
+          default:false//是否隐藏关闭按钮
+      },
       loading:{default:false},
       disabled:{default:false},
       cancelText:{
@@ -63,29 +66,26 @@ export default {
   directives: {
       drag: {
         inserted(el, bind){
-          el.style.left = (document.body.offsetWidth - el.offsetWidth) / 2 + 'px';
-          el.style.top = (document.body.offsetHeight - el.offsetHeight) / 2 + 'px';
           let target = el.children[0];
-          let sx, sy;
+          let sx, sy,lx,ly;
           let canmove = false;
           target.addEventListener('mousedown', start);
           function start () {
             sx = event.clientX;
             sy = event.clientY;
+            lx=el.getBoundingClientRect().left;
+            ly=el.getBoundingClientRect().top;
             target.addEventListener('mousemove', move);
             target.addEventListener('mouseup', end);
             target.addEventListener('mouseout', outside);
             target.addEventListener('blur', blur);
             el.style.cursor = 'move';
             canmove = true;
-
           };
           function move () {
             if (canmove) {
-              el.style.left = parseInt(el.style.left) + (event.clientX - sx)+'px';
-              el.style.top = parseInt(el.style.top) + (event.clientY - sy)+'px';
-              sx = event.clientX;
-              sy = event.clientY;
+              el.style.left = lx + (event.clientX - sx)+'px';
+              el.style.top = ly + (event.clientY - sy)+'px';
             }
           };
           function outside(){
@@ -95,10 +95,6 @@ export default {
           function end () {
             canmove = false;
             el.style.cursor = 'default';
-            el.style.left = parseInt(el.style.left) + (event.clientX - sx) + 'px';
-            el.style.top = parseInt(el.style.top) + (event.clientY - sy) + 'px';
-            sx = event.clientX;
-            sy = event.clientY;
             target.removeEventListener('mousemove', move);
             target.removeEventListener('mouseup', end);
           };

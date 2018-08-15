@@ -3,8 +3,8 @@
       <div class="order-zt">
           <span>验证提货码</span>
           <div>
-              <div><input type="text" v-model="thm" placeholder="请输入提货码或使用扫描枪扫描"></div>
-              <div>核销</div>
+              <div><input type="text" v-model.trim="thm" placeholder="请输入提货码或使用扫描枪扫描"></div>
+              <div @click="getOrderDetails">核销</div>
           </div>
       </div>
       <div class="order-search">
@@ -126,10 +126,12 @@
               </div>
           </div>
       </div>
+      <order v-if="dialog.show" :views="dialog"></order>
   </div>
 </template>
 <script>
 import { search } from "../serachFilter.js"
+import order from '../order_wdfh/order_fh'
 export default {
   props:['page'],
   mixins: [search],
@@ -153,7 +155,12 @@ export default {
         { label: "已自提", value: 2 }
       ],
       ztdList:[],
-      thm:''
+      thm:'',
+      dialog:{
+        show:false,
+        lx:1,//0 快递 1 自提
+        data:null
+      }
     };
   },
   methods: {
@@ -170,6 +177,19 @@ export default {
         id:-1,
         name:'全部'
       });
+    },
+    //获取订单详情
+    getOrderDetails(){
+        if(!this.thm){
+            this.$message('请输入提货码','error');
+        }else{
+            this.$http('/api/x6/hyValidateThm.do',{
+                thm:this.thm
+            }).then(res=>{
+                this.dialog.show=true;
+                this.dialog.data=res.List[0];
+            });
+        }
     }
   },
   mounted() {
@@ -177,6 +197,9 @@ export default {
   },
   activated(){
     this.initSearchParams();
+  },
+  components:{
+      order
   }
 };
 </script>

@@ -3,6 +3,7 @@ import {excel} from '../../../func/excel'
 //import '../../../public/mock'
 
 export const search = {
+    props:['currentTab'],
     data() {
         return {
             params: {},
@@ -32,12 +33,14 @@ export const search = {
     methods: {
         //执行筛选
         search() {
+            console.log()
             this.load=true;
             var params=JSON.parse(JSON.stringify(this.params));
             params.zdrqs=params.xdsj[0]||'';
             params.zdrqz=params.xdsj[1]||'';
             params.pageSize=this.page.size;
             params.pageNo=this.page.no;
+            params.psfs=this.currentTab=='qbdd'?-1:this.currentTab=='wdfh'?0:1;
             delete params.xdsj;
             this.$http('/api/x6/getOrderListByCondition.do',params).then(res=>{
                 this.load=false;

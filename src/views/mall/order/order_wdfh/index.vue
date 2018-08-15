@@ -86,7 +86,7 @@
                   <span>下单时间 : {{row.zdrq}}</span>
               </div>
               <div>
-                  <b @click="openFh(row.id)">已发货</b>
+                  <b @click="openFh(row)">已发货</b>
                   <i>-</i>
                   <b @click="openDetails(row.id)">查看详情</b>
                   <i>-</i>
@@ -148,7 +148,8 @@ export default {
           ckList:[],
           dialog:{
               show:false,
-              lx:0,//0 无串号 1 有串号
+              lx:0,//0 快递 1 自提
+              data:null
           }
       }
   },
@@ -167,9 +168,10 @@ export default {
               name:'全部'
           });
       },
-      openFh(id){
+      openFh(row){
+          console.log(row)
           this.dialog.show=true;
-          this.dialog.lx=1;
+          this.dialog.data=row;
       }
   },
   mounted(){

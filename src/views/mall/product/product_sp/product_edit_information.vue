@@ -376,6 +376,7 @@ export default {
       this.details.spList[this.currentIndex].spdm = item.spdm;
       this.details.spList[this.currentIndex].qspmc = item.qspmc;
       this.details.spList[this.currentIndex].kskc=item.kskc;
+      this.details.spList[this.currentIndex].isch=item.isch;
     },
     //统一设置价格
     openPrompt(){
@@ -464,7 +465,7 @@ export default {
     //
     createGgxx(target){
       target.ggspgx = [];
-      var notNeedKeys = ["dyjg", "kskc", "qspmc", "spdm"];
+      var notNeedKeys = ["dyjg", "kskc", "qspmc", "spdm","isch"];
       for (let obj of target.spList) {
         var temp = [];
         var keys = Object.keys(obj).filter(item => {
@@ -481,7 +482,8 @@ export default {
           spdm: obj.spdm,
           qspmc: obj.qspmc,
           kskc: obj.kskc,
-          dyjg: obj.dyjg
+          dyjg: obj.dyjg,
+          isch:obj.isch
         });
       }
     },
@@ -523,6 +525,7 @@ export default {
         this.$set(obj, "qspmc", "");
         this.$set(obj, "dyjg", "");
         this.$set(obj, "kskc", 0);
+        this.$set(obj, "isch", 0);
       }
     },
     //转发规格二维数组为列表形式的一维数组
