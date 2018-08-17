@@ -4,7 +4,7 @@
           <div>
               <div>
                   <b>{{ssgsname}}</b>
-                  <div class="success">开业中</div>
+                  <div :class="currentStep?'error':'success'">{{currentStep?"待开业":"开业中"}}</div>
               </div>
               <img src="../../assets/hat.png" alt="" width="30" @click="config.show=!config.show;">
           </div>
@@ -17,11 +17,13 @@
                 <div>
                     <div class="mall-config-left">
                         <div 
-                            v-for="(item,index) in config.data"
-                            :key="index"
+                            v-for="(value,key,index) in config.data"
+                            :key="key"
                         >
-                            <span>{{`${index+1}.${item.label}`}}</span>
-                            <span class="success"><i :class="item.value?'el-icon-check':'el-icon-close'"></i>{{item.value?'已完成':'未完成'}}</span>
+                            <span>{{`${index+1}.${value.label}`}}</span>
+                            <span :class="{success:configDatas[key]}">
+                              <i :class="configDatas[key]?'el-icon-check':'el-icon-close'"></i>{{configDatas[key]?'已完成':'未完成'}}
+                            </span>
                         </div>
                     </div>
                     <div class="mall-config-right">
@@ -52,8 +54,8 @@
                         :key="item.key"
                     >
                         <p><span>{{item.label}}</span></p>
-                        <p><b class="m-price">{{item.value1}}</b></p>
-                        <p><span>昨日 : {{item.value2}}</span></p> 
+                        <p><b class="m-price">{{gkDatas[item.value1]}}</b></p>
+                        <p><span>昨日 : {{gkDatas[item.value2]}}</span></p> 
                     </td>
                 </tr>
             </table>
@@ -78,21 +80,23 @@
         <div class="mall-title">
             <b>重要提醒</b>
         </div>
-        <div
-            class="mall-tips-items"
-            v-for="(row,index) in tips"
-            :key="index"
-        >
-           <div>{{row.label}}</div> 
-           <div>
-               <div
-                 v-for="item in row.items"
-                 :key="item.label"
-               >
-                <span>{{item.label}} : </span>
-                <a>{{item.value}}</a>
-               </div>
-           </div>
+        <div class="mall-main">
+          <div
+              class="mall-tips-items"
+              v-for="(row,index) in tips"
+              :key="index"
+          >
+            <div>{{row.label}}</div> 
+            <div>
+                <div
+                  v-for="item in row.items"
+                  :key="item.label"
+                >
+                  <span>{{item.label}} : </span>
+                  <a>{{tipsDatas[item.key]||0}}</a>
+                </div>
+            </div>
+          </div>
         </div>
       </div>
       <!-- 常用功能 -->
@@ -127,40 +131,46 @@ export default {
             {
               label: "网店销售额(元)",
               key: "wdxse",
-              value1: 100,
-              value2: 21098.98
+              value1: 'wdxsjeNow',
+              value2: 'wdxsjeYellow'
             },
-            { label: "网店支付订单数", key: "wdzfdd", value1: 100, value2: 0 }
+            { label: "网店支付订单数", key: "wdzfdd", value1: 'zfddslNow', value2: 'zfddslYellow' }
           ]
         },
         {
           icon: require("../../assets/person.png"),
           infos: [
-            { label: "浏览客户数", key: "llkhs", value1: 0, value2: 0 },
-            { label: "支付客户数", key: "zfkhs", value1: 0, value2: 0 }
+            { label: "浏览客户数", key: "llkhs", value1: 'wdkhslNow', value2: 'wdkhslYellow' },
+            { label: "支付客户数", key: "zfkhs", value1: 'zfkhslNow', value2: 'zfkhslYellow' }
           ]
         }
       ],
-      //实施概况网点销售额
+      gkDatas:{},
+      tipsDatas:{},
+      //实施概况网点销售额--统计表数据
       xsje: {
         je: 0,
         zrje: 0,
-        jrzs: [12, 34, 67, 33],
-        zrzs: [23, 43, 66, 10],
-        xdata: [0, 6, 12, 18]
+        jrzs: [],
+        zrzs: [],
+        xdata: []
       },
       //提醒的项目
       tips: [
         {
           label: "订单相关",
-          items: [{ label: "待发货订单", value: 0 }]
+          items: [{ label: "待发货订单", key: 'dfhddsl' }]
+        },
+        {
+          label: "通知消息",
+          items: [{ label: "未读客户消息", key: 'wdxxsl' }]
         },
         {
           label: "商品相关",
           items: [
-            { label: "网点在售", value: 0 },
-            { label: "网点缺货", value: 0 },
-            { label: "库存预警", value: 0 }
+            { label: "网点在售", key: 'zsspsl' },
+            { label: "网点缺货", key: 'qhspsl' },
+            { label: "库存预警", key: 'kcyjspsl' }
           ]
         }
       ],
@@ -186,15 +196,63 @@ export default {
       //配置科目
       config: {
         show: true,
-        data: [
-          { label: "配置微信收款账户", status: 0 },
-          { label: "编辑收货方式", status: 0 },
-          { label: "发布网店商品", status: 0 }
-        ]
-      }
+        data: {
+          iswxgzhpz:{ label: "授权微信公众号支付", status: 0 },
+          iswxzhpz:{ label: "配置微信收款账户", status: 0 },
+          isfbspxx:{ label: "发布网店商品", status: 0 }
+        }
+      },
+      currentStep:'iswxgzhpz',
+      configDatas:{}
     };
   },
   methods: {
+    //获取帮助
+    getHelpDetails(){
+      this.$http('/api/x6/getWdkyHelpInfo.do').then(res=>{
+        this.configDatas=res.VO;
+        if(!res.VO.iswxgzhpz)
+          this.currentStep='iswxgzhpz';
+        else if(!res.VO.iswxzhpz)
+          this.currentStep='iswxzhpz';
+        else if(!res.VO.isfbspxx)
+          this.currentStep='isfbspxx';
+        else
+          this.currentStep='';
+      });
+    },
+    //获取实施概况
+    getGkDetails(){
+      this.$http('/api/x6/getWdSsgk.do').then(res=>{
+        this.gkDatas=res.VO.data;
+        this.xsje.je=res.VO.data.wdxsjeNow;
+        this.xsje.zrje=res.VO.data.wdxsjeYellow;
+        for(let obj of res.VO.listNow){
+          this.xsje.jrzs.push(obj.wdxsje);
+          this.xsje.xdata.push(obj.hour);
+        }
+        for(let obj of res.VO.listYellow){
+          this.xsje.zrzs.push(obj.wdxsje);
+        }
+        var temp = [];
+        temp.push({
+          type: "line",
+          smooth: true,
+          data: this.xsje.jrzs
+        });
+        temp.push({
+          type: "line",
+          data: this.xsje.zrzs
+        });
+        this.drawCharts(this.xsje.xdata, temp);
+      });
+    },
+    //获取提醒数量
+    getTipsNumber(){
+      this.$http('/api/x6/getZyNotices.do').then(res=>{
+        this.tipsDatas=res.VO;
+      });
+    },
     drawCharts(xdata, ydata) {
       var chart = echarts.init(this.$refs.charts);
       var option = {
@@ -237,17 +295,9 @@ export default {
   },
   mounted() {
     this.ssgsname = this.$util.getCache("user").ssgsname;
-    var temp = [];
-    temp.push({
-      type: "line",
-      smooth: true,
-      data: this.xsje.jrzs
-    });
-    temp.push({
-      type: "line",
-      data: this.xsje.zrzs
-    });
-    this.drawCharts(this.xsje.xdata, temp);
+    this.getHelpDetails();
+    this.getGkDetails();
+    this.getTipsNumber();
   }
 };
 </script>
