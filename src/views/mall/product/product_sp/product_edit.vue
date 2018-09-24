@@ -1,8 +1,8 @@
 <template>
   <!-- 既是编辑也是新增 😶 -->
   <div ref="container">
-    <bread-nav :data="navs"></bread-nav>
-    <div class="p-edit-tab">
+    <bread-nav :data="navs" v-if="needBreadNav!==false"></bread-nav>
+    <div class="p-edit-tab" ref="tab">
         <div
             v-for="item in tabs"
             :key="item.value"
@@ -10,22 +10,18 @@
         >{{item.label}}</div>
     </div>
     <component
+        class="component"
         :is="currentTab"
-        :height="height"
         :details="form"
-        v-if="height"
         ref="component"
-        @next-step="openNext"
         @clear-tab="currentTab=''"
     ></component>
-    <div class="p-tab-submit">
-        <div v-if="currentTab=='information'"><el-button type="primary" size="mini" @click="nextStep">下一步</el-button></div>
-        <div v-else>
-            <el-button size="mini" @click="currentTab='information'">上一步</el-button>
-            <el-button type="primary" size="mini" @click="productUp" v-if="upShow">上架</el-button>
-            <el-button size="mini" @click="productDown" v-if="downShow">下架</el-button>
-            <el-button type="primary" size="mini" @click="productSave" v-if="!disabled">保存</el-button>
-        </div>
+    <div class="form-save-btn form-save-border" :style="{width:footerWidth+'px'}">
+        <el-button v-if="footer.indexOf('prev')>-1" size="mini" @click="currentTab='information'">上一步</el-button>
+        <el-button v-if="footer.indexOf('next')>-1" type="primary" size="mini" @click="nextStep">下一步</el-button>
+        <el-button v-if="footer.indexOf('up')>-1" type="primary" size="mini" @click="productUp">上架</el-button>
+        <el-button v-if="footer.indexOf('down')>-1" size="mini" @click="productDown">下架</el-button>
+        <el-button v-if="footer.indexOf('save')>-1" type="primary" size="mini" @click="productSave">保存</el-button>
     </div>
   </div>
 </template>
@@ -34,10 +30,20 @@ import breadNav from "../../../../components/breadNav/index";
 import information from "./product_edit_information";
 import editDetails from "./product_details";
 export default {
+  props:{
+    id:{default:-1},
+    yxbz:{default:0},
+    layout:{//底部按钮 上一步-'prev' 上架-'up' 下架-’down‘ 下一步-’next‘ 下架-’down‘ 保存-’save‘
+      default:'next'
+    },
+    needBreadNav:{
+      default:false//是否需要顶部面包屑导航
+    }
+  },
   data() {
     return {
       navs: [
-        { label: "网店商品", path: "/main/mallchildren/product_sp" },
+        { label: "商品列表", click: this.backList },
         { label: "编辑商品" }
       ],
       tabs: [
@@ -51,7 +57,7 @@ export default {
         }
       ],
       currentTab: "",
-      height: 0,
+      footer:'',
       //这是表单数据
       form: {
         id: -1,
@@ -73,35 +79,18 @@ export default {
         xqtp: [],
         yxbz: 0
       },
-      CACHE_KEY: ""
+      CACHE_KEY: "",
+      footerWidth:0
     };
   },
-  computed: {
-    disabled() {
-      return this.$route.params.id == -1 ? true : false;
-    },
-    upShow() {
-      return this.$route.params.yxbz != 2 && this.$route.params.yxbz == 0
-        ? true
-        : false;
-    },
-    downShow() {
-      return this.$route.params.yxbz != 2 && this.$route.params.yxbz == 1
-        ? true
-        : false;
-    }
-  },
-  watch: {
-    currentTab(nv) {
-      this.$util.setCache("MYHZ_PRODUCT_TAB", nv);
-    }
-  },
   methods: {
+    //返回商品列表
+    backList(){
+      this.$parent.editShow=false;
+      this.$parent.refreshList();
+    },
     nextStep() {
       this.$refs.component.save();
-    },
-    openNext() {
-      this.currentTab = "editDetails";
     },
     productUp() {
       this.$refs.component.productUp();
@@ -112,91 +101,70 @@ export default {
     productSave() {
       this.$refs.component.save();
     },
-    //这里设置返回的数据格式化成form格式
-    formattingForm(obj) {
-      var data = JSON.parse(obj.data);
-      var ggspgx = JSON.parse(obj.ggspgx);
-      var wl = JSON.parse(obj.wl);
-      this.form.name = obj.name;
-      this.form.spdj = obj.spdj;
-      this.form.predj = obj.predj;
-      this.form.spfz = obj.spfz;
-      this.form.kcyjsl = data.kcyjsl;
-      this.form.sptp = data.sptp;
-      this.form.ggspgx = ggspgx;
-      this.form.spList = [];
-      this.form.psfs = wl.psfs;
-      this.form.yfsz = wl.yfsz;
-      this.form.tyyfje = wl.tyyfje;
-      this.form.yfmbid = wl.yfmbid;
-      this.form.xgsl = data.xgsl;
-      this.form.spjj = data.spjj;
-      this.form.spmd = data.spmd;
-      this.form.xqtp = data.xqtp;
-      this.form.yxbz = obj.yxbz;
-      for (let obj of ggspgx) {
-        var spgg = obj.spgg;
-        var temp = {};
-        for (let gg of spgg) {
-          temp[gg.name] = gg.value;
+    //建构商品规格和商品列表
+    formatSpggAndData(array) {
+      let data={
+        list:[],
+        gg:[]
+      };
+      //构建商品列表
+      for(let obj of array){
+        let temp=Object.assign({},obj);
+        delete temp.spgg;
+        for(let gg of obj.spgg){
+          temp[gg.name]=gg.value;
         }
-        temp.dyjg = obj.dyjg;
-        temp.kskc = obj.kskc;
-        temp.spdm = obj.spdm;
-        temp.qspmc = obj.qspmc;
-        temp.isch = obj.isch;
-        this.form.spList.push(temp);
+        data.list.push(temp);
       }
+      //构建商品规格
+      for(let spgg of array[0].spgg){
+        data.gg.push(spgg.name);
+      }
+      return data;
     },
     //这里进行一些初始化操作
     resetPage() {
-      this.height = this.$refs.container.offsetHeight - 120;
-      if (this.$route.params.id != -1) {
-        this.form.id = this.$route.params.id;
-        //先判断是否有缓存
-        if (this.$util.getCache(this.CACHE_KEY)) {
-          this.form = this.$util.getCache(this.CACHE_KEY);
-          this.currentTab =
-            this.$util.getCache("MYHZ_PRODUCT_TAB") || "information";
-        } else {
-          this.$http("/api/x6/getHySetSpxxByid.do", {
-            id: this.form.id
-          }).then(res => {
-            this.formattingForm(res.VO);
-            this.currentTab =
-              this.$util.getCache("MYHZ_PRODUCT_TAB") || "information";
+      this.footerWidth=this.$refs.tab.offsetWidth-10;
+      this.footer=this.layout;
+      //先取缓存
+      let form=this.$util.getCache(this.CACHE_KEY);
+      if(form){
+        this.form=form;
+        this.currentTab='information';
+        this.$util.removeCache(this.CACHE_KEY);
+      }else{
+        if(this.id!=-1){
+          this.$http('/api/x6/getHySetSpxxByid.do',{
+            id:this.id,
+            yxbz:this.yxbz
+          }).then(res=>{
+            let data=JSON.parse(res.VO.data);
+            let wl=JSON.parse(res.VO.wl);
+            let spgg=this.formatSpggAndData(JSON.parse(res.VO.ggspgx));
+            this.form.id=this.id;
+            this.form.name=res.VO.name;
+            this.form.spdj=res.VO.spdj;
+            this.form.predj=res.VO.predj;
+            this.form.spfz=res.VO.spfz;
+            this.form.kcyjsl=data.kcyjsl;
+            this.form.sptp=data.sptp;
+            this.form.ggspgx=spgg.gg;
+            this.form.spList=spgg.list;
+            this.form.psfs=wl.psfs==2?['快递配送','到店自提']:wl.psfs==1?['快递配送']:['到店自提'];
+            this.form.yfsz=wl.yfsz;
+            this.form.tyyfje=wl.tyyfje;
+            this.form.yfmbid=wl.yfmbid||'';
+            this.form.xgsl=data.xgsl;
+            this.form.spjj=data.spjj;
+            this.form.spmd=data.spmd;
+            this.form.xqtp=data.xqtp;
+            this.form.yxbz=res.VO.yxbz;
+            this.currentTab='information';
           });
+        }else{
+          this.resetForm();
+          this.currentTab='information';
         }
-      } else {
-        setTimeout(() => {
-          if (this.$util.getStorage(this.CACHE_KEY)) {
-            if (this.$util.getCache("NOTCONFIRM") != "1") {
-              this.$confirm("检测到有未保存数据,你可以选择", "提示", {
-                confirmButtonText: "继续编辑",
-                cancelButtonText: "重新开始",
-                type: "warning"
-              })
-                .then(res => {
-                  this.form = this.$util.getStorage(this.CACHE_KEY);
-                  this.$util.removeStorage(this.CACHE_KEY);
-                  this.currentTab = "information";
-                })
-                .catch(err => {
-                  this.resetForm();
-                  this.$util.removeStorage(this.CACHE_KEY);
-                  this.currentTab = "information";
-                });
-            } else {
-              this.form = this.$util.getStorage(this.CACHE_KEY);
-              this.$util.removeStorage(this.CACHE_KEY);
-              this.$util.removeCache("NOTCONFIRM");
-              this.currentTab = "information";
-            }
-          } else {
-            this.resetForm();
-            this.currentTab = "information";
-          }
-        }, 0);
       }
     },
     resetForm() {
@@ -210,7 +178,7 @@ export default {
         sptp: [],
         ggspgx: [],
         spList: [], //表格商品列表
-        psfs: 1,
+        psfs: [],
         yfsz: 0,
         tyyfje: "",
         yfmbid: "",
@@ -222,31 +190,16 @@ export default {
       };
     }
   },
-  activated() {
-    this.CACHE_KEY =
-      this.$route.params.id == -1 ? "MYHZ_SPXX_ADD" : "MYHZ_SPXX_EDIT";
+  mounted(){
+    this.CACHE_KEY=this.id==-1?'PRODUCT-ADD':'PRODUCT-EDIT';
     this.resetPage();
-    this.$util.windowUnload(() => {
-      if (this.form.id == -1 && this.form.name) {
-        this.$refs.component.createGgxx(this.form);
-        this.$util.setStorage(this.CACHE_KEY, this.form);
-      }
-    }, "product_edit");
+  },
+  activated() {
+    this.CACHE_KEY=this.id==-1?'PRODUCT-ADD':'PRODUCT-EDIT';
+    this.resetPage();
   },
   deactivated() {
-    if (this.form.id == -1) {
-      //保存到本地
-      if (this.form.name) {
-        this.$refs.component.createGgxx(this.form);
-        this.$util.setStorage(this.CACHE_KEY, this.form);
-      }
-    } else {
-      //保存到本地
-      if (this.currentTab == "information")
-        this.$refs.component.createGgxx(this.form);
-      this.$util.setCache(this.CACHE_KEY, this.form);
-    }
-    this.currentTab = "";
+    this.$util.setCache(this.CACHE_KEY,this.form);
   },
   components: {
     breadNav,
@@ -260,23 +213,49 @@ export default {
     .p-edit-tab{
         width: 100%;
         display: flex;
+        justify-content: center;
         >div{
-            flex-grow: 1;
-            padding: 10px 0;
-            text-align: center;
-            font-size: 14px;
-            border-top:1px solid @gray;
-            border-bottom:1px solid @gray;
-            border-right:1px solid @gray;
-            color: #666;
-            font-size: 13px;
-            cursor: pointer;
-            background: #f0f0f0;
+            padding: 0 100px;
+            height: 30px;
+            line-height: 30px;
+            background: #e4e4e4;
+            position: relative;
+            margin: 0 15px;
         }
-        >div:nth-child(1){border-left:1px solid @gray}
+        >div:nth-child(1){
+          &:after{
+            content: '';
+            width: 0;
+            height: 0;
+            position: absolute;
+            right: -50px;
+            top:0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 25px solid transparent;
+            border-left: 25px solid #e4e4e4;
+          }
+        }
+        >div:nth-child(2){
+          &:before{
+            content: '';
+            width: 0;
+            height: 0;
+            position: absolute;
+            left: 0;
+            top:0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 25px solid transparent;
+            border-left: 25px solid #fff;
+          }
+        }
         .selected{
-            background: #fff;
-            border-bottom: none;
+            background: #33ccff;
+            color: #fff;
+            &:after{
+              border-left-color:#33ccff !important;
+            }
         }
     }
     .p-tab-submit{
@@ -284,6 +263,15 @@ export default {
         padding: 10px 0;
         text-align: center;
         margin-top: 10px;
+        position: fixed;
+        bottom: 0;
+        padding: 10px 0;
+        background: @gray;
+        z-index: 2;
+    }
+    .component{
+      flex-grow: 1;
+      padding-bottom: 48px;
     }
 </style>
 

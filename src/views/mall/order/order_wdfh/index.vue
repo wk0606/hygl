@@ -19,20 +19,7 @@
           </div>
           <div class="order-search-item">
               <span>下单时间</span>
-              <el-date-picker
-                v-model="params.xdsj"
-                size="mini"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"
-                class="order-search-item-date">
-              </el-date-picker>
-              <div class="order-btn" @click="selectDate(0)">今</div>
-              <div class="order-btn" @click="selectDate(1)">昨</div>
-              <div class="order-btn" @click="selectDate(7)">最近7天</div>
-              <div class="order-btn" @click="selectDate(30)">最近30天</div>
+              <date-picker :date.sync="params.xdsj" need-option class="order-search-item-date"></date-picker>
           </div>
           <div class="order-search-item">
               <span>仓库门店</span>
@@ -79,46 +66,22 @@
         class="order-table-body"
         v-for="row in List"
         :key="row.ddh"
-      >
+       >
           <div class="order-table-title">
               <div>
                   <span>订单号 : {{row.ddh}}</span>
                   <span>下单时间 : {{row.zdrq}}</span>
               </div>
               <div>
-                  <b @click="openFh(row)">已发货</b>
+                  <b @click="openDetails(row.ddh)">查看详情</b>
                   <i>-</i>
-                  <b @click="openDetails(row.id)">查看详情</b>
-                  <i>-</i>
-                  <b>备注</b>
+                  <b @click="openComments(row)">备注</b>
               </div>
           </div>
-          <div
-            class="order-table-item order-table-row"
-            v-for="row in row.details"
-            :key="row.id"
-          >
-              <div>
-                  <img :src="row.sptpfirst" alt="">
-                  <span class="cell-span">{{row.spname}}</span>
-              </div>
-              <div class="order-table-row-border">
-                  <div>￥{{row.spdj | currency}}</div>
-                  <div>{{row.sl}}</div>
-              </div>
-              <div class="order-table-row-border">
-                  <div>{{row.mjname}}</div>
-                  <div>{{row.shr}} {{row.shrlxfs}}</div>
-              </div>
-              <div class="order-table-row-border">
-                  <span>{{row.psfs?'自提':'快递'}}</span>
-              </div>
-              <div class="order-table-row-border">
-                  <span>{{row.je}}</span>
-              </div>
-              <div class="order-table-row-border">
-                  <span>{{row.ddzt}}</span>
-              </div>
+          <order-row :columns="colModel" :data="row.details" :sfje="row.zje"></order-row>
+          <div class="order-comments" v-if="row.remark">
+              <span>卖家备注 : </span>
+              <div>{{row.remark}}</div>
           </div>
       </div>
       <order-fh v-if="dialog.show" :views="dialog"></order-fh>
@@ -150,18 +113,19 @@ export default {
               show:false,
               lx:0,//0 快递 1 自提
               data:null
+          },
+          params:{
+              lx:0,
+              value:'',
+              xdsj:[],
+              xtgsid:-1,
+              fhzt:-1
           }
       }
   },
   methods:{
       //初始化查询条件
       initSearchParams(){
-          this.params={};
-          this.$set(this.params,'lx',0);
-          this.$set(this.params,'value','');
-          this.$set(this.params,'xdsj',[]);
-          this.$set(this.params,'xtgsid',-1);
-          this.$set(this.params,'fhzt',-1);
           this.ckList=this.$util.getCache('ksckList');
           this.ckList.splice(0,0,{
               id:-1,
@@ -169,7 +133,6 @@ export default {
           });
       },
       openFh(row){
-          console.log(row)
           this.dialog.show=true;
           this.dialog.data=row;
       }

@@ -29,6 +29,12 @@ export default {
       currentTab:'dpxx'
     }
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm=>{
+      if(from.name!='set_dprz')
+        vm.currentTab=vm.tabs[0].component;
+    });
+  },
   components:{
     dpxx,
     ksck,
@@ -38,8 +44,8 @@ export default {
 </script>
 <style lang="less" scoped>
   .set-body{
-    height: ~"calc(100% - 47px)";
-    overflow-y: auto;
-    >div{height: 100%;}
+    // height: ~"calc(100% - 47px)";
+    // overflow-y: auto;
+    // >div{height: 100%;}
   }
 </style>

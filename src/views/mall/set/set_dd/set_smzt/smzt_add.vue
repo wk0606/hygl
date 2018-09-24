@@ -35,12 +35,12 @@
           <el-form-item label="地理定位" prop="jwd">
             <maps v-model="addInfo.jwd" ref="maps"></maps>
           </el-form-item>
-          <el-form-item label="联系电话" prop="lxdhhm">
-            <el-input v-model="addInfo.lxdhqh" size="mini" style="width:80px;" placeholder="区号"></el-input>
+          <el-form-item label="联系电话" prop="lxdhhm" ref="lxdh">
+            <el-input v-model="addInfo.lxdhqh" size="mini" style="width:80px;" placeholder="区号" @input="clearValidate('lxdh')"></el-input>
             <span style="margin:0 5px;">-</span>
-            <el-input v-model="addInfo.lxdhhm" size="mini" style="width:445px;" placeholder="填写联系电话便于买家联系（区号可留空）"></el-input>
+            <el-input v-model="addInfo.lxdhhm" size="mini" style="width:445px;" placeholder="填写联系电话便于买家联系（区号可留空）" @input="clearValidate('lxdh')"></el-input>
           </el-form-item>
-          <el-form-item label="接待时间" prop="jdrq">
+          <el-form-item label="接待时间" prop="jdrq"  ref="jdsj">
             <div class="form-item-time">
               <time-picker v-model="defaultTime" style="width:180px;margin-right:20px;"></time-picker>
               <div
@@ -81,18 +81,18 @@
               <el-radio v-model="addInfo.ztlx" :label="1">提前<input-number v-model="addInfo.ztsj" style="margin:0 10px;" min="1"></input-number>天</el-radio>
             </el-row>
           </el-form-item>
-          <el-form-item label="最长预约" prop="zcyy">
+          <!-- <el-form-item label="最长预约" prop="zcyy">
             <el-row>
               <el-radio v-model="addInfo.zcyylx" :label="0">无需提前</el-radio>
             </el-row>
             <el-row>
               <el-radio v-model="addInfo.zcyylx" :label="1">提前<input-number v-model="addInfo.zcyyts" style="margin:0 10px;" min="1"></input-number>天</el-radio>
             </el-row>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="自提点照片" prop="ztdzp" required>
             <div class="form-item-upload">
               <div v-if="addInfo.ztdzp" class="form-item-img" :style="{backgroundImage:'url('+addInfo.ztdzp+')'}"></div>
-              <el-button type="primary" icon="el-icon-upload" size="mini" :loading="load" @click="openFile">选择图片</el-button>
+              <el-button type="primary" icon="el-icon-upload" size="mini" :loading="load" @click="openFile">{{addInfo.ztdzp?'重新上传':'选择图片'}}</el-button>
               <input type="file" ref="file" @change="uploadImg" style="display:none;">
             </div>
           </el-form-item>
@@ -160,11 +160,11 @@ export default {
         lxdhqh:'',
         lxdhhm:'',
         jdrq:[],
-        ztsjxz:true,
+        ztsjxz:false,
         ztlx:0,
-        ztsj:7,//预约自提
+        ztsj:1,//预约自提
         zcyylx:0,
-        zcyyts:1,//最长预约天数
+        zcyyts:7,//最长预约天数
         ztdzp:'',
         sjtj:'',
         ismdjd:false
@@ -177,7 +177,7 @@ export default {
         jwd:{required:true,message:'请搜索地图或者自行选择地理位置'},
         pct:{validator: validateAddress,trigger:'none'},
         jdrq:[
-          {required:true,message:'请填写联系方式',trigger:'none'},
+          {required:true,message:'请填写接待时间',trigger:'none'},
           {validator: validateJdrq,trigger:'none'}
         ]
       },
@@ -199,6 +199,10 @@ export default {
     }
   },
   methods:{
+    //清除校验
+    clearValidate(ref){
+      this.$refs[ref].clearValidate();
+    },
     save(){
       this.$refs.addForm.validate((valid) => {
         if (valid) {
@@ -231,6 +235,7 @@ export default {
       }
     },
     changeWeekend(item){
+      this.clearValidate('jdsj');
       if(this.hasSelectWd.indexOf(item.value)>-1)
         return;
       if(this.defaultWd.indexOf(item.value)>-1){

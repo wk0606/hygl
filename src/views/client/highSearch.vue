@@ -8,17 +8,7 @@
         <div slot="content" class="content">
             <div>
                 <span>消费时间</span>
-                <el-date-picker
-                    v-model="details.date"
-                    type="daterange"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    value-format="yyyy-MM-dd"
-                    size="mini"
-                    style="width:300px;"
-                    >
-                </el-date-picker>
+                <date-picker :date.sync="details.date"></date-picker>
             </div>
             <div>
                 <span>商品</span>
@@ -41,8 +31,9 @@
 <script>
 import popUp from '../../components/popUp/index'
 import goods from '../../components/goodsSelect/index'
+import datePicker from '../../components/datePicker/index'
 export default {
-    props:['views'],
+    props:['views','params'],
     data(){
         return {
             details:{
@@ -80,11 +71,14 @@ export default {
         }
     },
     mounted(){
+        //console.log(this.params)
+        //this.details=Object({},this.details,this.params);
         this.getTagList();
     },
     components:{
         popUp,
-        goods
+        goods,
+        datePicker
     }
 }
 </script>

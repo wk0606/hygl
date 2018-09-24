@@ -2,8 +2,16 @@
   <div>
       <div class="wdsp-header">
           <div>
-              <el-button size="mini" type="primary" @click="addProduct">发布商品</el-button>
-              <el-button size="mini" type="warning" @click="preview">网店预览</el-button>
+              <el-button
+                size="mini"
+                :type="currentValue?'primary':'warning'"
+                :icon="currentValue?'el-icon-upload2':'el-icon-download'"
+                @click="productDown"
+                v-if="currentValue<2"
+              >
+                <!-- <i class="iconfont" :class="currentValue?'icon-shangjia-copy':'icon-xiajia'"></i> -->
+                {{currentValue?'商品上架':'商品下架'}}
+              </el-button>
           </div>
           <el-input
             size="mini"
@@ -24,7 +32,6 @@
       <div class="wdsp-body">  
           <el-table
             :data="List"
-            height="100%"
             header-cell-class-name="el-table-drak-head"
             ref="table"
             @select-all="selectAll"
@@ -45,7 +52,7 @@
                         <img :src="scope.row.sptp" alt="">
                         <div>
                             <div class="ellipsis2rows">{{scope.row.name}}</div>
-                            <p>￥{{scope.row.spdj | currency}}</p>
+                            <p style="line-height:15px;">￥{{scope.row.spdj | currency}}</p>
                         </div>
                     </div>
                 </template>
@@ -63,6 +70,8 @@
                 label="总销量"
                 prop="zxl"
                 align="center"
+                width="110"
+                :render-header="renderFilterHead"
             >
                 <template slot-scope="scope">
                    <span class="cell-span">{{scope.row.zxl}}</span>
@@ -72,24 +81,53 @@
                 label="可售库存"
                 prop="kskcs"
                 align="center"
+                width="120"
+                :render-header="renderFilterHead"
             >
                 <template slot-scope="scope">
                    <span class="cell-span">{{scope.row.kskcs}}</span>
                 </template>
             </el-table-column>
             <el-table-column
+                label="库存预警"
+                prop="kcyjsl"
+                align="center"
+                width="120"
+                :render-header="renderFilterHead"
+            >
+                <template slot-scope="scope">
+                   <span
+                    v-if="currentRow!==scope.$index"
+                    class="cell-span cell-span-blue"
+                    @click="currentRow=scope.$index;kcyjsl=scope.row.kcyjsl"
+                   >{{scope.row.kcyjsl}}</span>
+                   <input
+                    v-if="currentRow===scope.$index"
+                    type="number"
+                    v-model.number="kcyjsl"
+                    v-focus
+                    @blur="setKcyj(scope.row,scope.$index,$event)"
+                   ></input>
+                </template>
+            </el-table-column>
+            <el-table-column
                 label="上架时间"
                 prop="sjsj"
                 align="center"
+                
+                :render-header="renderFilterHead"
             >
                 <template slot-scope="scope">
-                   <span class="cell-span">{{scope.row.fks}}</span>
+                   <span class="cell-span">{{scope.row.sjrq}}</span>
                 </template>
             </el-table-column>
             <el-table-column
                 label="分组"
                 prop="spfz"
                 align="center"
+                width="110"
+                :formatter="formatGroupName"
+                :render-header="renderFilterHead"
             >
                 <template slot-scope="scope">
                    <span class="cell-span">{{formatGroupName(scope.row.spfz)}}</span>
@@ -125,17 +163,19 @@
       </div>
       <div class="wdsp-footer">
           <div>
-            <el-button size="mini" v-if="currentValue!=2" :disabled="!selectRows.length" @click="batchUpOrDown">{{currentValue?'上架':'下架'}}</el-button>
             <el-button size="mini" :disabled="!selectRows.length" @click="batchDelele">删除</el-button>
           </div>
-          <pagination :data="page" :small="true" @current-change="changePage"></pagination>
+          <pagination :data="page" :small="true" @current-change="changePage" hide-border></pagination>
       </div>
       <preview v-if="dialog.show" :views="dialog"></preview>
+      <product-down v-if="down.show" :views="down" :yxbz="currentValue"></product-down>
   </div>
 </template>
 <script>
 import pagination from "../../../../components/pagination/index";
 import preview from './preview'
+import productDown from './product_down'
+import bus from '../../../../func/eventBus'
 export default {
   data() {
     return {
@@ -146,7 +186,7 @@ export default {
       groupList:[],
       page: {
         no: 1,
-        size: 20,
+        size: 10,
         rows: 0
       },
       currentPageChecked:false,
@@ -161,18 +201,31 @@ export default {
       },
       currentTime:0,
       currentRow:'',//当期行
-      currentIndex:''//当前行序号
-    };
+      currentIndex:'',//当前行序号
+      down:{
+          show:false,
+          yxbz:0,
+          title:''
+      },
+      currentRow:'',
+      kcyjsl:0,
+      filterColumn: {
+        datas:null
+      },
+    }
   },
   methods: {
-    //新增
-    addProduct() {
-      this.$router.push("/main/mallchildren/product_edit/-1/0");
+    //下架
+    productDown() {
+      this.down.title=this.currentValue?'商品上架':'商品下架';
+      this.down.yxbz=this.currentValue?0:1;
+      this.down.show=true;
     },
     //编辑
     edit(row){
-        this.$util.removeCache('MYHZ_SPXX_EDIT');
-        this.$router.push(`/main/mallchildren/product_edit/${row.id}/${this.currentValue===0?1:this.currentValue===1?0:2}`);
+        this.$parent.editShow=true;
+        this.$parent.pID=row.id;
+        this.$parent.pYxbz=this.currentValue;
     },
     //修改序号
     editIndex(row){
@@ -187,10 +240,26 @@ export default {
             }).then(res=>{
                 this.$message('修改成功');
                 this.currentRow=this.currentIndex='';
-                this.getList(this.currentValue);
+                this.getList();
             });
         }
         
+    },
+    //设置库存预警
+    setKcyj(row,index,ev){
+        if(this.kcyjsl>row.kskcs){
+            this.$message('库存预警数量不得大于当前的可售库存','error');
+            this.kcyjsl=row.kskcs;
+            ev.target.focus();
+        }else{
+            this.$http('/api/x6/updataSpxxKcyjsl.do',{
+                id:row.id,
+                kcyjsl:this.kcyjsl
+            }).then(res=>{
+                this.currentRow='';
+                row.kcyjsl=this.kcyjsl;
+            });  
+        }
     },
     changePage(page){
         if(page)
@@ -210,7 +279,7 @@ export default {
     tabChange(val){
         if(this.currentValue!=val){
             this.currentValue=val;
-            this.getList(val);
+            this.getList();
         }
     },
     //
@@ -219,17 +288,20 @@ export default {
         var _t=new Date().getTime();
         if(_t-this.currentTime>T){
             this.currentTime=_t;
-            this.getList(this.currentValue);
+            this.getList();
         }
     },
     //获取商品列表
-    getList(bzw=0) {
+    getList() {
       this.$http("/api/x6/getSpxxListByCondition.do",{
-          bzw:bzw,
+          bzw:this.currentValue,
           name:this.name
       }).then(res => {
+        for(let obj of res.List)
+            obj.sjsj=this.formatSjrq(obj.sjrq);
         this.allList=res.List;
         this.page.rows=res.List.length;
+        this.filterColumn.datas=res.List;
         this.changePage(1);
       });
     },
@@ -247,10 +319,6 @@ export default {
             }
         }
     },
-    // handleSelect(val){
-    //     console.log(val)
-    //     this.selectRows=val;
-    // },
     selectAll(val){
         this.hasSelectAll=val.length?true:false;
         this.selectRows=val.length?this.allList:[];
@@ -278,19 +346,6 @@ export default {
             this.selectRows=val;
         }
     },
-    //批量上下架
-    batchUpOrDown(){
-        var ids=[];
-        for(let obj of this.selectRows)
-            ids.push(obj.id);
-        this.$http('/api/x6/batchSetSpxx.do',{
-            ids:ids.join(','),
-            yxbz:this.currentValue?0:1
-        }).then(res=>{
-            this.$message(`${this.currentValue?'上架':'下架'}成功`);
-            this.getList(this.currentValue);
-        });
-    },
     //批量删除
     batchDelele(){
         this.$confirm('删除商品后不可恢复,确认删除吗','提示',{
@@ -303,17 +358,9 @@ export default {
                 ids:ids.join(',')
             }).then(res=>{
                 this.$message('删除成功');
-                this.getList(this.currentValue);
+                this.getList();
             });
         }).catch(()=>{});
-    },
-    //预览操作
-    preview(){
-        this.$http('/api/x6/getWdylInfo.do').then(res=>{
-            this.dialog.show=true;
-            this.dialog.data=res.VO;
-            this.dialog.type=1;
-        });
     },
     //
     previewRow(row){
@@ -331,6 +378,9 @@ export default {
                 return obj.name;
         }
         return '未知分组';
+    },
+    formatSjrq(rq){
+        return rq.split(' ')[0];
     },
     renderCell(h, {column, $index, store, _self}){
         return h('div',{
@@ -363,6 +413,11 @@ export default {
   mounted() {
     this.groupList=this.$util.getCache('spfzList');
     this.getList();
+    this.$bus.$on('filter-success', (array) => {
+        this.allList=array;
+        this.page.rows=array.length;
+        this.changePage(1);
+    });
   },
   activated(){
     this.groupList=this.$util.getCache('spfzList');
@@ -370,7 +425,8 @@ export default {
   },
   components: {
     pagination,
-    preview
+    preview,
+    productDown
   }
 };
 </script>
@@ -386,7 +442,7 @@ export default {
   }
 }
 .wdsp-body {
-  height: ~"calc(100% - 148px)";
+  //height: ~"calc(100% - 148px)";
 }
 .wdsp-footer {
   display: flex;
@@ -424,5 +480,16 @@ export default {
       color: #febc6b;
     }
   }
+}
+input[type=number]{
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 7px;
+    line-height: 28px;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+    &:focus{
+       border-color: #409eff; 
+    }
 }
 </style>

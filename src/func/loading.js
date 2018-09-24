@@ -35,8 +35,7 @@ export const Loading={
             data:{
                 height:options.height+'px'||'',
                 top:options.top||0,
-                text:options.text||'拼命加载中...',
-                opacity:options.opacity||1
+                text:options.text||'拼命加载中...'
             }
         });
         this.PARENT=target;

@@ -1,7 +1,7 @@
 <template>
     <pop-up
         title="PV值"
-        width="700"
+        width="800"
         :views="views"
     >
         <div class="content" slot="content">

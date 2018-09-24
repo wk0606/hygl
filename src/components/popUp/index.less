@@ -1,3 +1,4 @@
+@border-color:#f2f2f2;
 .p-container{
     width: 100%;
     height: 100%;
@@ -25,8 +26,6 @@
             align-items: center;
             justify-content: space-between;
             font-size: 14px;
-            color: #fff;
-            background: #373945;
             i{
                 cursor: pointer;
             }
@@ -34,6 +33,15 @@
                 font-size: 12px;
                 margin-left: 0px;
             }
+        }
+        .dark{
+            color: #fff;
+            background: #373945;
+        }
+        .light{
+            color: #373945;
+            background: #fff;
+            border-bottom: 1px solid @border-color;
         }
         .p-content{
             box-sizing: border-box;
@@ -44,8 +52,10 @@
         .p-footer{
             box-sizing: border-box;
             padding: 10px;
-            border-top: 1px solid #ccc;
-            text-align: right;
+            border-top: 1px solid @border-color;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     }
 }

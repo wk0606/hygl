@@ -5,96 +5,98 @@
 			<i class="el-icon-close" @click="backToActivity"></i>
 		</div>
 		<div class="add-body">
-			<div class="f-add">
-				<el-form :model='addForm' label-width='80px' :rules='addFormRules' ref='addForm'>
-					<el-form-item label='活动名称' prop="title">
-						<el-input
-							v-model="addForm.title"
-							type="text"
-							placeholder="请输入标题"
-							size="small"
-							style="width:100%"
-							auto-complete='off'
-						></el-input>                                                                  
-					</el-form-item>
-					<el-form-item label='活动图片' prop="shortcontent">
-						<div class="act-img" @click="openActImg" :style="{backgroundImage:'url('+addForm.shortcontent+')'}">
-							<i v-if="!addForm.shortcontent" class="el-icon-plus"></i>
-						</div>
-					</el-form-item>
-					<el-form-item label='活动时间' required>
-						<el-col :span="11">
-							<el-form-item prop="yxrqq">
-								<el-date-picker
-									size="small"
-									type="datetime"
-									placeholder="请选择开始时间"
-									v-model="addForm.yxrqq"
-									style="width: 100%;"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
-							</el-form-item>
-						</el-col>
-						<el-col class="line" :span="2"><div style="text-align:center;">-</div></el-col>
-						<el-col :span="11">
-							<el-form-item prop="yxrqz">
-								<el-date-picker
-									size="small"
-									type="datetime"
-									placeholder="请选择结束时间"
-									v-model="addForm.yxrqz"
-									style="width: 100%;"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
-							</el-form-item>
-						</el-col>
-					</el-form-item>
-					<el-form-item label='活动详情' prop="content">
-						<div class="content">
-							<simditor
-								uploadUrl="/api/x6/saveOtherPic.do"
-								:toolbar="toolbar"
-								v-model="addForm.content"
-								ref="simditor"
-							></simditor>
-						</div>
-					</el-form-item>
-					<el-form-item label='' prop="hdfw">
-						<div class="form-items" style="margin-left:-80px;">
-							<span class="ismust">活动范围</span>
-							<div class="s-shop">
-								<el-tag
-									size="small"
-									v-for="tag in tags"
-									:key="tag.id"
-									:closable="true"
-									@close="tagClose(tag)"
-								>{{tag.name}}</el-tag>
-								<div class="add-tag" @click="selectMd"><i class="el-icon-plus"></i></div>
-							</div> 
-						</div>               
-					</el-form-item>
-					<div  class="form-items" style="align-items:center;">
-						<span>
-							该活动是否参与分享返现
-							<i class="iconfont icon-bangzhu1" style="color:#ccc;" title="1.活动期间每名用户(同一手机号)只能领取一次.2.该红包最终解释权归商家所有"></i>
-						</span>
-						<el-switch
-							v-model="addForm.isfxfk"
-							active-text=""
-							inactive-text="">
-						</el-switch>
-						<span style="margin-left:15px;" v-if="addForm.isfxfk">返现金额</span>
-						<!-- <input-money :fromMoney="addForm.fxjl" v-model="addForm.fxjl" style="width:150px;" :needUnFocusCenter="false" :disabled="!addForm.isfxfk"></input-money> -->
-						<input v-if="addForm.isfxfk" type="number" class="money" v-model="addForm.fxjl"/>
-						
-					</div>
-					<div class="form-items" style="box-sizing:border-box;padding:10px;justify-content: flex-end;">
-						<el-button type="primary" size="small" @click="save('addForm')" :loading="load">确定</el-button>
-						<el-button size="small" @click="backToActivity">取消</el-button>
-					</div>
-				</el-form>
-
+			<div class="f-add" @scroll="scroll">
+				<div>
+          <el-form :model='addForm' label-width='80px' :rules='addFormRules' ref='addForm'>
+            <el-form-item label='活动名称' prop="title">
+              <el-input
+                v-model="addForm.title"
+                type="text"
+                placeholder="请输入标题"
+                size="small"
+                style="width:100%"
+                auto-complete='off'
+              ></el-input>                                                                  
+            </el-form-item>
+            <el-form-item label='活动图片' prop="shortcontent">
+              <div class="act-img" @click="openActImg" :style="{backgroundImage:'url('+addForm.shortcontent+')'}">
+                <i v-if="!addForm.shortcontent" class="el-icon-plus"></i>
+              </div>
+            </el-form-item>
+            <el-form-item label='活动时间' required>
+              <el-col :span="11">
+                <el-form-item prop="yxrqq">
+                  <el-date-picker
+                    size="small"
+                    type="datetime"
+                    placeholder="请选择开始时间"
+                    v-model="addForm.yxrqq"
+                    style="width: 100%;"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                  ></el-date-picker>
+                </el-form-item>
+              </el-col>
+              <el-col class="line" :span="2"><div style="text-align:center;">-</div></el-col>
+              <el-col :span="11">
+                <el-form-item prop="yxrqz">
+                  <el-date-picker
+                    size="small"
+                    type="datetime"
+                    placeholder="请选择结束时间"
+                    v-model="addForm.yxrqz"
+                    style="width: 100%;"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                  ></el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item label='活动详情' prop="content">
+              <div class="content">
+                <simditor
+                  uploadUrl="/api/x6/saveOtherPic.do"
+                  :toolbar="toolbar"
+                  v-model="addForm.content"
+                  ref="simditor"
+                ></simditor>
+              </div>
+            </el-form-item>
+            <el-form-item label='' prop="hdfw">
+              <div class="form-items" style="margin-left:-80px;">
+                <span class="ismust">活动范围</span>
+                <div class="s-shop">
+                  <el-tag
+                    size="small"
+                    v-for="tag in tags"
+                    :key="tag.id"
+                    :closable="true"
+                    @close="tagClose(tag)"
+                  >{{tag.name}}</el-tag>
+                  <div class="add-tag" @click="selectMd"><i class="el-icon-plus"></i></div>
+                </div> 
+              </div>               
+            </el-form-item>
+            <div class="form-items" style="align-items:center;margin:15px 0;">
+              <span>
+                该活动是否参与分享返现
+                <i class="iconfont icon-bangzhu1" style="color:#ccc;" title="1.活动期间每名用户(同一手机号)只能领取一次.2.该红包最终解释权归商家所有"></i>
+              </span>
+              <el-switch
+                v-model="addForm.isfxfk"
+                active-text=""
+                inactive-text="">
+              </el-switch>
+            </div>
+            <el-form-item label='返现金额' prop="fxjl" v-if="addForm.isfxfk" required>
+                <input v-if="addForm.isfxfk" type="number" class="money" v-model="addForm.fxjl"/>
+                <span style="margin-left:30px;"></span>
+                <el-checkbox v-model="addForm.iswdfxfk">网店是否可用</el-checkbox>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="form-items form-footer" ref="footer">
+          <el-button type="primary" size="small" @click="save('addForm')" :loading="load">保存</el-button>
+          <el-button size="small" @click="backToActivity">取消</el-button>
+        </div>
 			</div>
 			<div class="f-view" ref="mobile">
 				<preview :data="addForm"></preview>
@@ -117,6 +119,13 @@ export default {
       if (!value.length) {
         callback(new Error("请选择活动范围"));
       } else {
+        callback();
+      }
+    };
+    var validateFx= (rule, value, callback) => {
+      if(this.addForm.isfxfk&&this.addForm.fxjl<=0){
+        callback(new Error("请输入大于0的金额"));
+      }else{
         callback();
       }
     };
@@ -147,6 +156,7 @@ export default {
         hdfw: [],
         content: "",
         isfxfk: false,
+        iswdfxfk:false,
         fxjl: 0
       },
       addFormRules: {
@@ -155,7 +165,8 @@ export default {
         yxrqq: [{ required: true, message: "请选择开始时间" }],
         yxrqz: [{ required: true, message: "请选择结束时间" }],
         content: [{ required: true, message: "请输入活动详情" }],
-        hdfw: [{ validator: validate }]
+        hdfw: [{ validator: validate }],
+        fxjl: [{ validator: validateFx }],
       },
       tags: [],
       dialog: { show: false, data: null },
@@ -180,6 +191,7 @@ export default {
       }).then(
         res => {
           res.VO.isfxfk = res.VO.isfxfk ? true : false;
+          res.VO.iswdfxfk = res.VO.iswdfxfk ? true : false;
           for (let key in res.VO) this.addForm[key] = res.VO[key];
           this.copyForm = JSON.parse(JSON.stringify(this.addForm));
           this.parseNameById(this.addForm.hdfw);
@@ -201,6 +213,7 @@ export default {
             hdfw: this.addForm.hdfw,
             content: this.addForm.content,
             isfxfk: this.addForm.isfxfk ? 1 : 0,
+            iswdfxfk : this.addForm.iswdfxfk ? 1 : 0,
             fxjl: this.addForm.isfxfk ? parseFloat(this.addForm.fxjl) : 0
           };
           this.$http("/api/x6/CrmActivitySave.do", params).then(
@@ -306,9 +319,15 @@ export default {
       var min = _D.getMinutes() < 10 ? "0" + _D.getMinutes() : _D.getMinutes();
       var s = _D.getSeconds() < 10 ? "0" + _D.getSeconds() : _D.getSeconds();
       return `${_D.getFullYear()}-${m}-${d} ${h}:${min}:${s}`;
+    },
+    scroll(){
+      console.log(5454)
+      this.$refs.footer.style.bottom=0;
     }
   },
-  activated() {
+  mounted() {
+    this.$refs.mobile.style.width =
+      parseInt(this.$refs.mobile.offsetHeight * 9 / 16) + "px";
     this.gslists = this.$util.getMyGsList();
     //移出表单验证
     this.$refs.addForm.resetFields();
@@ -318,10 +337,6 @@ export default {
       this.resetPage();
       this.copyForm = JSON.parse(JSON.stringify(this.addForm));
     }
-  },
-  mounted() {
-    this.$refs.mobile.style.width =
-      parseInt(this.$refs.mobile.offsetHeight * 9 / 16) + "px";
   },
   components: {
     simditor,
@@ -338,6 +353,11 @@ input::-webkit-inner-spin-button {
 }
 input[type="number"] {
   -moz-appearance: textfield;
+  box-sizing: border-box;
+  line-height: 28px;
+  padding: 2px 15px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
 }
 .add-container {
   background: #fff;
@@ -382,29 +402,6 @@ input[type="number"] {
       visibility: visible;
     }
   }
-  // .act-img{
-  // 	margin-bottom: 20px;
-  // 	display: flex;
-  // 	align-items: center;
-  // 	>span{
-  // 		width: 80px;
-  // 		font-size: 14px;
-  // 		box-sizing: border-box;
-  // 		padding-left: 12px;
-  // 	}
-  // 	div{
-  // 		width: 100px;
-  // 		height: 100px;
-  // 		border-radius: 5px;
-  // 		border: 1px solid #dcdfe6;
-  // 		cursor: pointer;
-  // 		display: flex;
-  // 		align-items: center;
-  // 		justify-content: center;
-  // 		font-size: 30px;
-  // 		color:#999;
-  // 	}
-  // }
   .add-title {
     box-sizing: border-box;
     padding: 10px;
@@ -427,9 +424,26 @@ input[type="number"] {
     display: flex;
     .f-add {
       flex-grow: 1;
-      overflow-y: auto;
       box-sizing: border-box;
       padding: 15px 15px 0 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      >div:nth-child(1){
+        flex-grow: 1;
+        height: 0;
+        padding-bottom: 20px;
+        overflow-y: auto;
+      }
+      .form-footer{
+        flex-shrink: 0;
+        width: 100%;
+        
+        background: #f2f2f2;
+        box-sizing:border-box;
+        padding:10px;
+        justify-content: center;
+      }
       .el-form-item {
         margin-bottom: 20px;
       }

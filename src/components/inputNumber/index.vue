@@ -57,15 +57,18 @@ export default {
           this.$emit('input',parseFloat(this.val));
       },
       changeValue(){
-          this.val=parseFloat(this.val);
-          var max=parseFloat(this.max);
-          var min=parseFloat(this.min);
-          if(this.max!==null&&this.val>max)
-            this.val=max;
-          if(this.min!==null&&this.val<min)
-            this.val=min;
-          this.val=this.val||0;
-          this.$emit('input',parseFloat(this.val));
+          if(!/\d/.test(this.val)){
+            this.$emit('input','');
+          }else{
+            this.val=parseFloat(this.val);
+            var max=parseFloat(this.max);
+            var min=parseFloat(this.min);
+            if(this.max!==null&&this.val>max)
+                this.val=max;
+            if(this.min!==null&&this.val<min)
+                this.val=min;
+            this.$emit('input',parseFloat(this.val));
+          }
       }
   },
   mounted(){

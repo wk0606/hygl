@@ -60,11 +60,25 @@
     }
     .order-body-table{
         border: 1px solid @border-color;
+        border-bottom: none;
         margin-top: 15px;
         user-select: none;
-        .order-body-table-row{border-bottom: 1px solid @border-color;}
+        position: relative;
+        .order-gift{
+            width: 12%;
+            position: absolute;
+            bottom:0;
+            right: 0;
+            background: #fff;
+            box-sizing: border-box;
+            border-bottom: 1px solid @border-color;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .order-body-table-item{
             display: flex;
+            border-bottom: 1px solid @border-color;
             >div{
                 box-sizing: border-box;
                 padding: 10px;
@@ -81,7 +95,7 @@
             >div:nth-child(1){
                 width: 30%;
                 display: inline-flex;
-                align-items: flex-start;
+                align-items: center;
                 img{
                     width: 60px;
                     height: 60px;
@@ -125,9 +139,10 @@
             line-height: 18px;
             color: #999;
             box-sizing: border-box;
-            padding: 0 10px 10px 10px;
-            width: 88%;
-            border-right: 1px solid @border-color;
+            padding: 10px;
+            width: 100%;
+            border-top: 1px solid @border-color;
+            border-bottom: 1px solid @border-color;
             span{
                 flex-shrink: 0;
                 margin-right: 5px;

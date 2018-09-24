@@ -1,5 +1,6 @@
 <template>
   <el-table
+    v-if="height"
     :data="data"
     stripe
     :height="height"
@@ -8,7 +9,42 @@
     @select-all="selectAll"
     @selection-change="selectChange"
     ref="mTable"
-  >
+   >
+    <el-table-column
+      type="selection"
+      width="55"
+      align="center"
+      v-if="needSelection"
+    ></el-table-column>
+    <el-table-column
+        v-for="row in colModel"
+        :key="row.prop"
+        :label="row.label"
+        :prop="row.prop"
+        header-align="center"
+        :align="row.align || 'center'"
+        :render-header="row.render?renderFilterHead:null"
+    >
+        <template slot-scope="scope">
+            <span
+              class="cell-span"
+              :class="row.class?row.class(scope.row):row.click?'cell-span-blue':''"
+              @click="row.click?row.click(scope.row,scope.row[row.prop]):null"
+            >{{scope.row[row.prop]}}</span>
+        </template>
+    </el-table-column>
+    <slot name="table-column"></slot>
+  </el-table>
+  <el-table
+    v-else
+    :data="data"
+    stripe
+    header-cell-class-name="el-table-drak-head"
+    @select="selectRow"
+    @select-all="selectAll"
+    @selection-change="selectChange"
+    ref="mTable"
+     >
     <el-table-column
       type="selection"
       width="55"
@@ -42,7 +78,7 @@ export default {
       data:{required:true},
       filterList:{},
       colModel:{require:true},
-      height:{default:'100%'},
+      height:{default:'auto'},
       needSelection:{default:false}
   },
   data(){

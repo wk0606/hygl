@@ -2,18 +2,7 @@
   <div class="container" @click="editForm.show=false;pfModel.show=false">
       <div class="comments-head">
         <span><i style="color:red;">*</i>日期</span>
-        <el-date-picker
-            v-model="date"
-            type="daterange"
-            size="small"
-            range-separator="-"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="yyyy-MM-dd"
-            :clearable="false"
-            :picker-options="pickerOptions"
-            @change="handleChange">
-        </el-date-picker>
+        <date-picker :date.sync="date" @change="handleChange"></date-picker>
       </div>
       <div class="comments-body">
           <el-table
@@ -73,6 +62,7 @@ import pagination from '../../components/pagination/index'
 import pfDetails from './details'
 import order from './order'
 import editMember from '../client/editMember'
+import datePicker from '../../components/datePicker/index'
 export default {
   data(){
       return{
@@ -231,7 +221,8 @@ export default {
       pagination,
       pfDetails,
       order,
-      editMember
+      editMember,
+      datePicker
   }
 }
 </script>

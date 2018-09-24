@@ -27,7 +27,6 @@
             stripe
             border
             header-cell-class-name="el-table-drak-head"
-            height="100%"
             @select-all="selectAll"
             @select="selectOne"
             ref="table"
@@ -235,7 +234,4 @@ export default {
     }
     .success{color:#67C23A;}
     .error{color:#F56C6C;}
-    .set-ksck-body{
-        height: ~"calc(100% - 113px)";
-    }
 </style>

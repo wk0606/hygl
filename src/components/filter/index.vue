@@ -33,13 +33,13 @@
                 v-for="(item,index) in List"
                 :key="index"
                 v-show="item.show"
-                @click="item.checked=!item.checked"
+                @click="handleChange(item)"
               >
                 <el-checkbox
                     v-model="item.checked"
                     @change="filterDatas(item)"
                 ></el-checkbox>
-                <label>{{item.label}}</label>
+                <label>{{item.format?item.format:item.label}}</label>
               </li>
           </ul>
           <div class="f-footer">
@@ -124,7 +124,15 @@ export default {
                 return 0;
             }
         });
-        console.log(tempMap)
+        this.List.sort((a,b) => {
+            if(py.GetPY(a.label||0)<py.GetPY(b.label||0)){
+                return 0-num;
+            }else if(py.GetPY(a.label||0)>py.GetPY(b.label||0)){
+                return num;
+            }else{
+                return 0;
+            }
+        });
         this.$bus.$emit('filter-success',tempMap);
         
     },
@@ -133,13 +141,15 @@ export default {
         var target=this.$store.state.filterTable[this.getCurrentRouter()]||this.datas;
         //var target=this.datas;
         var temp=[];
-        console.log(this.checkedList)
         for(let obj of target){
             if(this.checkedList.indexOf(obj[this.column])>-1)
                 temp.push(obj);
         }
-        console.log(temp)
         return temp;
+    },
+    handleChange(item){
+        item.checked=!item.checked;
+        this.filterDatas(item);
     },
     //筛选源数据
     filterDatas(item){
@@ -165,7 +175,6 @@ export default {
             if(!this.filterColumn[this.column].length)
                 delete this.filterColumn[this.column];
         }
-        console.log(this.filterColumn)
         //当filterColumn仅剩下datas属性时候返回全部
         if(Object.keys(this.filterColumn).length==1){
             this.$bus.$emit('filter-success',this.filterColumn.datas);
@@ -185,15 +194,20 @@ export default {
         this.List=[];
         var tempMap=this.$store.state.filterTable[this.getCurrentRouter()]||this.datas;
         for(let obj of tempMap){
-            if(temp.indexOf(obj[this.column])==-1)
-            temp.push(obj[this.column]);
+            if(temp.indexOf(obj[this.column])==-1){
+                //let label=this.formatter?this.formatter(obj[this.column]):obj[this.column];
+                temp.push(obj[this.column]);
+            }
         }
         for(let label of temp){
-            this.List.push({
+            let obj={
                 label:label,
                 show:true,
                 checked:this.filterColumn[this.column]?this.filterColumn[this.column].indexOf(label)>-1?true:false:false
-            });
+            };
+            if(this.formatter)
+                obj.format=this.formatter(label);
+            this.List.push(obj);
         }
         temp=null;
     } 

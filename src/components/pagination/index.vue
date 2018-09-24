@@ -1,5 +1,5 @@
 <template>
-    <div class="pagination">
+    <div class="pagination" :class="{'no-border':hideBorder!==false}">
         <el-pagination
             :small="small"
             @current-change="changePage"
@@ -18,7 +18,8 @@
             },
             small:{
                 default:false
-            }
+            },
+            hideBorder:{default:false}
         },
         methods:{
             changePage(page){
@@ -28,5 +29,7 @@
     }
 </script>
 <style lang="less" scoped>
-    
+    .no-border{
+        border-top:none;
+    }
 </style>

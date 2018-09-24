@@ -1,11 +1,13 @@
 <template>
 	<div class="content">
-		<div class="p-body" ref="body">
-			<div class="close" @click="close">
-				<i class="el-icon-close"></i>
-			</div>
-			<preview v-if="data" :data="data"></preview>
-		</div>
+		<preview
+			v-if="data"
+			:data="data"
+			width="320px"
+			height="570px"
+			:need-close="true"
+			@close="close"
+		></preview>
 	</div>
 </template>
 <script>
@@ -56,10 +58,13 @@
 		top:0;
 		left: 0;
 		z-index: 99;
+		background-attachment:fixed;
+		-webkit-overflow-scroll:touch;
+		-webkit-overflow-scrolling:touch;
+		overflow: hidden;
 		.p-body{
 			width:400px;
 			height: 600px;
-			background: #fff;
 			position: relative;
 			.close{
 				position: absolute;

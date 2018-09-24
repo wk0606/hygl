@@ -35,6 +35,11 @@
                 margin-left: 5px;
             }
         }
+        .p-btn{
+            cursor: pointer;
+            font-size: 12px;
+            color: #409eff;
+        }
         >div{width: ~"calc(100% - 90px)";}
         .edit-items-required{
             &:before{
@@ -62,12 +67,18 @@
                 position: relative;
                 display: inline-flex;
                 .close{
+                    visibility: hidden;
                     position: absolute;
                     color:red;
                     font-size: 14px;
                     top: -5px;
                     right: -5px;
                     cursor: pointer;
+                }
+                &:hover{
+                    .close{
+                        visibility: visible;
+                    }
                 }
             }
             .edit-items-plus{

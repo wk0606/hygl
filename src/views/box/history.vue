@@ -9,20 +9,9 @@
         <div class="content-title">
             <div>
                 <span style="margin-right:10px;">日期范围</span>
-                <el-date-picker
-                    v-model="date"
-                    type="daterange"
-                    size="small"
-                    range-separator="-"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    value-format="yyyy-MM-dd"
-                    :clearable="false"
-                    :picker-options="pickerOptions"
-                    @change="getData">
-                </el-date-picker>
+                <date-picker :date.sync="date" @change="getData"></date-picker>
             </div>
-            <el-select v-model="range" placeholder="请选择" size="small" style="width:70px;" @change="getData">
+            <el-select v-model="range" placeholder="请选择" size="mini" style="width:70px;" @change="getData">
                 <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -51,6 +40,7 @@
 </template>
 <script>
 import popUp from '../../components/popUp/index'
+import datePicker from '../../components/datePicker/index'
 import echarts from 'echarts'
 export default {
   props:['views'],
@@ -192,7 +182,8 @@ export default {
       this.getData();
   },
   components:{
-      popUp
+      popUp,
+      datePicker
   }
 }
 </script>

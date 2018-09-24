@@ -49,7 +49,7 @@
                                 :value="item.id"
                             ></el-option>
                          </el-select>
-                         <a @click="openRouter('/main/mallchildren/product_group_add/-1')" style="color:#409eff;margin-left:10px;">新建分组</a>
+                         <a @click="openRouter('/main/mall/shop/product_group_add/-1')" style="color:#409eff;margin-left:10px;">新建分组</a>
                      </div>
                      <div class="tips" v-if="rules.spfz.show">{{rules.spfz.label}}</div>
                  </div>
@@ -61,6 +61,10 @@
                          <div style="diaplay:inline-flex;" v-if="details">
                             <draggable
                                 v-model="details.sptp"
+                                :options="{
+                                  animation:150,
+                                  ghostClass:'dragGhost'
+                                }"
                                 @start="drag=true"
                                 @end="drag=false"
                             >
@@ -93,7 +97,7 @@
              <div class="edit-items">
                  <span>规格设置</span>
                  <div>
-                     <gg-select :data="type_group" @select-change="handleChange"></gg-select>
+                     <gg-select ref="ggSelect" :selected="details.ggspgx" :list="details.spList" @selection-change="handleChange"></gg-select>
                  </div>
              </div>
              <div class="edit-items">
@@ -101,9 +105,7 @@
                  <div>
                      <el-table
                         :data="details.spList"
-                        :span-method="arraySpanMethod"
                         border
-                        
                      >
                         <el-table-column
                             v-for="item in colModels"
@@ -115,12 +117,11 @@
                         >
                             <template slot-scope="scope">
                                 <span class="cell-span" v-if="item.prop!='spdm'&&item.prop!='dyjg'&&item.prop!='kskc'">{{scope.row[item.prop]}}</span>
-                                <el-button
-                                    size="mini"
-                                    type="text"
+                                <span
                                     v-if="item.prop=='spdm'"
+                                    class="p-btn"
                                     @click="openGoodsDialog(scope.row,scope.$index)"
-                                >{{scope.row.qspmc||'选择商品库商品'}}</el-button>
+                                >{{scope.row.qspmc||'选择商品库商品'}}</span>
                                 <input-number
                                     v-if="item.prop=='dyjg'&&scope.row.spdm"
                                     v-model="scope.row.dyjg"
@@ -130,6 +131,19 @@
                                 ></input-number>
                                 <span class="cell-span" v-if="item.prop=='kskc'&&scope.row.spdm">{{scope.row.kskc}}</span>
                             </template>
+                        </el-table-column>
+                        <el-table-column
+                          width="80"
+                          label="操作"
+                          align="center"
+                        >
+                          <template slot-scope="scope">
+                            <i
+                              class="el-icon-delete"
+                              style="cursor:pointer;color:#999;"
+                              @click="removeProduct(scope.$index)"
+                            ></i>
+                          </template>
                         </el-table-column>
                      </el-table>
                      <div class="table-footer">
@@ -142,7 +156,7 @@
                           @click="openPrompt"
                         >价格</el-button>
                      </div>
-                     <div class="tips" v-if="rules.ggspgx.show" style="width:300px;">{{rules.ggspgx.label}}</div>
+                     <div class="tips" v-if="rules.spList.show" style="width:300px;">{{rules.spList.label}}</div>
                  </div>
              </div>
              <div class="edit-items">
@@ -156,7 +170,7 @@
                              <span style="margin-left:10px;">{{calcKcTotal}}</span>
                          </div>
                      </div>
-                 </div>
+                 </div>   
              </div>
          </div>
      </div>
@@ -167,13 +181,16 @@
                  <span class="edit-items-required">配送方式</span>
                  <div>
                      <div style="line-height:28px;">
-                        <el-radio v-model="details.psfs" :label="1">快递配送</el-radio>
-                        <el-radio v-model="details.psfs" :label="0">到店自提</el-radio>
+                        <el-checkbox-group v-model="details.psfs">
+                          <el-checkbox label="快递配送"></el-checkbox>
+                          <el-checkbox label="到店自提"></el-checkbox>
+                        </el-checkbox-group>
                      </div>
+                     <div class="tips" v-if="rules.psfs.show" style="width:300px;">{{rules.psfs.label}}</div>
                      <!-- <div class="tips" v-if="rules.name.show" style="width:300px;">{{rules.name.label}}</div> -->
                  </div>
              </div>
-             <div class="edit-items" v-show="details.psfs">
+             <div class="edit-items" v-show="details.psfs.indexOf('快递配送')>-1">
                  <span class="edit-items-required">运费设置</span>
                  <div>
                      <div>
@@ -194,6 +211,7 @@
                                 placeholder="请选择运费模板"
                                 style="margin-left:20px;width:150px;"
                                 @focus="getCache('kdmbList')"
+                                @change="details.yfsz=1"
                             >
                                 <el-option
                                     v-for="item in yfmb"
@@ -202,7 +220,7 @@
                                     :value="item.id"
                                 ></el-option>
                             </el-select>
-                            <a @click="openRouter('/main/mallchildren/set_dd_addkd/-1')">新建模板</a>
+                            <a @click="openRouter('/main/mall/shop/set_dd_addkd/-1')">新建模板</a>
                         </div>
                      </div>
                      <div class="tips" v-if="rules.yfsz.show" style="width:300px;">{{rules.yfsz.label}}</div>
@@ -242,19 +260,21 @@ export default {
   props:['details'],
   data() {
     return {
+      test:40,
       rules: {
         name: { label: "姓名不可为空", show: false },
         spdj: { label: "售价不可为空", show: false },
         spfz: { label: "分组不可为空", show: false },
         sptp: { label: "商品图片不可为空", show: false },
-        ggspgx: { label: "请添加规格后选择商品", show: false },
-        yfsz: { label: "运费模板不可为空", show: false }
+        spList: { label: "请至少选择一个商品", show: false },
+        yfsz: { label: "运费模板不可为空", show: false },
+        psfs: { label: "请选择配送方式", show: false }
       },
       type_group: [], //规格分组
       colModels: [
         { label: "商品名称", prop: "spdm" },
-        { label: "网店售价", prop: "dyjg" },
-        { label: "可售库存", prop: "kskc" }
+        { label: "网店售价", prop: "dyjg" ,width:120},
+        { label: "可售库存", prop: "kskc" ,width:120}
       ],
       iskdps: true,
       isddzt: false,
@@ -272,8 +292,9 @@ export default {
         if (nv.spdj !== "") this.rules.spdj.show = false;
         if (nv.spfz !== "") this.rules.spfz.show = false;
         if (nv.sptp.length) this.rules.sptp.show = false;
-        if (nv.ggspgx.length) this.rules.ggspgx.show = false;
-        if (nv.psfs) {
+        if (nv.spList.length) this.rules.spList.show = false;
+        if (nv.psfs.length) this.rules.psfs.show = false;
+        if (nv.psfs.indexOf('快递配送')>-1) {
           if (!nv.yfsz && this.details.tyyfje !== "") {
             this.rules.yfsz.show = false;
           }
@@ -283,6 +304,15 @@ export default {
         }
       },
       deep: true
+    },
+    'details.yfsz':function(nv){
+      console.log(nv)
+      if(nv){
+        this.details.tyyfje='';
+      }
+      else{
+        this.details.yfmbid='';
+      }
     }
   },
   computed:{
@@ -301,7 +331,9 @@ export default {
   methods: {
     getCache(key){
       if(key=='spfzList')
-        this.spfz=this.$util.getCache(key);
+        this.spfz=this.$util.getCache(key).filter(item=>{
+          return item.id!=1;
+        });
       else
         this.yfmb=this.$util.getCache(key);
     },
@@ -360,6 +392,18 @@ export default {
         }
       }, 150);
     },
+    //删除商品
+    removeProduct(index){
+      if(!this.details.spList[index].spdm){
+        this.details.spList.splice(index,1);
+      }else{
+        this.$confirm('确认要删除此行商品吗','提示',{
+          type:'warning'
+        }).then(res=>{
+          this.details.spList.splice(index,1);
+        }).catch(()=>{});
+      }
+    },
     //删除图片
     removImg(pic) {
       this.details.sptp = this.details.sptp.filter(item => {
@@ -411,11 +455,25 @@ export default {
         this.rules.sptp.show = true;
       }
       if (!this.details.spList.length) {
-        this.rules.ggspgx.show = true;
+        this.rules.spList.show = true;
+      }else{
+        let flag=false;
+        for(let obj of this.details.spList){
+          if(obj.spdm){
+            flag=true;
+            break;
+          }
+        }
+        if(!flag){
+          this.rules.spList.show = true;
+        }
+      }
+      if (!this.details.psfs.length) {
+        this.rules.psfs.show = true;
       }
       //验证运费这一块
       //如果选择快递配送
-      if (this.details.psfs) {
+      if (this.details.psfs.indexOf('快递配送')>-1) {
         //如果选择统一运费 验证是否为空
         if (!this.details.yfsz && this.details.tyyfje === "") {
           this.rules.yfsz.label = "运费不能为空";
@@ -462,142 +520,107 @@ export default {
       }
       return array.join(" ");
     },
-    //
-    createGgxx(target){
-      target.ggspgx = [];
-      var notNeedKeys = ["dyjg", "kskc", "qspmc", "spdm","isch"];
-      for (let obj of target.spList) {
-        var temp = [];
-        var keys = Object.keys(obj).filter(item => {
-          return notNeedKeys.indexOf(item) == -1;
-        });
-        for (let key of keys) {
-          temp.push({
-            name: key,
-            value: obj[key]
-          });
-        }
-        target.ggspgx.push({
-          spgg: temp,
-          spdm: obj.spdm,
-          qspmc: obj.qspmc,
-          kskc: obj.kskc,
-          dyjg: obj.dyjg,
-          isch:obj.isch
-        });
-      }
+    next(){
+      this.details.ggList=this.$refs.ggSelect.hasSelected.map(item=>{
+        return item.name;
+      });
+      this.$parent.currentTab='editDetails';
     },
     save() {
       //将splist转成需要的ggspgx格式并插入
       if (this.vartifyForm()) {
-        if (this.vartifyTable()) {
-          this.createGgxx(this.details);
-          this.$emit("next-step");
+        var flag=true;
+        for(let obj of this.details.spList){
+          if(obj.spdm&&obj.dyjg===''){
+            this.$message(`商品${obj.qspmc}未填写网店售价`,'error');
+            return;
+          }
+          if(obj.spdm&&obj.dyjg===0){
+            //flag=false;
+            this.$confirm('关联的商品中存在网店售价为0的商品,是否继续?','提示',{
+              type:'warning'
+            }).then(res=>{
+              this.next();
+            }).catch(()=>{});
+            return ;
+          }
         }
+        this.next();
       } else {
         this.$message("请先完善信息", "error");
       }
     },
+    equalArrayElement(array1,array2){
+      //检测方法：两个数组合并去重后,比较新数组与原来两个数组的长度
+      let temp=[...new Set(array1.concat(array2))];
+      return temp.length==array1.length&&temp.length==array2.length?true:false;
+    },
+    getValueArray(obj,keys){
+      let temp=[];
+      for(let key of keys){
+        temp.push(obj[key]);
+      }
+      return temp;
+    },
     //规格选择完毕
     handleChange(array) {
-      this.type_group = array.filter(item => {
-        return item.name && item.value.length;
+      //检测大规格是否变动
+      let pgg1=array.map(item=>{
+        return item.name;
       });
-      this.type_group = this.type_group.reverse();
-      this.colModels = this.colModels.slice(-3);
-      for (let obj of this.type_group) {
-        this.colModels.splice(0, 0, {
+      let pgg2=this.colModels.slice(0,this.colModels.length-3).map(item=>{
+        return item.label;
+      });
+      if(!this.equalArrayElement(pgg1,pgg2)){
+        this.details.spList=[];
+      }else{
+        //如果规格选择已经变动肯定不存在
+        //检测大规格+小规格是否已存在
+        let cgg1=array.map(item=>{
+          return item.value;
+        });
+        for(let obj of this.details.spList){
+          if(this.equalArrayElement(cgg1,this.getValueArray(obj,pgg1))){
+            this.$message('所选择的规格在列表中已存在,请重新选择','error');
+            return;
+          }
+        }
+      }
+      let temp={
+        spdm:0,
+        qspmc:'',
+        dyjg:'',
+        kskc:0,
+        isch:0
+      };
+      array.reverse();
+      this.colModels=this.colModels.slice(-3);
+      for(let obj of array){
+        this.colModels.splice(0,0,{
           label: obj.name,
           prop: obj.name,
           width: 100
         });
+        temp[obj.name]=obj.value;
       }
-      var temp = {};
-      var index = 0;
-      this.details.spList = [];
-      if (this.type_group.length) {
-        this.type_group = this.type_group.reverse();
-        this.tarnsferArray(temp, this.type_group, index, null);
-      }
-      //每一行中添加其他属性
-      for (let obj of this.details.spList) {
-        this.$set(obj, "spdm", 0);
-        this.$set(obj, "qspmc", "");
-        this.$set(obj, "dyjg", "");
-        this.$set(obj, "kskc", 0);
-        this.$set(obj, "isch", 0);
-      }
-    },
-    //转发规格二维数组为列表形式的一维数组
-    tarnsferArray(target, data, row, el) {
-      for (let i = 0; i < data[row].value.length; i++) {
-        target[data[row].name] = data[row].value[i];
-        var k = row + 1;
-        if (k > data.length - 1) {
-          target[data[row].name] = data[row].value[i];
-          this.details.spList.push(JSON.parse(JSON.stringify(target)));
-          delete target[data[row].name];
-        } else {
-          this.tarnsferArray(target, data, k, data[k - 1].name);
-        }
-        if (i >= data[row].value.length - 1) {
-          delete target[el];
-        }
-      }
-    },
-    //合并行的方法
-    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-      for (let i = 0; i < this.type_group.length - 1; i++) {
-        var k = this.type_group.slice(i + 1).reduce(function(num, obj) {
-          return num * obj.value.length;
-        }, 1);
-        if (columnIndex == i) {
-          if (rowIndex % k == 0) {
-            return [k, 1];
-          } else {
-            return [0, 0];
-          }
-        }
-      }
+      this.details.spList.push(temp);
     },
     resetPage() {
+      this.getCache('spfzList');
+      this.getCache('kdmbList');
+      this.$parent.footer='next';
       if(this.details.ggspgx.length){
-        var ggspgx=this.details.ggspgx;
-        //在这里需要将ggspgx中的值转成当前需要的spList和type_group
-        this.type_group = [];
-        var _type_group = {};
-        for (let obj of ggspgx) {
-          var spgg = obj.spgg;
-          for (let gg of spgg) {
-            if (!_type_group.hasOwnProperty(gg.name)) _type_group[gg.name] = [];
-            if (_type_group[gg.name].indexOf(gg.value) == -1)
-              _type_group[gg.name].push(gg.value);
-          }
-        }
-        for (let key in _type_group) {
-          this.type_group.push({
-            name: key,
-            value: _type_group[key],
-            show: false
-          });
-        }
-        var temp = JSON.parse(JSON.stringify(this.type_group)).reverse();
-        //在这里要构建colmodels
-        this.colModels = [
-          { label: "商品名称", prop: "spdm" },
-          { label: "网店售价", prop: "dyjg" },
-          { label: "可售库存", prop: "kskc" }
-        ];
-        for (let obj of temp) {
-          this.colModels.splice(0, 0, {
-            label: obj.name,
-            prop: obj.name,
+        let temp=JSON.parse(JSON.stringify(this.details.ggspgx));
+        temp.reverse();
+        for(let gg of temp){
+          this.colModels.splice(0,0,{
+            label: gg,
+            prop: gg,
             width: 100
           });
         }
+        temp=null;
       }
-      //this.spfz=this.$util.getCache('spfzList');
-      //this.yfmb=this.$util.getCache('kdmbList');
     },
     saveDetailsToStorage() {
       //在这里之判断当填写了商品名称的时候才去做缓存
@@ -615,15 +638,8 @@ export default {
     this.resetPage();
   },
   activated() {
-    this.resetPage();
-  },
-  destroyed() {
-    //this.$emit('clear-tab')
-    //this.saveDetailsToStorage();
-  },
-  deactivated() {
-    //this.$emit('clear-tab')
-    //this.saveDetailsToStorage();
+    //console.log(this.details)
+    //this.resetPage();
   },
   components: {
     draggable,

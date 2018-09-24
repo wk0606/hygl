@@ -50,14 +50,23 @@
             >
                 <el-table-column label="序号" width="80" align="center">
                     <template slot-scope="scope">
-                        <span>{{scope.$index}}</span>
+                        <span>{{(page.no-1)*page.size+scope.$index+1}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column
                     label="名称"
                     prop="name"
                     header-align="center"
-                >   
+                >  
+                    <template slot-scope="scope">
+                        <span v-if="!scope.row.text||!scope.row.text.length">{{scope.row.name}}</span>
+                        <div v-else>
+                            <span
+                                v-for="item in scope.row.text"
+                                :class="{red:item.isred}"
+                            >{{item.value}}</span>
+                        </div>
+                    </template> 
                 </el-table-column>
             </el-table>
         </div>
@@ -71,7 +80,9 @@
 import popUp from '../popUp/index'
 import pagination from '../pagination/index'
 import py from '../../func/pinyin'
+import keyWords from '../../mixins/keywordHighLight'
 export default { 
+  mixins:[keyWords],
   props:['views'],
   data(){
       return {
@@ -81,13 +92,13 @@ export default {
               ['N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
           ],
           tabs:[
-              {label:'总公司',icon:'icon-gongsi',value:'0'},
-              {label:'分公司',icon:'icon-fengongsi',value:'2'},
-              {label:'门店',icon:'icon-mendian',value:'3'},
-              {label:'仓库',icon:'icon-cangku',value:'4'}
+              {label:'总公司',icon:'icon-gongsi',value:0},
+              {label:'分公司',icon:'icon-fengongsi',value:2},
+              {label:'门店',icon:'icon-mendian',value:3},
+              {label:'仓库',icon:'icon-cangku',value:4}
           ],
           currentLetter:'',
-          currentTab:'0',
+          currentTab:0,
           currentRow:null,
           allList:[],
           List:[],
@@ -134,17 +145,48 @@ export default {
           }
       },
       filterByName(){
-          var origin=this.changePage();
-          this.List=this.List.filter(item=>{
-              return py.GetPY(item.name).indexOf(py.GetPY(this.name))>-1;
-          });
+          let tabs=JSON.parse(JSON.stringify(this.tabs));
+          this.allList=[];
+          if(this.currentTab>0){
+            let temp=tabs[this.currentTab-1];
+            tabs.splice(this.currentTab-1,1);
+            tabs.splice(0,0,temp);
+          }
+          for(let lx of tabs){
+              let list=this.getList(lx.value);
+              for(let obj of list){
+                let matchInfo=this.matchCharForIndex(obj.name,this.name);
+                if(matchInfo.flag){
+                    this.currentTab=lx.value;
+                    obj.text=this.splitStrByArray(matchInfo.index,obj.name);
+                    this.allList.push(obj);
+                }
+              }
+              if(this.allList.length)
+                break;
+          }
+          this.page.rows=this.allList.length;
+          this.changePage(1);
       },
       filterByLetter(value){
-          this.currentLetter=value;
-          var origin=this.changePage();
-          this.List=this.List.filter(item=>{
-              return py.GetPY(item.name)[0]==value.toLowerCase();
-          });
+          this.currentLetter=this.currentLetter==value?'':value;
+          let tabs=JSON.parse(JSON.stringify(this.tabs));
+          this.allList=[];
+          if(this.currentTab>0){
+            let temp=tabs[this.currentTab-1];
+            tabs.splice(this.currentTab-1,1);
+            tabs.splice(0,0,temp);
+          }
+          for(let lx of tabs){
+              let list=this.getList(lx.value);
+              this.allList=this.filterOfFirstLetter(list,this.currentLetter,'name');
+              if(this.allList.length){
+                  this.currentTab=lx.value;
+                  break;
+              }
+          }
+          this.page.rows=this.allList.length;
+          this.changePage(1);
       },
       reset(){
           this.currentLetter='';
@@ -221,4 +263,5 @@ export default {
             }
         }
     }
+    .red{color:red;}
 </style>

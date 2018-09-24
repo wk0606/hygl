@@ -2,38 +2,43 @@
   <div>
     <bread-nav :data="navs"></bread-nav>
     <div class="g-add-body" ref="body">
-      <div :style="{width:width+'px'}" class="g-add-left">
-        <img src="../../../../assets/mobilenav.png" alt="" ref="img">
-        <div class="g-add-header">
-          <b>{{name}}</b>
+      <real-view
+        width="300px"
+        height="600px"
+      >
+        <div>
+          <img src="../../../../assets/spxq.png" alt="" ref="img">
+          <div class="g-add-header" ref="header">
+            <b>{{name}}</b>
+          </div>
+          <div class="g-add-main">
+            <div>
+              <img src="../../../../assets/mrfz.jpeg" alt="">
+              <div class="g-footer">￥ 999.00</div>
+            </div>
+            <div>
+              <img src="../../../../assets/mrfz.jpeg" alt="">
+              <div class="g-footer">￥ 999.00</div>
+            </div>
+            <div>
+              <img src="../../../../assets/mrfz.jpeg" alt="">
+              <div class="g-footer">￥ 999.00</div>
+            </div>
+            <div>
+              <img src="../../../../assets/mrfz.jpeg" alt="">
+              <div class="g-footer">￥ 999.00</div>
+            </div>
+          </div>
         </div>
-        <div class="g-add-main">
-          <div>
-            <img src="../../../../assets/mob3.jpg" alt="">
-            <div class="g-footer">￥ 999.00</div>
-          </div>
-          <div>
-            <img src="../../../../assets/mob3.jpg" alt="">
-            <div class="g-footer">￥ 999.00</div>
-          </div>
-          <div>
-            <img src="../../../../assets/mob3.jpg" alt="">
-            <div class="g-footer">￥ 999.00</div>
-          </div>
-          <div>
-            <img src="../../../../assets/mob3.jpg" alt="">
-            <div class="g-footer">￥ 999.00</div>
-          </div>
-        </div>
-      </div>
+      </real-view>
       <div :style="{width:width+'px'}" class="g-add-right">
-        <div :style="{top:scrollTop+'px'}">
+        <div>
           <span><i style="color:red;">*</i>分组名称 ：</span>
           <el-input size="mini" v-model="name" style="width:150px;" :disabled="id==1"></el-input>
         </div>
       </div>
     </div>
-    <div class="g-add-bottom">
+    <div class="g-add-bottom" :style="{width:footerWidth+'px'}">
       <el-button size="mini" type="primary" :loading="load" @click="save">保存</el-button>
       <el-button size="mini" @click="cancel">取消</el-button>
     </div>
@@ -41,12 +46,14 @@
 </template>
 <script>
 import breadNav from '../../../../components/breadNav/index'
+import realView from '../../../../components/realView/index'
 export default {
+  props:['views'],
   data(){
     return {
       navs:[
-          {label:'网店商品',path:'/main/mallchildren/product_sp'},
-          {label:'编辑商品'}
+        { label: "分组列表", path:'/main/mall/shop/product_sp' },
+        { label: "编辑分组" }
       ],
       width:0,
       scrollTop:0,
@@ -56,7 +63,8 @@ export default {
       spList:[
         {url:''}
       ],
-      load:false
+      load:false,
+      footerWidth:0
     }
   },
   methods:{
@@ -75,9 +83,7 @@ export default {
           this.load=false;
           this.name='';
           this.$util.requestAllCache(this.$http);
-          if(this.$util.getCache('NEEDBACK')==1)
-            this.$router.go (-1);
-          this.$util.removeCache('NEEDBACK');
+          this.cancel();
         },err=>{
           this.load=false;
         });
@@ -98,24 +104,27 @@ export default {
   },
   activated(){
     this.width=this.$refs.body.offsetHeight*9/16;
+    this.footerWidth=this.$refs.body.offsetWidth;
     setTimeout(()=>{
       this.scrollTop=this.$refs.img.offsetHeight;
     },0);
     this.id=this.$route.params.id;
+    //this.id=this.views.id;
     if(this.id!=='-1'){
       this.getDetail();
     }
   },
   components:{
-    breadNav
+    breadNav,
+    realView
   }
 }
 </script>
 <style lang="less" scoped>
   .g-add-body{
-    height:~"calc(100% - 93px)";
     display: flex;
     justify-content: center;
+    padding-bottom: 48px;
     >div{
       margin: 0 20px;
       height:100%;
@@ -125,45 +134,40 @@ export default {
         height:auto;
       }
     }
-    .g-add-left{
-      border:1px solid #f2f2f2;
-      background: #f8f8f8;
-      position: relative;
-      .g-add-header{
-        height: 35px;
-        line-height: 35px;
+    .g-add-header{
+      height: 35px;
+      line-height: 35px;
+      background: #fff;
+      text-align: center;
+      font-size: 13px;
+    }
+    .g-add-main{
+      box-sizing: border-box;
+      //padding: 10px;
+      padding: 0 10px 10px 0;
+      height: ~"calc(100% - 86px)";
+      display: flex;
+      flex-wrap: wrap;
+      >div{
+        width:50%;
+        height: 50%;
+        border-top:10px solid transparent;
+        border-left:10px solid transparent;
         background: #fff;
-        text-align: center;
-        font-size: 13px;
-      }
-      .g-add-main{
         box-sizing: border-box;
-        //padding: 10px;
-        padding: 0 10px 10px 0;
-        height: ~"calc(100% - 86px)";
-        display: flex;
-        flex-wrap: wrap;
-        >div{
-          width:50%;
-          height: 50%;
-          border-top:10px solid #f8f8f8;
-          border-left:10px solid #f8f8f8;
-          background: #fff;
+        img{
+          display: block;
+          width: 100%;
+          height: 80%;
+        }
+        .g-footer{
+          height: 20%;
+          display: flex;
+          align-items: center;
+          font-size: 14px;
+          color: red;
           box-sizing: border-box;
-          img{
-            display: block;
-            width: 100%;
-            height: 80%;
-          }
-          .g-footer{
-            height: 20%;
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            color: red;
-            box-sizing: border-box;
-            padding: 0 10px;
-          }
+          padding: 0 10px;
         }
       }
     }
@@ -178,6 +182,7 @@ export default {
         border: 1px solid #f2f2f2;
         border-radius: 4px;
         position: relative;
+        top:109px;
         &:before{
           content: '';
           display: block;
@@ -198,5 +203,7 @@ export default {
     padding: 10px 0;
     text-align: center;
     margin-top:10px;
+    position: fixed;
+    bottom: 0;
   }
 </style>

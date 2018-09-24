@@ -113,7 +113,7 @@ export default {
           return val.join(',');
       },
       openAdd(id,index){
-        this.$router.push(`/main/mallchildren/set_dd_addkd/${id}`);  
+        this.$router.push(`/main/mall/shop/set_dd_addkd/${id}`);  
         this.currentIndex=index;
       },
       remove(row,index){
@@ -138,8 +138,8 @@ export default {
       this.getList();
   },
   activated(){
-      console.log(this.currentIndex)
       var row=this.$util.getCache('KDMB');
+      console.log(row)
       if(row){
           row.data=JSON.parse(row.data);
           if(this.currentIndex==-1){

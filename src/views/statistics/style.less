@@ -1,0 +1,71 @@
+.root-title{
+    padding: 10px;
+    background: #f8f9f8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    span{font-size: 14px;}
+}
+.root-title-before{
+    div{
+        display: inline-flex;
+        align-items: center;
+        font-size: 13px;
+        &:before{
+            content:'';
+            height: 20px;
+            width: 2px;
+            background: #409EFF;
+            display: block;
+            margin-right: 5px;
+        }
+    }
+}
+.root-chart{
+    display: flex;
+    flex-wrap: wrap;
+    >div{
+        box-sizing: border-box;
+        //width: 33.33%;
+        height: auto;
+        border: 10px solid #fff;
+        flex-shrink: 0;
+        background: #f8f9f8;
+        padding: 10px;
+        b{font-size:12px}
+        p{
+            display: flex;
+            align-items: center;
+            i{margin-left: 10px;}
+        }
+        .c-price{
+            margin-top: 5px;
+            b{font-size: 15px;}
+            span{
+                color: #999;
+            }
+            span:nth-child(2){margin-left: 10px;}
+        }
+        >div{
+            margin-top: 10px;
+            height: 200px;
+        }
+    }
+
+}
+@media screen and (min-width:1400px){
+    .root-chart{
+        >div{width: 33.33%;}
+    }
+}
+@media screen and (max-width:1399px) and (min-width:900px){
+    .root-chart{
+        >div{width: 50%;}
+    }
+}
+@media screen and (max-width:899px){
+    .root-chart{
+        >div{width: 100%;}
+    }
+}

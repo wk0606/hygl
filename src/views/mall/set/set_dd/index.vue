@@ -32,16 +32,22 @@ export default {
   activated(){
     
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm=>{
+      if(from.name!='set_dd_addkd')
+        vm.currentTab=vm.tabs[0].component;
+    });
+  },
   components:{
     smzt,
     kdfh,
-    jysz
+    jysz,
   }
 }
 </script>
 <style lang="less" scoped>
   .set-body{
-    height: ~"calc(100% - 47px)";
-    >div{height: 100%;}
+    // height: ~"calc(100% - 47px)";
+    // >div{height: 100%;}
   }
 </style>

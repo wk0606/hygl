@@ -17,6 +17,7 @@ import './public/filter'
 /**引入element */
 import {
   Input,
+  Autocomplete,
   Button,
   Row,
   Col,
@@ -33,6 +34,7 @@ import {
   Radio,
   RadioGroup,
   Checkbox,
+  CheckboxGroup,
   Upload,
   Tabs,
   TabPane,
@@ -43,12 +45,14 @@ import {
   cascader,
   Steps,
   Step,
-
+  Carousel,
+  CarouselItem,
   Message,
   MessageBox
 } from 'element-ui'
 import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 Vue.use(Input)
+Vue.use(Autocomplete)
 Vue.use(Button)
 Vue.use(Row)
 Vue.use(Col)
@@ -65,6 +69,7 @@ Vue.use(FormItem)
 Vue.use(Radio)
 Vue.use(RadioGroup)
 Vue.use(Checkbox)
+Vue.use(CheckboxGroup)
 Vue.use(Upload)
 Vue.use(Tabs)
 Vue.use(TabPane)
@@ -75,6 +80,8 @@ Vue.use(Transfer)
 Vue.use(cascader)
 Vue.use(Steps)
 Vue.use(Step)
+Vue.use(Carousel)
+Vue.use(CarouselItem)
 Vue.component(CollapseTransition.name, CollapseTransition)
 /**vuex */
 Vue.prototype.$store=store;
@@ -114,13 +121,17 @@ Vue.prototype.renderFilterHead=function(h, {column, $index, store, _self}){
         },
         on:{
           click:function($event){
-            panel.open({
+            let filterObj={
               top:$event.target.getBoundingClientRect().bottom,
               left:$event.target.getBoundingClientRect().right,
               column:column.property,
               datas:_self.filterColumn.datas,
               filterColumn:_self.filterColumn
-            },$event.target.parentNode);
+            };
+            if(column.hasOwnProperty('formatter')){
+              filterObj.formatter=column.formatter;
+            }
+            panel.open(filterObj,$event.target.parentNode);
           }
         }
       }
@@ -143,6 +154,7 @@ Vue.prototype.$alert = function (msg, title = '提示', type = 'warning') {
 }
 Vue.prototype.$confirm = MessageBox.confirm;
 Vue.prototype.$prompt = MessageBox.prompt;
+Vue.prototype.$msgbox = MessageBox
 Vue.prototype.$dialog = function (msg = '', options = {}) {
   MessageBox.confirm(msg, '提示', {
       confirmButtonText: '确定',
@@ -152,6 +164,11 @@ Vue.prototype.$dialog = function (msg = '', options = {}) {
       options.success(options.params);
   });
 }
+// //导航守卫
+// router.beforeEach((to,from,next)=>{
+//   console.log(to)
+//   console.log(from)
+// });
 
 /* eslint-disable no-new */
 new Vue({

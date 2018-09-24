@@ -1,28 +1,31 @@
 <template>
-    <div class="preview">
-        <img src="../../assets/mobilenav.png"/>
-        <div class="preview-body">
-            <div class="preview-title"><b>{{data.title}}</b></div>
-		    <div class="preview-info" v-if="data.hdfw.length">
-                <span>活动门店：</span>
-                <span style="color:#20A0FF;">{{data.hdfw.length>1?getMdName(data.hdfw[0])+'等门店':getMdName(data.hdfw[0])}}</span>
+    <real-view :width="width" :height="height" :needClose="needClose" @close="close">
+        <div class="preview">
+            <img src="../../assets/hdxq.png" width="100%"/>
+            <div class="preview-body">
+                <div class="preview-title"><b>{{data.title}}</b></div>
+                <div class="preview-info" v-if="data.hdfw.length">
+                    <span>活动门店：</span>
+                    <span style="color:#20A0FF;">{{data.hdfw.length>1?getMdName(data.hdfw[0])+'等门店':getMdName(data.hdfw[0])}}</span>
+                </div>
+                <div class="preview-info" v-if="data.yxrqq&&data.yxrqz">
+                    <span>活动时间：</span>
+                    <span>{{getFormatTime(data.yxrqq)+'至'+getFormatTime(data.yxrqz)}}</span>
+                </div>
+                <div class="simditor">
+                    <div class="simditor-body" v-html="data.content"></div>
+                </div>
             </div>
-            <div class="preview-info" v-if="data.yxrqq&&data.yxrqz">
-                <span>活动时间：</span>
-                <span>{{getFormatTime(data.yxrqq)+'至'+getFormatTime(data.yxrqz)}}</span>
-            </div>
-            <div class="simditor">
-                <div class="simditor-body" v-html="data.content"></div>
+            <div class="preview-footer" v-if="data.isfxfk">
+                <div>转发有奖</div>
             </div>
         </div>
-        <div class="preview-footer" v-if="data.isfxfk">
-            <div>转发有奖</div>
-        </div>
-    </div>
+    </real-view>
 </template>
 <script>
+import realView from '../../components/realView/index'
 export default {
-  props:['data'],
+  props:['data','width','height','needClose'],
   methods:{
       getMdName(id){
           return this.$util.getCompanyInfo(id).name;
@@ -35,7 +38,13 @@ export default {
             var min=_D.getMinutes()<10?'0'+_D.getMinutes():_D.getMinutes();
             var s=_D.getSeconds()<10?'0'+_D.getSeconds():_D.getSeconds();
             return `${_D.getFullYear()}-${m}-${d} ${h}:${min}:${s}`;
+      },
+      close(){
+          this.$emit('close');
       }
+  },
+  components:{
+      realView
   }
 }
 </script>
@@ -46,9 +55,10 @@ export default {
         height: 100%;
         display: flex;
         flex-direction: column;
-        border: 1px solid #ccc;
+        background: #fff;
         >img{width: 100%;flex-shrink: 0;}
         .preview-body{
+            box-sizing: border-box;
             flex-grow: 1;
             box-sizing: border-box;
             overflow-y: auto;
@@ -57,8 +67,8 @@ export default {
                 flex-shrink: 0;
                 font-size: 14px;
                 text-align: center;
-                box-sizing: border-box;
-                padding: 10px;
+                margin: 10px 0;
+                padding: 0 10px;
             }
             .preview-info{
                 flex-shrink: 0;

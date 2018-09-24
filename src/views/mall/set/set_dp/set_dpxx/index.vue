@@ -1,17 +1,5 @@
 <template>
-  <div>
-    <!-- <div
-      class="set-items"
-      v-for="item in details"
-      :key="item.prop"
-    >
-      <span>{{item.label}} : </span>
-      <span>{{data[item.prop]}}</span>
-      <el-button
-        v-if="item.btnText"
-        type="text"
-      >{{item.btnText}}</el-button>
-    </div> -->
+  <div ref="main">
     <table cellspacing="10">
       <tr
         v-for="item in details"
@@ -37,7 +25,7 @@
               size="mini"
               @change="item.show=false"
               style="width:180px;"
-            >
+             >
               <el-option
                 v-for="item in lm"
                 :key="item.value"
@@ -45,7 +33,8 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input v-if="item.show&&item.prop=='dpName'" size="mini" v-model="data[item.prop]" @blur="item.show=false"></el-input>
+            <el-input v-if="item.show&&item.prop=='dpName'" size="mini" v-model="data[item.prop]" @blur="item.show=false" style="width:273px;" autofocus></el-input>
+            <upload v-if="item.prop=='dpImg'" :src.sync="data.dptpUrl"></upload>       
           </div>
         </td>
         <td>
@@ -55,12 +44,11 @@
             @click="item.click(item)"
             
           >{{typeof item.btnText=='string'?item.btnText:item.btnText()}}</el-button>
-          <!-- :disabled="item.prop=='isValidate'&&data.isValidate==1" -->
         </td>
       </tr>
     </table>
-    <div style="padding-left:15px;padding-top:15px;">
-      <el-button type="primary" size="mini" @click="save" :disabled="modifyCount<=1">保存</el-button>
+    <div class="form-save-btn" :style="{width:footerWidth+'px'}">
+      <el-button :type="modifyCount>1?'primary':''" size="mini" @click="save" :disabled="modifyCount<=1">保存</el-button>
     </div>
     <modify-phone v-if="dialog.show" :views="dialog" @change="setNewPhone"></modify-phone>
   </div>
@@ -68,6 +56,7 @@
 <script>
 import {jylm} from '../../../../../func/jylm'
 import modifyPhone from './modifyPhone'
+import upload from '../../../../../components/upload/index'
 export default {
   data(){
     return {
@@ -76,6 +65,7 @@ export default {
         {label:'公司代码',prop:'gsdm'},
         {label:'公司认证',prop:'isValidate',btnText:this.rzBtnText,click:this.openRz,format:this.formatRz},
         {label:'店铺名称',prop:'dpName',btnText:'修改',show:false,click:this.openInput},
+        {label:'店铺图片',prop:'dpImg'},
         {label:'主营类目',prop:'zylm',format:this.formatName},
         {label:'关联微信公众号',prop:'wxgzh'},
         {label:'有效日期',prop:'enddate',btnText:'续费',click:this.openXf},
@@ -88,7 +78,8 @@ export default {
         show:false,
         phone:''
       },
-      modifyCount:0
+      modifyCount:0,
+      footerWidth:0
     }
   },
   watch:{
@@ -118,7 +109,7 @@ export default {
       if(!this.$util.vartifyPhone(this.data.phone)){
         this.$message('请完善联系方式','error');
       }else{
-        this.$router.push(`/main/mallchildren/set_dprz/${this.data.phone}/${this.data.dpName}`);
+        this.$router.push(`/main/mall/shop/set_dprz/${this.data.phone}/${this.data.dpName}`);
       }
     },
     openXf(){
@@ -149,10 +140,12 @@ export default {
     
   },
   mounted(){
+    this.footerWidth=this.$refs.main.offsetWidth;
     this.getDetails();
   },
   components:{
-    modifyPhone
+    modifyPhone,
+    upload
   }
 }
 </script>

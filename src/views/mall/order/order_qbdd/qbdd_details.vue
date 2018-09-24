@@ -9,10 +9,10 @@
           <div class="order-body-jy">
             <div>
                 <div class="order-body-jy-left">
-                    <b>{{step[details.ddzt].label}}</b>
+                    <b>{{details.ddzt==4?'交易关闭':step[details.ddzt].label}}</b>
                 </div>
                 <div class="order-body-jy-right">
-                    <el-steps :active="details.ddzt+1" align-center>
+                    <el-steps :active="details.ddzt==4?-1:details.ddzt+1" align-center>
                         <el-step
                             v-for="(item,index) in step"
                             :key="index"
@@ -53,49 +53,22 @@
                     :style="{width:col.width}"
                   >{{col.label}}</div>
               </div>
-              <div
-                v-for="row in details.spList"
-                :key="row.id"
-                class="order-body-table-row"
-              >
-                <div class="order-body-table-item order-body-table-body">
-                    <div>
-                        <img :src="row.sppic" alt="">
-                        <span class="ellipsis2rows">{{row.name}}</span>
-                    </div>
-                    <div>
-                        <span>￥ {{row.dj | currency}}</span>
-                        <span>{{row.sl}}</span>
-                    </div>
-                    <div>
-                        <span>￥ {{row.sl*row.dj | currency}}</span>
-                    </div>
-                    <div>
-                        <span>{{row.fhzt}}</span>
-                    </div>
-                    <div class="order-body-table-border">
-                        <div class="order-body-table-btn" :class="{'order-body-table-disabled':row.tkzt}">{{row.tkzt?'已退款':'主动退款'}}</div>
-                    </div>
-                    <div>
-                        <span>￥ {{row.yhje | currency}}</span>
-                    </div>
-                </div>
-                <div class="order-body-table-footer">
-                    <span>商品留言 ：</span>
-                    <div>{{row.sply}}</div>
-                </div>
-              </div>
+              <order-detail-row :data="details.spList" :columns="colModel" :gift="details.gift"></order-detail-row>
           </div>
       </div>
+      <refund v-if="dialog.show" :views="dialog" :gift="0"></refund>
   </div>
 </template>
 <script>
 import breadNav from '../../../../components/breadNav/index'
+import orderDetailRow from './orderDetailRow'
+import refund from './refund'
+import {Loading} from '../../../../func/loading'
 export default {
   data(){
       return {
         navs:[
-          {label:'全部订单',path:'/main/mallchildren/order'},
+          {label:'订单列表',path:'/main/mall/shop/order'},
           {label:'订单详情'}
         ],  
         //'买家下单','买家付款','商家发货','交易完成'
@@ -129,7 +102,7 @@ export default {
         ],
         details:{
             ddh:'',
-            ddzt:0,
+            ddzt:1,
             sjbz:'',
             lxrname:'赵普',
             lxrphone:'',
@@ -146,7 +119,10 @@ export default {
             {label:'发货状态',prop:'ffzt',width:'10%'},
             {label:'退款状态',prop:'tkzt',width:'15%'},
             {label:'优惠(元)',prop:'yhje',width:'12%'}
-        ]
+        ],
+        dialog:{
+            show:false
+        }
       }
   },
   computed:{
@@ -161,18 +137,19 @@ export default {
           var mjxx=JSON.parse(row.extend);
           this.details.ddh=row.ddh;
           this.details.ddzt=row.ddzt;
-          this.details.sjbz=row.sjbz;
+          this.details.sjbz=mjxx.remark;
           this.details.lxrname=shrxx.shr;
           this.details.lxrphone=shrxx.shrlxfs;
           this.details.mjname=mjxx.mjname;
-          this.details.fksj=row.zfsj;
-          this.details.mjly=mjxx.mjlx;
+          this.details.fksj=row.zfrq;
+          this.details.mjly=mjxx.mjly;
+          this.details.gift=mjxx.gift;
           this.step[0].time=row.zdrq;
           this.step[1].time=row.zfrq;
           this.step[2].time=row.fhrq;
           this.step[3].time=row.wcrq;
           this.details.zfje=obj.List.reduce((total,item)=>{
-              return total+item.je;
+              return total+JSON.parse(item.extend).zje;
           },0);
           this.details.spList=[];
           for(let item of obj.List){
@@ -180,30 +157,43 @@ export default {
               this.details.spList.push({
                   sppic:sp.sptpFirst,
                   name:sp.spname,
-                  dj:sp.spdj,
-                  xj:item.sl,
+                  dj:parseFloat(sp.spdj),
+                  sl:item.sl,
+                  xj:item.sl*parseFloat(sp.spdj),
                   fhzt:item.fhzt?'已发货':'未发货',
                   tkzt:item.tkzt,
                   yhje:0,
                   sply:''
               });
           }
+          this.details.spList=this.details.spList.concat(this.details.spList)
       },
       getDetails(ddh){
+          Loading.open({
+              height:document.body.offsetHeight
+          });
           this.$http('/api/x6/getOrderByDdh.do',{
               ddh:ddh
           }).then(res=>{
+              Loading.close();
               this.formatDetails(res.VO);
-          })
+          },err=>{
+              Loading.close();
+          });
       }
   },
   mounted(){
       var ddh=this.$route.params.ddh;
-      console.log(this.$route)
+      this.getDetails(ddh);
+  },
+  activated(){
+      var ddh=this.$route.params.ddh;
       this.getDetails(ddh);
   },
   components:{
-      breadNav
+      breadNav,
+      orderDetailRow,
+      refund
   }
 }
 </script>

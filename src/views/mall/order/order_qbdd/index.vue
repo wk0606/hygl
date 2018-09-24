@@ -19,20 +19,7 @@
           </div>
           <div class="order-search-item">
               <span>下单时间</span>
-              <el-date-picker
-                v-model="params.xdsj"
-                size="mini"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"
-                class="order-search-item-date">
-              </el-date-picker>
-              <div class="order-btn" @click="selectDate(0)">今</div>
-              <div class="order-btn" @click="selectDate(1)">昨</div>
-              <div class="order-btn" @click="selectDate(7)">最近7天</div>
-              <div class="order-btn" @click="selectDate(30)">最近30天</div>
+              <date-picker :date.sync="params.xdsj" need-option class="order-search-item-date"></date-picker>
           </div>
           <div class="order-search-item">
               <span>订单状态</span>
@@ -79,7 +66,7 @@
         class="order-table-body"
         v-for="row in List"
         :key="row.ddh"
-      >
+       >
           <div class="order-table-title">
               <div>
                   <span>订单号 : {{row.ddh}}</span>
@@ -88,35 +75,13 @@
               <div>
                   <b @click="openDetails(row.ddh)">查看详情</b>
                   <i>-</i>
-                  <b>备注</b>
+                  <b @click="openComments(row)">备注</b>
               </div>
           </div>
-          <div
-            class="order-table-item order-table-row"
-            v-for="row in row.details"
-            :key="row.id"
-          >
-              <div>
-                  <img :src="row.sptpfirst" alt="">
-                  <span class="cell-span">{{row.spname}}</span>
-              </div>
-              <div class="order-table-row-border">
-                  <div>￥{{row.spdj | currency}}</div>
-                  <div>{{row.sl}}</div>
-              </div>
-              <div class="order-table-row-border">
-                  <div>{{row.mjname}}</div>
-                  <div>{{row.shr}} {{row.shrlxfs}}</div>
-              </div>
-              <div class="order-table-row-border">
-                  <span>{{row.psfs?'自提':'快递'}}</span>
-              </div>
-              <div class="order-table-row-border">
-                  <span>{{row.je}}</span>
-              </div>
-              <div class="order-table-row-border">
-                  <span>{{row.ddzt}}</span>
-              </div>
+          <order-row :columns="colModel" :data="row.details" :sfje="row.zje"></order-row>
+          <div class="order-comments" v-if="row.remark">
+              <span>卖家备注 : </span>
+              <div>{{row.remark}}</div>
           </div>
       </div>
   </div>
@@ -136,16 +101,24 @@ export default {
           ],
           ddType:[
             {label:'全部',value:-1},
-            {label:'已下单',value:0},
-            {label:'已付款',value:1},
-            {label:'已发货',value:2},
-            {label:'已完成',value:3}
+            {label:'待付款',value:0},
+            {label:'待发货',value:1},
+            {label:'待收货',value:2},
+            {label:'已完成',value:3},
+            {label:'已关闭',value:4}
           ],
           psType:[
               {label:'全部',value:-1},
-              {label:'快递',value:0},
-              {label:'自提',value:1}
-          ]
+              {label:'快递',value:1},
+              {label:'自提',value:0}
+          ],
+          params: {
+              lx:0,
+              value:'',
+              xdsj:[],
+              ddzt:-1,
+              psfs:-1
+          },
       }
   },
   computed:{
@@ -170,7 +143,7 @@ export default {
       }
   },
   mounted(){
-     this.initSearchParams(); 
+     //this.initSearchParams(); 
   }
 }
 </script>

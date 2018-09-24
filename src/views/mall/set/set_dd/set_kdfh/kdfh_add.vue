@@ -88,7 +88,7 @@ export default {
       return {
           load:false,
           navs:[
-              {label:'订单设置',path:'/main/mallchildren/set_dd'},
+              {label:'快递发货',path:'/main/mall/shop/set_dd'},
               {label:'编辑模板'}
           ],
           jfList:[
@@ -203,17 +203,14 @@ export default {
                 this.load=true;
                 this.details.jjdw=this.details.jffs?'千克':'个';
                 this.$http('/api/x6/HySetKdmbSave.do',this.details).then(res=>{
+                    this.load=false;
                     this.$message(this.$route.params.id!=='-1'?'编辑成功':'新增成功');
-                    this.$router.push('/main/mallchildren/set_dd');
+                    //this.$router.push('/main/mallchildren/set_dd');
                     res.VO.show=true;
                     this.$util.requestAllCache(this.$http,()=>{
                         this.$util.setCache('KDMB',res.VO);
-                    });
-                    //
-                    this.load=false;
-                    if(this.$util.getCache('NEEDBACK')==1)
                         this.$router.go (-1);
-                    this.$util.removeCache('NEEDBACK');
+                    });
                 },err=>{
                     this.load=false;
                 });

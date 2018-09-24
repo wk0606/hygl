@@ -1,12 +1,11 @@
 import {excel} from '../../../func/excel'
-//MockJs----（开发测试数据）
-//import '../../../public/mock'
-
+import datePicker from '../../../components/datePicker/index'
+import orderRow from './orderRow'
+import {Loading} from '../../../func/loading'
 export const search = {
     props:['currentTab'],
     data() {
         return {
-            params: {},
             colModel: [
                 { label: '商品', prop: 'spname', width: '30%' },
                 { label: '单价(元)/数量', prop: 'dj', width: '10%', align: 'center' },
@@ -33,20 +32,25 @@ export const search = {
     methods: {
         //执行筛选
         search() {
-            console.log()
+            Loading.open({
+                height:document.body.height
+            });
+            this.$util.setCache(this.$parent.currentTab,this.params);
             this.load=true;
             var params=JSON.parse(JSON.stringify(this.params));
             params.zdrqs=params.xdsj[0]||'';
             params.zdrqz=params.xdsj[1]||'';
             params.pageSize=this.page.size;
             params.pageNo=this.page.no;
-            params.psfs=this.currentTab=='qbdd'?-1:this.currentTab=='wdfh'?0:1;
+            params.psfs=this.currentTab=='qbdd'?this.params.psfs:this.currentTab=='wdfh'?1:0;
             delete params.xdsj;
             this.$http('/api/x6/getOrderListByCondition.do',params).then(res=>{
+                Loading.close();
                 this.load=false;
                 this.List=res.rows;
                 this.page.rows=res.totalRows;
             },err=>{
+                Loading.close();
                 this.load=false;
             });
         },
@@ -95,7 +99,52 @@ export const search = {
         },
         //打开详情
         openDetails(ddh) {
-            this.$router.push(`/main/mallchildren/order_details/${ddh}`);
-        }
+            this.$router.push(`/main/mall/shop/order_details/${ddh}`);
+        },
+        //打开备注
+        openComments(row){
+            this.$parent.dialog.data=row.remark;
+            this.$parent.dialog.ddh=row.ddh;
+            this.$parent.dialog.show=true;
+        },
+        //跟新备注
+        updateRowRemark(ddh,bz){
+            for(let obj of this.List){
+                if(obj.ddh==ddh){
+                    obj.remark=bz;
+                    break;
+                }
+            }
+        },
+        getDdzt(zt){
+            if(zt==1){
+                return '待付款';
+            }else if(zt==2){
+                return '待发货';
+            }else if(zt==3){
+                return '待收货';
+            }else if(zt==4){
+                return '已完成';
+            }else
+                return '已关闭';
+        },
+        resetPage(){
+            console.log(this.params)
+            let temp=this.$util.getCache(this.$parent.currentTab);
+            if(temp){
+                for(let key in temp){
+                    this.$set(this.params,key,temp[key]);
+                }
+                this.search();
+                //this.$util.removeCache(this.$parent.currentTab);
+            }
+        },
+    },
+    mounted() {
+        this.resetPage();
+    },
+    components:{
+        datePicker,
+        orderRow
     }
 }

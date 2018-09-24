@@ -6,7 +6,7 @@
                 ref="content"
                 v-drag
             >
-                <div class="p-title">
+                <div class="p-title" :class="type">
                     <div>
                         <span>{{title}}</span>
                         <span v-if="titleSub" class="title-sub">{{titleSub}}</span>
@@ -17,9 +17,14 @@
                     <slot name="content"></slot>
                 </div>
                 <div class="p-footer">
-                    <slot name="footer"></slot>
-                    <el-button type="primary" size="mini" v-if="confirm" @click="confirm" :loading="loading" :disabled="disabled">{{confirmText}}</el-button>
-                    <el-button size="mini" v-if="!hideCancel" @click="close">{{cancelText}}</el-button>
+                    <div>
+                        <slot name="footer-text"></slot>
+                    </div>
+                    <div>
+                        <slot name="footer"></slot>
+                        <el-button type="primary" size="mini" v-if="confirm" @click="confirm" :loading="loading" :disabled="disabled">{{confirmText}}</el-button>
+                        <el-button size="mini" v-if="!hideCancel" @click="close">{{cancelText}}</el-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -30,6 +35,7 @@ export default {
   props:{
       title:{default:'提示'},
       titleSub:{default:''},//副标题
+      type:{default:'dark'},//标题栏样式 dark/light
       width:{default:500},
       confirm:{default:null},//确认回调
       cancel:{default:null},//关闭回调
@@ -75,9 +81,9 @@ export default {
             sy = event.clientY;
             lx=el.getBoundingClientRect().left;
             ly=el.getBoundingClientRect().top;
-            target.addEventListener('mousemove', move);
-            target.addEventListener('mouseup', end);
-            target.addEventListener('mouseout', outside);
+            document.body.addEventListener('mousemove', move);
+            document.body.addEventListener('mouseup', end);
+            //target.addEventListener('mouseout', outside);
             target.addEventListener('blur', blur);
             el.style.cursor = 'move';
             canmove = true;
@@ -88,15 +94,15 @@ export default {
               el.style.top = ly + (event.clientY - sy)+'px';
             }
           };
-          function outside(){
-            target.removeEventListener('mousemove', move);
-            target.removeEventListener('mouseup', end);
-          }
+        //   function outside(){
+        //     target.removeEventListener('mousemove', move);
+        //     target.removeEventListener('mouseup', end);
+        //   }
           function end () {
             canmove = false;
             el.style.cursor = 'default';
-            target.removeEventListener('mousemove', move);
-            target.removeEventListener('mouseup', end);
+            document.body.removeEventListener('mousemove', move);
+            document.body.removeEventListener('mouseup', end);
           };
           function blur () {
             canmove = false;

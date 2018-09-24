@@ -9,21 +9,7 @@
           <span>时间选择 : </span>
           <div>
               <div>
-                <el-date-picker
-                    v-model="date"
-                    type="daterange"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    value-format="yyyy-MM-dd"
-                    size="mini">
-                </el-date-picker>
-                <span
-                    v-for="item in datePickes"
-                    :key="item.value"
-                    class="span-btn"
-                    @click="selectDate(item.value)"
-                >{{item.label}}</span>
+                <date-picker :date.sync="date" need-option></date-picker>
               </div>
               <div>
                   <el-button size="mini" type="primary" @click="getList">查询</el-button>
@@ -84,6 +70,7 @@
 </template>
 <script>
 import pagination from '../../../components/pagination/index'
+import datePicker from '../../../components/datePicker/index'
 import {excel} from '../../../func/excel'
 export default {
   data(){
@@ -184,7 +171,8 @@ export default {
       //this.calcTotal();
   },
   components:{
-      pagination
+      pagination,
+      datePicker
   }
 }
 </script>

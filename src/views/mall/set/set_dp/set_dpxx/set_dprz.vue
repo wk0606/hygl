@@ -227,7 +227,7 @@ export default {
   data(){
     return {
       navs:[
-        {label:'店铺信息',path:'/main/mallchildren/set_dp'},
+        {label:'店铺信息',path:'/main/mall/shop/set_dp'},
         {label:'店铺认证'}
       ],
       details:{

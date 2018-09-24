@@ -17,6 +17,19 @@
 			<el-table stripe :data="datas" border height="100%"  ref="multipleTable" @selection-change="changeBar">
 				<el-table-column type="selection" width="55" align="center"></el-table-column>
 				<el-table-column
+					width="90"
+					align="center"
+					label="分享返现"
+				>
+					<template slot-scope="scope">
+						<i
+							class="iconfont icon-hongbao2"
+							:class="scope.row.isfxfk?'red':'gray'"
+							style="font-size:25px;"
+						></i>
+					</template>
+				</el-table-column>
+				<el-table-column
 					v-for="item in colModel"
 					:key="item.prop"
 					header-align="center"
@@ -35,14 +48,15 @@
 							@click="item.cellClick?item.cellClick(scope.row):null"
 						>
 							{{item.format?item.format(scope.row):scope.row[item.prop]}}
-							<i class="icon-back" v-if="item.prop=='title'&&scope.row.isfxfk"><i>返</i></i>
+							<!-- <i class="icon-back" v-if="item.prop=='title'&&scope.row.isfxfk"><i>返</i></i> -->
 						</span>
 						
 					</template>
 				</el-table-column>
-				<el-table-column label="操作" align="center" width='150'>
+				<el-table-column label="操作" align="center" width='180'>
 					<template slot-scope="scope">
 						<el-button type="text" size="mini" @click="chartView(scope.row)">PV值</el-button>
+						<el-button type="text" size="mini" @click="activityStatus(scope.row)">活动状态</el-button>
 						<el-button type="text" size="mini" @click="realView(scope.row)">用户画面</el-button>
 					</template>
 				</el-table-column>
@@ -54,6 +68,7 @@
 </template>
 <script>
 	import chart_view from './charts_view'
+	import activity_charts from './activityCharts'
 	import bar from '../../components/bar/index'
 	import py from '../../func/pinyin'
 	import pagination from '../../components/pagination/index'
@@ -73,8 +88,8 @@
 					rows:0
 				},
 				colModel:[
-					{prop:'title',label:'活动名称',align:'left',min:150,cellClick:this.openActivity,needFilter:true},
-					{prop:'yxrq',label:'有效时间',align:'center',min: 150,format:this.formatRq,class:'nowrap'},
+					{prop:'title',label:'活动名称',align:'left',cellClick:this.openActivity,needFilter:true},
+					{prop:'yxrq',label:'有效时间',align:'center',format:this.formatRq,class:'nowrap'},
 					{prop:'hdzt',label:'活动状态',align:'center',width: 120,needFilter:true,formatColor:this.formatColor},
 					{prop:'xsje',label:'活动销售金额',align:'right',width: 137,currency:true,needDesc:true},
 					{prop:'xssl',label:'消费人数',align:'right',width: 110,needDesc:true},
@@ -97,7 +112,7 @@
 				dialog:{
 					name:'',
 					data:null,
-					show:true
+					show:false
 				}
 			}
 		},
@@ -148,6 +163,12 @@
 				this.dialog.name='chart_view';
 				this.dialog.show=true;
 				this.dialog.data=row.id;
+			},
+			//活动动态
+			activityStatus(row){
+				this.dialog.name='activity_charts';
+				this.dialog.data=row.id;
+				this.dialog.show=true;
 			},
 			//真机预览
 			realView(row){
@@ -209,10 +230,8 @@
 				})])
 			}
 		},
-		activated(){
-			this.getList();
-		},
 		mounted(){
+			this.getList();
 			this.$on('filterList',array=>{
 				this.alldatas=array;
 				this.changePage();
@@ -222,7 +241,8 @@
 			fax_preview,
 			bar,
 			pagination,
-			chart_view
+			chart_view,
+			activity_charts
 		}
 	}
 </script>
@@ -230,7 +250,7 @@
 	.hd-container{
 		.act-table{
 			position: relative;
-			height: ~"calc(100% - 105px)";
+			height: ~"calc(100% - 113px)";
 		}
 	}
 	.el-button{font-family: 'microsoft yahei';}
@@ -259,4 +279,6 @@
 			transform: scale(.8,.8);
 		}
 	}
+	.red{color:red;}
+	.gray{color:#ccc;}
 </style>

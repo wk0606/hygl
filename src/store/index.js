@@ -5,7 +5,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state:{
         filterTable:{},
-        count:1
+        count:1,
+        user:{}
     },
     mutations:{
         updateFilterTable(state,obj){
@@ -13,6 +14,9 @@ export default new Vuex.Store({
         },
         updateCount(state,value){
             state.count=value;
+        },
+        updateUserInfo(state,data){
+            state.user=data;
         }
     }
 });

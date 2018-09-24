@@ -14,6 +14,7 @@ export const panel={
                     datas:options.datas,//表格的原数据
                     column:options.column,//当前过滤的列
                     filterColumn:options.filterColumn,//页面中的指定属性（需手动注册此属性,名称必须一致）
+                    formatter:options.formatter,//列的格式化方法
                 }
             });
             document.body.appendChild(dom.$el);
@@ -22,6 +23,7 @@ export const panel={
             dom.left=options.left;
             dom.datas=options.datas;
             dom.column=options.column;
+            dom.formatter=options.formatter;
         }
     }
 }
