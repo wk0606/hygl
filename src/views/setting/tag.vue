@@ -8,7 +8,7 @@
     <div slot="content" class="content">
         <div style="box-sizing:border-box;padding:10px;">
             <span>标签：</span>
-            <el-input size="small" v-model="name" style="width:200px;"></el-input>
+            <el-input size="small" v-model="name" style="width:200px;" clearable></el-input>
             <el-button size="small" @click="add" :disabled="canAdd" type="info" style="margin-left:10px;">新增</el-button>
         </div>
         <el-table

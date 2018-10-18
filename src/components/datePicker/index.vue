@@ -14,8 +14,9 @@
                 :picker-options="pickerOptions1"
                 @change="handlerChange">
             </el-date-picker>
-            <span>~</span>
+            <span style="margin:0 5px;" v-show="type=='daterange'">{{separator}}</span>
             <el-date-picker
+                v-show="type=='daterange'"
                 ref="picker2"
                 :size="size"
                 v-model="date[1]"
@@ -52,7 +53,14 @@ export default {
                 return []
             }
         },
-        needOption:{default:false}
+        separator:{
+            default:'~'//分隔符
+        },
+        type:{
+            default:'daterange'//默认类型
+        },
+        needOption:{default:false},
+        hidePicker:{default:false}
     },
     data(){
         return {
@@ -64,27 +72,27 @@ export default {
                     }
                 },
                 shortcuts: [{
-                    text: '最近一周',
-                    onClick(picker) {
-                        let date=[that.$util.getDateByDistance(-7),that.$util.getCurrentDate()];
-                        that.$emit('update:date',date);
-                        that.$refs.picker1.hidePicker();
-                    }
-                }, {
-                    text: '最近一个月',
-                    onClick(picker) {
-                        let date=[that.$util.getDateByDistance(-30),that.$util.getCurrentDate()];
-                        that.$emit('update:date',date);
-                        that.$refs.picker1.hidePicker();
-                    }
-                }, {
-                    text: '最近三个月',
-                    onClick(picker) {
-                        let date=[that.$util.getDateByDistance(-90),that.$util.getCurrentDate()];
-                        that.$emit('update:date',date);
-                        that.$refs.picker1.hidePicker();
-                    }
-                }]
+                                text: '最近一周',
+                                onClick(picker) {
+                                    let date=[that.$util.getDateByDistance(-7),that.$util.getCurrentDate()];
+                                    that.$emit('update:date',date);
+                                    that.$refs.picker1.hidePicker();
+                                }
+                            }, {
+                                text: '最近一个月',
+                                onClick(picker) {
+                                    let date=[that.$util.getDateByDistance(-30),that.$util.getCurrentDate()];
+                                    that.$emit('update:date',date);
+                                    that.$refs.picker1.hidePicker();
+                                }
+                            }, {
+                                text: '最近三个月',
+                                onClick(picker) {
+                                    let date=[that.$util.getDateByDistance(-90),that.$util.getCurrentDate()];
+                                    that.$emit('update:date',date);
+                                    that.$refs.picker1.hidePicker();
+                                }
+                            }]
             },
             pickerOptions2: {
                 disabledDate(time) {
@@ -94,27 +102,27 @@ export default {
                     }
                 },
                 shortcuts: [{
-                    text: '最近一周',
-                    onClick(picker) {
-                        let date=[that.$util.getDateByDistance(-7),that.$util.getCurrentDate()];
-                        that.$emit('update:date',date);
-                        that.$refs.picker2.hidePicker();
-                    }
-                }, {
-                    text: '最近一个月',
-                    onClick(picker) {
-                        let date=[that.$util.getDateByDistance(-30),that.$util.getCurrentDate()];
-                        that.$emit('update:date',date);
-                        that.$refs.picker2.hidePicker();
-                    }
-                }, {
-                    text: '最近三个月',
-                    onClick(picker) {
-                        let date=[that.$util.getDateByDistance(-90),that.$util.getCurrentDate()];
-                        that.$emit('update:date',date);
-                        that.$refs.picker2.hidePicker();
-                    }
-                }]
+                                text: '最近一周',
+                                onClick(picker) {
+                                    let date=[that.$util.getDateByDistance(-7),that.$util.getCurrentDate()];
+                                    that.$emit('update:date',date);
+                                    that.$refs.picker2.hidePicker();
+                                }
+                            }, {
+                                text: '最近一个月',
+                                onClick(picker) {
+                                    let date=[that.$util.getDateByDistance(-30),that.$util.getCurrentDate()];
+                                    that.$emit('update:date',date);
+                                    that.$refs.picker2.hidePicker();
+                                }
+                            }, {
+                                text: '最近三个月',
+                                onClick(picker) {
+                                    let date=[that.$util.getDateByDistance(-90),that.$util.getCurrentDate()];
+                                    that.$emit('update:date',date);
+                                    that.$refs.picker2.hidePicker();
+                                }
+                            }]
             },
             options:[
                 {label:'今',value:0},
@@ -137,11 +145,19 @@ export default {
         },
         handlerChange(){
             this.currentOption='';
+            console.log(this.$refs.picker1.value,this.$refs.picker2.value)
+            let date=[this.$refs.picker1.value||'',this.$refs.picker2.value||''];
+            console.log(date)
+            this.$emit('update:date',date);
             this.$emit('change');
         }
     },
     mounted(){
         that=this;
+        if(this.hidePicker!==false){
+            this.pickerOptions1.shortcuts='';
+            this.pickerOptions2.shortcuts='';
+        }
     },
     activated(){
         that=this;

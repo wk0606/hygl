@@ -124,11 +124,25 @@ export default {
     },
     //这里进行一些初始化操作
     resetPage() {
-      this.footerWidth=this.$refs.tab.offsetWidth-10;
+      this.footerWidth=this.$refs.tab.offsetWidth;
       this.footer=this.layout;
       //先取缓存
       let form=this.$util.getCache(this.CACHE_KEY);
       if(form){
+        if(this.$util.getCache('GROUP-ID')){
+          if(this.$refs.component){
+            this.$refs.component.getCache('spfzList');
+            form.spfz=parseInt(this.$util.getCache('GROUP-ID'));
+          }
+          this.$util.removeCache('GROUP-ID');
+        }
+        if(this.$util.getCache('KDMB-ID')){
+          if(this.$refs.component){
+            this.$refs.component.getCache('kdmbList');
+            form.yfmbid=parseInt(this.$util.getCache('KDMB-ID'));
+          }
+          this.$util.removeCache('KDMB-ID');
+        }
         this.form=form;
         this.currentTab='information';
         this.$util.removeCache(this.CACHE_KEY);
@@ -150,7 +164,7 @@ export default {
             this.form.sptp=data.sptp;
             this.form.ggspgx=spgg.gg;
             this.form.spList=spgg.list;
-            this.form.psfs=wl.psfs==2?['快递配送','到店自提']:wl.psfs==1?['快递配送']:['到店自提'];
+            this.form.psfs=wl.psfs==2?['快递配送','到店自提']:wl.psfs==1?['到店自提']:['快递配送'];
             this.form.yfsz=wl.yfsz;
             this.form.tyyfje=wl.tyyfje;
             this.form.yfmbid=wl.yfmbid||'';
@@ -180,7 +194,7 @@ export default {
         spList: [], //表格商品列表
         psfs: [],
         yfsz: 0,
-        tyyfje: "",
+        tyyfje: 0,
         yfmbid: "",
         xgsl: 0,
         spjj: "",

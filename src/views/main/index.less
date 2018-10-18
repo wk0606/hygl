@@ -25,16 +25,17 @@
                 width: @logo-size;
                 height: @logo-size;
                 margin: 20px 0;
-                background-image: url('../../assets/mjlogo.png');
-                background-size: 60px 60px;
+                //background-image: url('../../assets/mjlogo.png');
+                background-size: cover;
                 background-position: center center;
                 background-repeat: no-repeat;
                 position: relative;
+                border-radius: 50%;
                 .logo-menu{
                     position: absolute;
                     top:75px;
                     left: 0px;
-                    width: 200px;
+                    width: 260px;
                     height: auto;
                     background: #fff;
                     box-shadow: 0 0 2px #ccc;
@@ -51,11 +52,13 @@
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
+                        padding: 13px 0;
                         i{color: #9c9c9c;}
                     }
                     >div:nth-child(2){
                         font-size: 12px;
                         border-top: 1px solid #d3d3d3;
+                        p{padding: 5px 0;}
                         p:nth-child(2){margin-top: 10px;color:#9c9c9c;}
                     }
                     .arrow{

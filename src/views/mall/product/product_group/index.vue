@@ -8,6 +8,10 @@
             <el-table
               :data="List"
             >
+              <div slot="empty" class="empty-tip">
+                  <i class="iconfont icon-zanwushuju"></i>
+                  <span>暂无数据</span>
+              </div>
               <el-table-column
                   v-for="row in colModel"
                   :key="row.prop"
@@ -33,7 +37,7 @@
               >
                   <template slot-scope="scope">
                       <el-button size="mini" style="padding:3px 5px;" type="primary" @click="openView(scope.row)">预览</el-button>
-                      <el-button v-if="scope.row.id!=1" size="mini" style="padding:3px 5px;" type="danger" @click="deleteGroup(scope.row,scope.$index)">删除</el-button>
+                      <el-button v-if="!scope.row.yxbz" size="mini" style="padding:3px 5px;" type="danger" @click="deleteGroup(scope.row,scope.$index)">删除</el-button>
                   </template>
               </el-table-column>
             </el-table>
@@ -72,7 +76,7 @@ export default {
   },
   methods: {
     getClass(row) {
-      if (row.id == 1) return "cell-span-gray";
+      if (row.yxbz) return "cell-span-gray";
       else return "cell-span-blue";
     },
     openView(row) {
@@ -80,6 +84,7 @@ export default {
       this.dialog.data = row.name;
     },
     openAdd(row, id) {
+      if(row.yxbz) return;
       var id = row ? row.id : -1;
       this.$router.push(`/main/mall/shop/product_group_add/${id}`);
     },

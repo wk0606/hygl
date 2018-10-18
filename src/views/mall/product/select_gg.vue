@@ -13,7 +13,8 @@
                 @blur="save(-1)"
                 @keyup.enter.native="enterSave(-1)"
                 style="margin-bottom:10px;"
-                ref="addInput">
+                ref="addInput"
+                clearable>
             </el-input>
             <el-table
                 max-height="300"

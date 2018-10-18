@@ -96,6 +96,7 @@ export default {
       this.$http("/api/x6/getHySetZtdList.do").then(res => {
         for (let obj of res.List) {
           obj.status = obj.yxbz ? "不开启" : "开启";
+          obj.lxdhhm=obj.lxdhqh?`${obj.lxdhqh}-${obj.lxdhhm}`:obj.lxdhhm;
         }
         this.List = res.List;
         this.filterList = res.List;

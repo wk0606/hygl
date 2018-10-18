@@ -1,3 +1,4 @@
+
 var util = {
     compileStr(code) { //对字符串进行加密
         var c = String.fromCharCode(code.charCodeAt(0) + code.length)
@@ -136,7 +137,6 @@ var util = {
                 break;
             }
         }
-        console.log(hasContains)
         if(!hasContains&&insert){
             temp.push(data);
         }
@@ -154,6 +154,8 @@ var util = {
     },
     //根据key（默认id）取出员工信息
     getYgInfo(value, key = 'id') {
+        if(!value)
+            return {};
         var list = this.getCache('userlist');
         for (let obj of list) {
             if (obj[key] == value) {
@@ -272,6 +274,22 @@ var util = {
         }
         return _temp;
     },
+    //取出所有公司--needck:是否包含仓库
+    getAllGsList(needck = false){
+        var lists = this.getCache('gslist');
+        var _temp = [];
+        for (let gs of lists) {
+            if (!gs.yxbz)
+                _temp.push(gs);
+        }
+        //如果不包含仓库
+        if (needck) {
+            _temp = _temp.filter(item => {
+                return item.lx != 4;
+            });
+        }
+        return _temp;
+    },
     /**
      * 
      * @param {*} obj1 
@@ -314,6 +332,21 @@ var util = {
             });
         });
         return promise;
+    },
+    openSystemVoice(){
+        const ID='audio-31415926';
+        const voice=require('../assets/notice.mp3');
+        if(document.getElementById(ID)){
+            document.getElementById(ID).play();
+        }else{
+            let audio = document.createElement('audio');
+            let source = document.createElement('source');
+            source.setAttribute('src',voice);
+            audio.appendChild(source);
+            audio.setAttribute('id',ID);
+            audio.setAttribute('autoplay','autoplay');
+            document.body.appendChild(audio);
+        } 
     },
     windowResize(callback, route) {
         callback();

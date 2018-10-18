@@ -23,7 +23,10 @@
         :key="data.id"
       >
           <div class="kdfh-table-top" @click="data.show=!data.show">
-              <span>{{data.name}}</span>
+              <div>
+                  <span>{{data.name}}</span>
+                  <span v-if="data.sl" style="color:#999;">{{`(已被个${data.sl}商品使用)`}}</span>
+              </div>
               <div>
                   <div>最后编辑时间 {{data.zdrq}}</div>
                   <span>-</span>

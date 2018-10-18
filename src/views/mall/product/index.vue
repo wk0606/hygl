@@ -21,6 +21,7 @@ import wdsp from "./product_sp/index";
 import spfz from "./product_group/index";
 import wdyl from './shop_view'
 import productEdit from './product_sp/product_edit'
+import bus from '../../../func/eventBus'
 export default {
   data() {
     return {
@@ -41,9 +42,29 @@ export default {
         this.$refs.shop.getList();
     }
   },
+  activated(){
+    let temp=this.$util.getCache('GOODS-ID');
+    if(temp){
+      this.$util.removeCache('GOODS-ID');
+      setTimeout(()=>{
+        this.$refs.shop.currentValue=temp.bzw;
+        if(temp.isxskcyj)
+          this.$refs.shop.kcyjShow=true;
+        this.$refs.shop.getList(temp.name,temp.isxskcyj);
+      },10);
+    }
+    bus.$on('goods-change',obj=>{
+      this.currentTab='wdsp';
+      setTimeout(()=>{
+        this.$refs.shop.currentValue=obj.bzw;
+        this.$refs.shop.getList(obj.name);
+      },10);
+    });
+  },
   beforeRouteEnter (to, from, next) {
     next(vm=>{
-      if(from.name!='product_group_add')
+      if(from.name!='product_group_add'&&from.name!='set_dd_addkd')
+        vm.editShow=false;
         vm.currentTab=vm.tabs[0].component;
     });
   },

@@ -34,7 +34,7 @@
       <div :style="{width:width+'px'}" class="g-add-right">
         <div>
           <span><i style="color:red;">*</i>分组名称 ：</span>
-          <el-input size="mini" v-model="name" style="width:150px;" :disabled="id==1"></el-input>
+          <el-input size="mini" v-model="name" style="width:150px;" :disabled="id==1" clearable></el-input>
         </div>
       </div>
     </div>
@@ -82,8 +82,15 @@ export default {
           this.$message(this.id==-1?'新增成功':'修改成功');
           this.load=false;
           this.name='';
-          this.$util.requestAllCache(this.$http);
-          this.cancel();
+          this.$util.requestAllCache(this.$http,()=>{
+            if(this.$util.getCache('NEEDBACK')==1){
+              this.$util.setCache('GROUP-ID',res.VO.id);
+              this.$util.removeCache('NEEDBACK');
+              this.cancel();
+            }else{
+              this.cancel();
+            }
+          });
         },err=>{
           this.load=false;
         });
@@ -91,8 +98,6 @@ export default {
     },
     cancel(){
       this.$router.go (-1);
-      if(this.$util.getCache('NEEDBACK')==1)
-        this.$util.removeCache('NEEDBACK');
     },
     getDetail(){
       this.$http('/api/x6/getSpfzById.do',{

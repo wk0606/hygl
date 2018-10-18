@@ -8,7 +8,7 @@
       <i class="el-icon-close close" @click="close"></i>
     </div>
     <div class="map-details">
-      <div class="map-details-item"><span>门店名称 ：</span><el-input size="small" v-model="location.name" placeholder="请输入门店名称" style="width:450px;" :disabled="true"></el-input></el-input></div>
+      <div class="map-details-item"><span>门店名称 ：</span><el-input size="small" clearable v-model="location.name" placeholder="请输入门店名称" style="width:450px;" :disabled="true"></el-input></el-input></div>
       <div class="map-details-item">
         <span>门店照片 ：</span>
         <div class="map-details-logo">
@@ -53,7 +53,7 @@
       </div>
       <div class="map-details-item">
         <span>详细地址 ：</span>
-        <el-input size="small" v-model="location.dz" style="width:370px;margin-right:10px;"></el-input>
+        <el-input size="small" clearable v-model="location.dz" style="width:370px;margin-right:10px;"></el-input>
         <!-- <div style="line-height:30px;padding:0 7px;box-sizing:border-box;border-radius:4px;border:1px solid #ccc;"></div> -->
         <el-button size="small" @click="searchMap">搜索地图</el-button>
         <span style="color:#aaa;margin-left:10px;">(可点击地图来调整商铺的位置)</span>

@@ -9,7 +9,7 @@
             label-width="80px"
           >
             <el-form-item label="模板名称" prop="name">
-                <el-input v-model="details.name" size="mini" style="width:250px;"></el-input>
+                <el-input v-model="details.name" size="mini" style="width:250px;" clearable></el-input>
             </el-form-item>
             <el-form-item label="计费方式" prop="jffs">
                 <el-radio-group v-model="details.jffs" @change="changeLabel">
@@ -209,6 +209,10 @@ export default {
                     res.VO.show=true;
                     this.$util.requestAllCache(this.$http,()=>{
                         this.$util.setCache('KDMB',res.VO);
+                        if(this.$util.getCache('NEEDBACK')==1){
+                            this.$util.setCache('KDMB-ID',res.VO.id);
+                            this.$util.removeCache('NEEDBACK');
+                        }
                         this.$router.go (-1);
                     });
                 },err=>{

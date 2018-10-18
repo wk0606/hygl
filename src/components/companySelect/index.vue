@@ -71,13 +71,11 @@ export default {
       this.$refs.cascader.inputValue=name;
     },
     createOptions(){
-      this.List=this.$util.getMyGsList();
-      var _zgsbm;
+      this.List=this.$util.getAllGsList();
       if(this.List.length){
         for(let i=0,len=this.List.length;i<len;i++){
           //找到总公司
           if(this.List[i].lx===0){
-            _zgsbm=this.List[i].bm;
             this.options.push({
               bm:this.List[i].bm,
               id:this.List[i].id,
@@ -88,8 +86,27 @@ export default {
             break;
           }
         }
-        //寻找下一级
-        this.findChildren(_zgsbm,this.List,this.options[0].children);
+        if(!this.options.length){
+          let temp=this.List.map(item=>{
+            return item.lx;
+          });
+          let f_lx=Math.min.apply(null,temp);
+          for(let obj of this.List){
+            if(obj.lx==f_lx){
+              this.options.push({
+                bm:obj.bm,
+                id:obj.id,
+                value:obj.bm,
+                label:obj.name,
+                children:[]
+              });
+            }
+          }
+        }
+        for(let obj of this.options){
+          //寻找下一级
+          this.findChildren(obj.bm,this.List,obj.children);
+        }
       } 
     },
     //寻找子级

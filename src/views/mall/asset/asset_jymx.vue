@@ -16,7 +16,7 @@
                 size="mini">
             </el-date-picker>
             <span class="span-label">单号:</span>
-            <el-input size="mini" v-model="searchParams.djh" placeholder="订单号/退款单号/交易号"></el-input>
+            <el-input size="mini" v-model="searchParams.djh" placeholder="订单号/退款单号/交易号" clearable></el-input>
           </div>
           <div>
               <el-button size="mini" type="primary">查询</el-button>

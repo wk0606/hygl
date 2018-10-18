@@ -32,7 +32,7 @@
 }
 .cell-span-gray{
     color: #aaa;
-    cursor: pointer;
+    cursor: default;
 }
 .el-table-drak-head{
     background-color: #f0f0f0 !important;
@@ -74,6 +74,8 @@
     display: flex;
     user-select: none;
     margin-bottom: 10px;
+    position: relative;
+    align-items: center;
 }
 .wdsp-tab>div{
     width: 80px;
@@ -124,6 +126,7 @@
     overflow:hidden; 
     text-overflow:ellipsis;
     display:-webkit-box; 
+    box-orient:vertical;
     -webkit-box-orient:vertical;
     -webkit-line-clamp:2; 
 }
@@ -150,9 +153,43 @@
     padding: 10px 0;
     background: #f0f0f0;
     text-align: center;
+    z-index: 5;
 }
 .form-save-border{
     border-top: 1px solid #dedede;
+}
+.i-number{
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 7px;
+    line-height: 28px;
+    border-radius: 4px;
+    border: 1px solid #dcdfe6;
+}
+.i-number:focus{
+    border-color: #409eff; 
+ }
+
+ .empty-tip{
+    padding:20px 0;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-tip i{
+    font-size:25px;
+    margin-right:10px;
+}
+.empty-tip span{font-size: 12px;}
+
+.empty-suggestion-tip{
+    width:100%;
+    background: #fff;
+    padding: 5px 0;
+    text-align: center;
+    color:#aaa;
 }
 
 @-webkit-keyframes slideRight{

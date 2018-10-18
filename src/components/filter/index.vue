@@ -26,6 +26,7 @@
                 suffix-icon="el-icon-search"
                 v-model="name"
                 @input="matchItems"
+                clearable
               ></el-input>
           </div>
           <ul class="f-checkbox">

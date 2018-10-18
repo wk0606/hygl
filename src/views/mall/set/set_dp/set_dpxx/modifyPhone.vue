@@ -9,11 +9,11 @@
             <p>验证码已发送至{{this.views.phone.substring(0,3)}}****{{this.views.phone.substring(7)}}</p>
         </div>
         <div v-if="show">
-            <el-input size="mini" placeholder="请输入验证码" v-model="yzcode" style="width:200px;margin-right:10px;"></el-input>
+            <el-input size="mini" placeholder="请输入验证码" v-model="yzcode" style="width:200px;margin-right:10px;" clearable></el-input>
             <el-button size="mini" type="primary" :disabled="yzDisabled" style="width:92px;" @click="getYzCode">{{yzText}}</el-button>
         </div>
         <div v-if="!show">
-            <el-input size="mini" placeholder="请输入新手机号" v-model="newphone" style="width:292px;margin-right:10px;"></el-input>
+            <el-input size="mini" clearable placeholder="请输入新手机号" v-model="newphone" style="width:292px;margin-right:10px;"></el-input>
         </div>
     </div>
     <el-button

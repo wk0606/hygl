@@ -116,18 +116,22 @@ export default {
             });  
         },
         save(){
-            this.$http('/api/x6/batchSetSpxx.do',{
-                ids:this.pId.toString(),
-                spdms:this.spdms.join(','),
-                yxbz:this.yxbz?0:1
-            }).then(res=>{
-                if(this.spdms.length==this.spList.length){
-                    this.views.show=false;
-                    this.$parent.getList(this.$parent.currentValue);
-                }else{
-                    this.getSpDetails(this.pId);
-                }
-            });
+            this.$confirm(`确认进行${this.yxbz?'上架':'下架'}操作吗`,'提示',{
+                type:'warning'
+            }).then(()=>{
+                this.$http('/api/x6/batchSetSpxx.do',{
+                    ids:this.pId.toString(),
+                    spdms:this.spdms.join(','),
+                    yxbz:this.yxbz?0:1
+                }).then(res=>{
+                    if(this.spdms.length==this.spList.length){
+                        this.views.show=false;
+                    }else{
+                        this.getSpDetails(this.pId);
+                    }
+                    this.$parent.getList();
+                });
+            }).catch(()=>{});
         }
     },
     mounted(){

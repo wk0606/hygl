@@ -20,8 +20,8 @@
                             :key="item.key"
                         >
                             <p><span>{{item.label}}</span></p>
-                            <p><b class="m-price">{{gkDatas[item.value1]}}</b></p>
-                            <p><span>昨日 : {{gkDatas[item.value2]}}</span></p> 
+                            <p><b class="m-price">{{item.currency?$util.formatCash(gkDatas[item.value1]):gkDatas[item.value1]}}</b></p>
+                            <p><span>昨日 : {{item.currency?$util.formatCash(gkDatas[item.value2]):gkDatas[item.value2]}}</span></p> 
                         </td>
                     </tr>
                 </table>
@@ -75,7 +75,7 @@
                         :key="item.label"
                         >
                         <span>{{item.label}} : </span>
-                        <a>{{tipsDatas[item.key]||0}}</a>
+                        <a @click="openTipsPage(item)">{{tipsDatas[item.value]||0}}</a>
                         </div>
                     </div>
                 </div>
@@ -89,6 +89,7 @@
 </template>
 <script>
 import echarts from "echarts"
+import bus from '../../func/eventBus'
 export default {
     data(){
         return {
@@ -99,19 +100,20 @@ export default {
                 icon: require("../../assets/je.png"),
                 infos: [
                     {
-                    label: "网店销售额(元)",
-                    key: "wdxse",
-                    value1: 'wdxsjeNow',
-                    value2: 'wdxsjeYellow'
+                        label: "网店销售额(元)",
+                        key: "wdxse",
+                        value1: 'wdxsjeNow',
+                        value2: 'wdxsjeYellow',
+                        currency:true
                     },
-                    { label: "门店销售额", key: "wdzfdd", value1: 'zfddslNow', value2: 'zfddslYellow' }
+                    { label: "门店销售额(元)", key: "mdxse", value1: 'mdxsjeNow', value2: 'mdxsjeYellow',currency:true }
                 ]
                 },
                 {
                 icon: require("../../assets/person.png"),
                 infos: [
-                    { label: "网点客流量", key: "llkhs", value1: 'wdkhslNow', value2: 'wdkhslYellow' },
-                    { label: "门店客流量", key: "zfkhs", value1: 'zfkhslNow', value2: 'zfkhslYellow' }
+                    { label: "网店客流量", key: "llkhs", value1: 'wdkhslNow', value2: 'wdkhslYellow' },
+                    { label: "门店客流量", key: "zfkhs", value1: 'mdkhslNow', value2: 'mdkhslYellow' }
                 ]
                 }
             ],
@@ -128,20 +130,20 @@ export default {
             //提醒的项目
             tips: [
                 {
-                label: "订单相关",
-                items: [{ label: "待发货订单", key: 'dfhddsl' }]
+                    label: "订单相关",
+                    items: [{ label: "待发货订单", key: 'order_fh',value:'dfhddsl'},{ label: "待退款订单", key: 'order_tk',value:'dtkddsl' }]
                 },
                 {
-                label: "通知消息",
-                items: [{ label: "未读客户消息", key: 'wdxxsl' }]
+                    label: "通知消息",
+                    items: [{ label: "未读系统通知", key: 'notify',value:'wdkhxxsl' }]
                 },
                 {
-                label: "商品相关",
-                items: [
-                    { label: "网点在售", key: 'zsspsl' },
-                    { label: "网点缺货", key: 'qhspsl' },
-                    { label: "库存预警", key: 'kcyjspsl' }
-                ]
+                    label: "商品相关",
+                    items: [
+                        { label: "网店在售商品", key: 'shop_zs',value:'zsspsl' },
+                        { label: "网店缺货商品", key: 'shop_qh',value:'qhspsl' },
+                        { label: "库存预警商品", key: 'shop_yj',value:'kcyjspsl' }
+                    ]
                 }
             ],
             //常用功能
@@ -149,18 +151,18 @@ export default {
                 {
                 icon: require("../../assets/fbsp.png"),
                 label: "发布商品",
-                path: "/main/mallchildren/product_sp"
+                path: "/main/mall/shop/product_fb"
                 },
-                { icon: require("../../assets/spgl.png"), label: "管理商品", path: "" },
+                { icon: require("../../assets/spgl.png"), label: "管理商品", path: "/main/mall/shop/product_sp" },
                 {
                 icon: require("../../assets/wddd.png"),
                 label: "网店订单",
-                path: "/main/mallchildren/asset_jy"
+                path: "/main/mall/shop/order"
                 },
                 {
                 icon: require("../../assets/wdsz.png"),
                 label: "网店设置",
-                path: "/main/mallchildren/set_dd"
+                path: "/main/mall/shop/set_dp"
                 }
             ],
             dialog:{
@@ -177,11 +179,11 @@ export default {
                 this.xsje.je=res.VO.data.wdxsjeNow;
                 this.xsje.zrje=res.VO.data.wdxsjeYellow;
                 for(let obj of res.VO.listNow){
-                this.xsje.jrzs.push(obj.wdxsje);
-                this.xsje.xdata.push(obj.hour);
+                    this.xsje.jrzs.push(obj.wdxsje);
+                    this.xsje.xdata.push(obj.hour);
                 }
                 for(let obj of res.VO.listYellow){
-                this.xsje.zrzs.push(obj.wdxsje);
+                    this.xsje.zrzs.push(obj.wdxsje);
                 }
                 var temp = [];
                 temp.push({
@@ -240,11 +242,45 @@ export default {
         },
         openNav(path) {
             this.$router.push(path);
+        },
+        openTipsPage(item){
+            if(item.key.indexOf('order')>-1){
+                if(item.key=='order_fh'){
+                    this.$util.setCache('ORDER',{ddzt:1,psfs:0});
+                    this.$router.push('/main/mall/shop/order');
+                }
+                if(item.key=='order_tk'){
+                    this.$util.setCache('ORDER',{tkzt:1});
+                    this.$router.push('/main/mall/shop/order');
+                }
+            }else if(item.key=='notify'){
+                bus.$emit('open');
+            }else if(item.key.indexOf('shop')>-1){
+                if(item.key=='shop_qh'){
+                    this.$util.setCache('GOODS-ID',{
+                        name:'',
+                        bzw:2
+                    });
+                }
+                if(item.key=='shop_yj'){
+                    this.$util.setCache('GOODS-ID',{
+                        name:'',
+                        bzw:0,
+                        isxskcyj:1
+                    });
+                }
+                this.$router.push('/main/mall/shop/product_sp');
+            }else{
+
+            }
         }
     },
     mounted(){
         this.getGkDetails();
         this.getTipsNumber();
+        bus.$on('refresh-tips',()=>{
+            this.getTipsNumber();
+        });
     },
     components:{
 
@@ -429,8 +465,8 @@ export default {
             color:#999;
             display: flex;
             align-items: center;
-            justify-content: space-between;
             margin-top: 10px;
+            div{width: 33.33%;}
             a{
                 color:#64a4fc;
             }

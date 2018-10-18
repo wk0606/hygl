@@ -91,12 +91,12 @@ export default {
         getData(params){
             params.actid=this.views.data;
             //活动浏览量
-            this.$http('/api/x6/crmGetHdkbLookcsfx.do',params).then(res=>{
+            this.$http('/api/x6/hyCrmGetHdkbLookcsfx.do',params).then(res=>{
                 this.setChartDatas(this.charts[0],res.VO);
                 this.drawChart(this.charts[0].xData,this.charts[0].yData,this.charts[0].ref,false);
             });
             //活动转化率
-            this.$http('/api/x6/crmGetHdkbZhlfx.do',params).then(res=>{
+            this.$http('/api/x6/hyCrmGetHdkbZhlfx.do',params).then(res=>{
                 let temp=res.VO.value*100;
                 temp=res.VO.value.toFixed(2)+'%';
                 res.VO.value=temp;
@@ -104,7 +104,7 @@ export default {
                 this.drawChart(this.charts[1].xData,this.charts[1].yData,this.charts[1].ref,false);
             });
             //活动停留时间
-            this.$http('/api/x6/crmGetHdkbTlsj.do',params).then(res=>{
+            this.$http('/api/x6/hyCrmGetHdkbTlsj.do',params).then(res=>{
                 this.setChartDatas(this.charts[2],res.VO);
                 this.drawChart(this.charts[2].xData,this.charts[2].yData,this.charts[2].ref,false);
             });

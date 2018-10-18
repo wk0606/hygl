@@ -19,8 +19,10 @@
             prefix-icon="el-icon-search"
             v-model="name"
             @input="searchListByName"
+            clearable
           ></el-input>
       </div>
+      <!-- @input="searchListByName" -->
       <div class="wdsp-tab">
           <div
             v-for="item in tabs"
@@ -28,6 +30,14 @@
             :class="{selected:item.value==currentValue}"
             @click="tabChange(item.value)"
           >{{item.label}}</div>
+          <el-tag
+            v-if="kcyjShow"
+            closable
+            type="danger"
+            @close="kcyjShow=false;getList('')">
+            库存预警商品
+          </el-tag>
+
       </div>
       <div class="wdsp-body">  
           <el-table
@@ -37,6 +47,10 @@
             @select-all="selectAll"
             @select="selectOne"
           >
+            <div slot="empty" class="empty-tip">
+                <i class="iconfont icon-zanwushuju"></i>
+                <span>暂无数据</span>
+            </div>
             <el-table-column
                 type="selection"
                 align="center"
@@ -51,7 +65,19 @@
                     <div class="cell-product">
                         <img :src="scope.row.sptp" alt="">
                         <div>
-                            <div class="ellipsis2rows">{{scope.row.name}}</div>
+                            <div style="display:flex;align-items:center;">
+                                <div 
+                                    style="flex-grow:1;"
+                                    class="ellipsis2rows"
+                                    :title="scope.row.name"
+                                >{{scope.row.name}}</div>
+                                <i 
+                                    v-if="scope.row.yxbz==2"
+                                    title="部分规格已下架"
+                                    style="flex-shrink:0;margin-left:5px;font-size:12px;color:red;cursor:pointer;"
+                                    class="iconfont icon-xiajia1"
+                                ></i>
+                            </div>
                             <p style="line-height:15px;">￥{{scope.row.spdj | currency}}</p>
                         </div>
                     </div>
@@ -85,7 +111,7 @@
                 :render-header="renderFilterHead"
             >
                 <template slot-scope="scope">
-                   <span class="cell-span">{{scope.row.kskcs}}</span>
+                   <span class="cell-span" :class="{error:scope.row.kskcs<=scope.row.kcyjsl}">{{scope.row.kskcs}}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -96,18 +122,19 @@
                 :render-header="renderFilterHead"
             >
                 <template slot-scope="scope">
-                   <span
-                    v-if="currentRow!==scope.$index"
-                    class="cell-span cell-span-blue"
-                    @click="currentRow=scope.$index;kcyjsl=scope.row.kcyjsl"
-                   >{{scope.row.kcyjsl}}</span>
-                   <input
-                    v-if="currentRow===scope.$index"
+                  <input
+                    v-if="currentRow===scope.$index&&currentCol=='kcyjsl'"
                     type="number"
                     v-model.number="kcyjsl"
                     v-focus
                     @blur="setKcyj(scope.row,scope.$index,$event)"
                    ></input>
+                   <span
+                    v-else
+                    class="cell-span cell-span-blue"
+                    @click="currentRow=scope.$index;currentCol='kcyjsl';kcyjsl=scope.row.kcyjsl"
+                   >{{scope.row.kcyjsl}}</span>
+                   
                 </template>
             </el-table-column>
             <el-table-column
@@ -144,10 +171,11 @@
                    <el-input
                     size="mini"
                     v-model="currentIndex"
-                    v-if="currentRow===scope.$index"
+                    v-if="currentRow===scope.$index&&currentCol=='spfzxh'"
                     @blur="editIndex(scope.row)"
+                    clearable
                    ></el-input>
-                   <span class="cell-span cell-span-blue" @click="currentRow=scope.$index;currentIndex=scope.row.spfzxh" v-else>{{scope.row.spfzxh}}</span>
+                   <span class="cell-span cell-span-blue" @click="currentRow=scope.$index;currentCol='spfzxh';currentIndex=scope.row.spfzxh" v-else>{{scope.row.spfzxh}}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -164,6 +192,8 @@
       <div class="wdsp-footer">
           <div>
             <el-button size="mini" :disabled="!selectRows.length" @click="batchDelele">删除</el-button>
+            <el-button size="mini" v-if="currentValue===0" :disabled="!selectRows.length" @click="batchUpDown(1)">下架</el-button>
+            <el-button size="mini" v-if="currentValue===1" :disabled="!selectRows.length" @click="batchUpDown(0)">上架</el-button>
           </div>
           <pagination :data="page" :small="true" @current-change="changePage" hide-border></pagination>
       </div>
@@ -179,6 +209,7 @@ import bus from '../../../../func/eventBus'
 export default {
   data() {
     return {
+      kcyjShow:false,
       tabs: [{ label: "销售中", value: 0 },{ label: "已下架", value: 1 }, { label: "已售罄", value: 2 }],
       currentValue: 0,
       allList:[],
@@ -194,6 +225,7 @@ export default {
       noSelectedRows:[],
       hasSelectAll:false,
       name:'',
+      isxskcyj:0,
       dialog:{
           show:false,
           data:null,
@@ -201,6 +233,7 @@ export default {
       },
       currentTime:0,
       currentRow:'',//当期行
+      currentCol:'',
       currentIndex:'',//当前行序号
       down:{
           show:false,
@@ -221,11 +254,29 @@ export default {
       this.down.yxbz=this.currentValue?0:1;
       this.down.show=true;
     },
+    //批量上下架
+    batchUpDown(yxbz){
+        this.$confirm(`确认进行${yxbz?'下架':'上架'}操作吗`,'提示',{
+            type:'warning'
+        }).then(()=>{
+            let ids=this.selectRows.map(item=>{
+                return item.id
+            });
+            this.$http('/api/x6/batchSetSpxx.do',{
+                ids:ids.join(','),
+                spdms:'',
+                yxbz:yxbz
+            }).then(res=>{
+                this.$message(yxbz?'下架成功':'上架成功');
+                this.getList();
+            });
+        }).catch(()=>{});
+    },
     //编辑
     edit(row){
         this.$parent.editShow=true;
         this.$parent.pID=row.id;
-        this.$parent.pYxbz=this.currentValue;
+        this.$parent.pYxbz=this.currentValue==2?0:this.currentValue;
     },
     //修改序号
     editIndex(row){
@@ -292,10 +343,12 @@ export default {
         }
     },
     //获取商品列表
-    getList() {
+    getList(name,isxskcyj=0) {
+      if(name) this.name=name;
       this.$http("/api/x6/getSpxxListByCondition.do",{
           bzw:this.currentValue,
-          name:this.name
+          name:this.name,
+          isxskcyj:isxskcyj
       }).then(res => {
         for(let obj of res.List)
             obj.sjsj=this.formatSjrq(obj.sjrq);
@@ -367,6 +420,7 @@ export default {
         this.$http('/api/x6/getSpxxDetailById.do',{
             id:row.id
         }).then(res=>{
+            console.log(row)
             this.dialog.show=true;
             this.dialog.data=res.VO;
             this.dialog.type=2;
@@ -490,6 +544,14 @@ input[type=number]{
     border: 1px solid #dcdfe6;
     &:focus{
        border-color: #409eff; 
+    }
+}
+.error{color:red;}
+.wdsp-tab{
+    .el-tag{
+        margin-left: 10px;
+        height: 25px;
+        line-height: 23px;
     }
 }
 </style>

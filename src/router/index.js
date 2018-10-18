@@ -47,7 +47,7 @@ export default new Router({
                 {path:'set_dd_addkd/:id',name:'set_dd_addkd',component:resolve=>require(['../views/mall/set/set_dd/set_kdfh/kdfh_add'],resolve)},
                 {path:'set_jy',name:'set_jy',component:resolve=>require(['../views/mall/set/set_jy'],resolve)},
                 {path:'set_dp',name:'set_dp',component:resolve=>require(['../views/mall/set/set_dp/index'],resolve)},
-                {path:'set_dprz/:phone/:name',name:'set_dprz',component:resolve=>require(['../views/mall/set/set_dp/set_dpxx/set_dprz'],resolve)},
+                {path:'set_dprz',name:'set_dprz',component:resolve=>require(['../views/mall/set/set_dp/set_dpxx/set_dprz'],resolve)},
                 {path:'order',name:'order',component:resolve=>require(['../views/mall/order/index'],resolve)},
                 {path:'order_details/:ddh',name:'order_details',component:resolve=>require(['../views/mall/order/order_qbdd/qbdd_details'],resolve)},
               ]

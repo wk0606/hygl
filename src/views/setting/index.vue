@@ -7,7 +7,7 @@
 			</div> 
 			<div>
 				<el-checkbox v-model="onlyNoLocation" @change="changeList">仅显示未定位</el-checkbox>
-				<el-input size="small" suffix-icon="el-icon-search" placeholder="请输入门店名称" @input="searchByName" v-model="name"></el-input>
+				<el-input size="small" suffix-icon="el-icon-search" placeholder="请输入门店名称" @input="searchByName" v-model="name" clearable></el-input>
 			</div>
 		</div>
 		<div class="shop-body" ref="container">

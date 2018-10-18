@@ -16,6 +16,7 @@
                 size="small"
                 style="width:100%"
                 auto-complete='off'
+                clearable
               ></el-input>                                                                  
             </el-form-item>
             <el-form-item label='活动图片' prop="shortcontent">
@@ -175,7 +176,8 @@ export default {
       copyForm: null,
       upload: {
         show: false
-      }
+      },
+      width:0
     };
   },
   watch: {
@@ -326,7 +328,7 @@ export default {
     }
   },
   mounted() {
-    this.$refs.mobile.style.width =
+    this.$refs.mobile.style.width = 
       parseInt(this.$refs.mobile.offsetHeight * 9 / 16) + "px";
     this.gslists = this.$util.getMyGsList();
     //移出表单验证

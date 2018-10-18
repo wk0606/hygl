@@ -107,7 +107,7 @@ export default {
           xData:[],
           yData:[],
           ref: "zhsl",
-          title: "查看活动并产生消费的客户数/查看活动的客户总数"
+          title: "收藏活动并在活动期间产生消费客户数/查看活动客户数"
         },
         {
           label: "平均停留时长（单位:秒）",
@@ -145,7 +145,7 @@ export default {
     },
     //获取会员看板数据
     getDatas(params) {
-      this.$http("/api/x6/crmGetHyfxHykb.do", params).then(res => {
+      this.$http("/api/x6/hyCrmGetHyfxHykb.do", params).then(res => {
         this.hykbDatas = res.VO;
       });
     },
@@ -155,7 +155,7 @@ export default {
         temp.flList=this.hykb.map(item=>{
             return item.ref;
         });
-        this.$http('/api/x6/crmHyzzzs.do',temp).then(res=>{
+        this.$http('/api/x6/hyCrmHyzzzs.do',temp).then(res=>{
             for(let obj of res.List){
                 let key=Object.keys(obj)[0];
                 let [xData,yData]=[[],[]];
@@ -171,12 +171,12 @@ export default {
     //获取活动看板数据
     getActBroad(params){
         //活动浏览量
-        this.$http('/api/x6/crmGetHdkbLookcsfx.do',params).then(res=>{
+        this.$http('/api/x6/hyCrmGetHdkbLookcsfx.do',params).then(res=>{
             this.setChartDatas(this.hdkb[0],res.VO);
             this.drawChart(this.hdkb[0].xData,this.hdkb[0].yData,this.hdkb[0].ref,false);
         });
         //活动转化率
-        this.$http('/api/x6/crmGetHdkbZhlfx.do',params).then(res=>{
+        this.$http('/api/x6/hyCrmGetHdkbZhlfx.do',params).then(res=>{
             let temp=res.VO.value*100;
             temp=res.VO.value.toFixed(2)+'%';
             res.VO.value=temp;
@@ -184,7 +184,7 @@ export default {
             this.drawChart(this.hdkb[1].xData,this.hdkb[1].yData,this.hdkb[1].ref,false);
         });
         //活动停留时间
-        this.$http('/api/x6/crmGetHdkbTlsj.do',params).then(res=>{
+        this.$http('/api/x6/hyCrmGetHdkbTlsj.do',params).then(res=>{
             this.setChartDatas(this.hdkb[2],res.VO);
             this.drawChart(this.hdkb[2].xData,this.hdkb[2].yData,this.hdkb[2].ref,false);
         });

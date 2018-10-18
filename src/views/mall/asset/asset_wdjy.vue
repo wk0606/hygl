@@ -2,7 +2,7 @@
   <div>
       <div class="asset-body-header">
           <p>说明:</p>
-          <p>1.针对店铺门店和网点的销售和退款情况的统计</p>
+          <p>1.针对网店的销售和退款情况的统计</p>
           <p>2.净销售额 = 销售小计金额 - 退款小计金额</p>
       </div>
       <div class="asset-body-bar">
@@ -21,6 +21,10 @@
           <el-table
             :data="List"
           >
+            <div slot="empty" class="empty-tip">
+                <i class="iconfont icon-zanwushuju"></i>
+                <span>暂无数据</span>
+            </div>
             <el-table-column
                 label="日期"
                 prop="fsrq"
@@ -36,7 +40,7 @@
                 align="left"
             >
                 <template slot-scope="scope">
-                    <span class="cell-span">{{scope.row.jxsxj | currency}}</span>
+                    <span class="cell-span">￥{{scope.row.jxsxj | currency}}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -46,7 +50,7 @@
                 header-align="left"
             >
                 <template slot-scope="scope">
-                    <p v-if="List.length"><span class="cell-span">{{scope.row.xsxj | currency}}元</span></p>
+                    <p v-if="List.length"><span class="cell-span">￥{{scope.row.xsxj | currency}}</span></p>
                     <p v-if="List.length"><span class="cell-span">{{scope.row.xssl}}笔</span></p>
                 </template>
             </el-table-column>
@@ -57,7 +61,7 @@
                 header-align="left"
             >
                 <template slot-scope="scope">
-                    <p v-if="List.length"><span class="cell-span">{{scope.row.tkxj | currency}}元</span></p>
+                    <p v-if="List.length"><span class="cell-span">￥{{scope.row.tkxj | currency}}</span></p>
                     <p v-if="List.length"><span class="cell-span">{{scope.row.tksl}}笔</span></p>
                 </template>
             </el-table-column>

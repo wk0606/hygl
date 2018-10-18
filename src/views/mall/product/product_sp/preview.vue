@@ -21,10 +21,11 @@
                         </div>
                         <div class="context">
                             <span class="price">{{'￥'+views.data.spdj}}</span>
+                            <s class="small-je">{{'￥'+views.data.predj}}</s>
                         </div>
                         <div class="context other">
-                            <span>运费 : {{views.data.yfje}}</span>
-                            <span>库存 : {{setKskc}}</span>
+                            <span>运费 : {{views.data.yfje?$util.formatCash(views.data.yfje):'免运费'}}</span>
+                            <span>库存 : {{views.data.kskcs}}</span>
                         </div>
                         <div class="context other">
                             <span>选择 : {{setText}}</span>
@@ -130,9 +131,6 @@ export default {
         close(e){
             this.views.show=false;
         },
-        resizeBar(){
-            console.log(212)
-        },
         stop(e){
             e.preventDefault();
             
@@ -185,6 +183,12 @@ export default {
                 font-size: 13px;
                 color: red;
                 font-weight: bold;
+            }
+            .small-je{
+                font-size: 10px;
+                color: #aaa;
+                margin-left: 5px;
+                text-decoration: line-through;
             }
         }
         .other{

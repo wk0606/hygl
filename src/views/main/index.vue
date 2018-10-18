@@ -3,7 +3,13 @@
 		<div class="nav-body">
 			<div class="container-left">
 				<!-- <img src="../../assets/mjlogo.png" alt="" width="60"> -->
-        <div class="logo" @mouseenter="logoShow=true" @mouseleave="closeLogoMenu">
+        <div
+          class="logo"
+          @mouseenter="logoShow=true"
+          @mouseleave="closeLogoMenu"
+          :style="{backgroundImage:'url('+$store.getters.getShopImg+')'}"
+        >
+          <!-- v-if="logoShow" -->
           <div class="logo-menu" v-if="logoShow" @mouseenter="clearTimeout">
             <div @click="openDpSet">
               <b>店铺设置</b>
@@ -31,12 +37,11 @@
 				</div>
 			</div>
 			<div class="container-right">
-				<div class="view">
+				<div class="view" ref="view">
 					<router-view></router-view>
 				</div>
 			</div>
 		</div>
-		<notify></notify>
 	</div>
 </template>
 <script>
@@ -111,7 +116,9 @@ export default {
   mounted() {
     this.$refs.navs.style.maxHeight =
       this.menus.length * 51 + (this.menus.length - 1) * 15 + "px";
-    this.$util.requestAllCache(this.$http);
+    this.$util.requestAllCache(this.$http,()=>{
+      this.$store.commit('updateShopImg',this.$util.getCache('dptpUrl'));
+    });
     this.username = this.$util.getCache("user").name;
     this.phone = this.$util.getCache("user").phone;
   },

@@ -33,7 +33,7 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input v-if="item.show&&item.prop=='dpName'" size="mini" v-model="data[item.prop]" @blur="item.show=false" style="width:273px;" autofocus></el-input>
+            <el-input v-if="item.show&&item.prop=='dpName'" clearable size="mini" v-model="data[item.prop]" @blur="item.show=false" style="width:273px;" autofocus></el-input>
             <upload v-if="item.prop=='dpImg'" :src.sync="data.dptpUrl"></upload>       
           </div>
         </td>
@@ -67,7 +67,7 @@ export default {
         {label:'店铺名称',prop:'dpName',btnText:'修改',show:false,click:this.openInput},
         {label:'店铺图片',prop:'dpImg'},
         {label:'主营类目',prop:'zylm',format:this.formatName},
-        {label:'关联微信公众号',prop:'wxgzh'},
+        // {label:'关联微信公众号',prop:'wxgzh'},
         {label:'有效日期',prop:'enddate',btnText:'续费',click:this.openXf},
         {label:'店铺描述',prop:'dpjj'},
         {label:'联系方式',prop:'phone',btnText:'修改',show:false,click:this.openModify}
@@ -88,6 +88,9 @@ export default {
         this.modifyCount++;
       },
       deep:true
+    },
+    'data.dptpUrl':function(nv){
+      this.$store.commit('updateShopImg',nv);
     }
   },
   computed:{
@@ -95,7 +98,15 @@ export default {
   },
   methods:{
     rzBtnText(){
-      return this.data.isValidate?this.data.isValidate==1?'立即认证':'重新认证':'立即认证';
+      if(this.data.isValidate==0)
+        return '去认证';
+      else if(this.data.isValidate==1)
+        return '查看详情';
+      else if(this.data.isValidate==2)
+        return '查看申请';
+      else
+        return '重新认证';
+      //return this.data.isValidate?this.data.isValidate==1?'查看详情':'重新认证':'查看详情';
     },
     getDetails(){
       this.$http('/api/x6/getHySetInfo.do').then(res=>{
@@ -109,14 +120,21 @@ export default {
       if(!this.$util.vartifyPhone(this.data.phone)){
         this.$message('请完善联系方式','error');
       }else{
-        this.$router.push(`/main/mall/shop/set_dprz/${this.data.phone}/${this.data.dpName}`);
+        this.$router.push(`/main/mall/shop/set_dprz`);
       }
     },
     openXf(){
       window.open("http://wpa.b.qq.com/cgi/wpa.php?ln=1&key=XzgwMDA3MzcyM18xNzU0OTRfODAwMDczNzIzXzJf");
     },
     formatRz(value){
-      return value?value==1?'已提交认证,待审核':'已审核':'未提交认证';
+      if(value==0)
+        return '未提交认证';
+      else if(value==1)
+        return '已提交认证,审核中';
+      else if(value==2)
+        return '认证通过';
+      else
+        return '认证不通过';
     },
     formatName(value){
       for(let item of jylm){
@@ -135,12 +153,15 @@ export default {
       this.$http('/api/x6/saveHysetInfo.do',this.data).then(res=>{
         this.$message('店铺信息更新成功');
         this.modifyCount=1;
+        this.$store.commit('updateShopImg',this.data.dptpUrl);
       });
-    },
-    
+    }
   },
   mounted(){
     this.footerWidth=this.$refs.main.offsetWidth;
+    this.getDetails();
+  },
+  activated(){
     this.getDetails();
   },
   components:{

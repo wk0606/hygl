@@ -12,7 +12,7 @@ export default {
   data(){
     return {
       tabs:[
-        {label:'网点交易',component:'wdjy'},
+        {label:'网店交易',component:'wdjy'},
         {label:'交易明细',component:'jymx'}
       ],
       currentTab:'wdjy',

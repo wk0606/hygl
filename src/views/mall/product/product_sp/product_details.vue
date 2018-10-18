@@ -26,7 +26,7 @@
             </div>
         </div>
         <div style="width:254.98px;">
-            <span>商品详情图片:</span>
+            <span><i style="color:red;">*</i>商品详情图片:</span>
             <span style="color:#ccc;">可拖动图片改变缩略图</span>
             <input type="file" ref="file" multiple="multiple" style="display:none;" @change="uploadImgs">
         </div>
@@ -148,10 +148,6 @@ export default {
           this.save(1);
       },
       save(){
-          if(!this.details.spmd){
-              this.$message('请填写商品卖点','error');
-              return;
-          }
           if(!this.details.xqtp.length){
               this.$message('请上传详情图片','error');
               return;
@@ -160,8 +156,8 @@ export default {
           let array=[];
           //let keys=['dyjg','isch','kskc','qspmc','spdm'];
           //设置配送方式
-          params.psfs=params.psfs.length==2?2:params.psfs[0]=='快递配送'?1:0;
-          if(!params.psfs){
+          params.psfs=params.psfs.length==2?2:params.psfs[0]=='快递配送'?0:1;
+          if(params.psfs==1){
               //选择到店自提
               params.tyyfje=0;
               params.yfmbid=0;

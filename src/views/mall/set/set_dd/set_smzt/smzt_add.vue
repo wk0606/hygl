@@ -14,7 +14,7 @@
           label-width="100px"
         >
           <el-form-item label="自提点名称" prop="name">
-            <el-input v-model="addInfo.name" size="mini" style="width:550px;"></el-input>
+            <el-input v-model="addInfo.name" size="mini" style="width:550px;" clearable></el-input>
           </el-form-item>
           <el-form-item label="自提点地址" required>
             <el-row>
@@ -27,7 +27,7 @@
             </el-row>
             <el-row style="margin-top:15px;width:550px;">
               <el-form-item prop="dz">
-                  <el-input v-model="addInfo.dz" size="mini" style="width:455px;margin-right:10px;"></el-input>
+                  <el-input v-model="addInfo.dz" size="mini" style="width:455px;margin-right:10px;" clearable></el-input>
                   <el-button size="mini" @click="searchForMap">搜索地图</el-button>
                 </el-form-item>
             </el-row>
@@ -38,7 +38,7 @@
           <el-form-item label="联系电话" prop="lxdhhm" ref="lxdh">
             <el-input v-model="addInfo.lxdhqh" size="mini" style="width:80px;" placeholder="区号" @input="clearValidate('lxdh')"></el-input>
             <span style="margin:0 5px;">-</span>
-            <el-input v-model="addInfo.lxdhhm" size="mini" style="width:445px;" placeholder="填写联系电话便于买家联系（区号可留空）" @input="clearValidate('lxdh')"></el-input>
+            <el-input v-model="addInfo.lxdhhm" clearable size="mini" style="width:445px;" placeholder="填写联系电话便于买家联系（区号可留空）" @input="clearValidate('lxdh')"></el-input>
           </el-form-item>
           <el-form-item label="接待时间" prop="jdrq"  ref="jdsj">
             <div class="form-item-time">
@@ -103,6 +103,7 @@
                 type="textarea"
                 :rows="3"
                 placeholder="请输入内容"
+                clearable
                 v-model="addInfo.sjtj">
               </el-input>
             </el-row>

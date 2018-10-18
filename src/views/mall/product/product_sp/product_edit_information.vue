@@ -6,7 +6,7 @@
              <div class="edit-items">
                  <span class="edit-items-required">商品名称</span>
                  <div>
-                     <div><el-input size="mini" style="width:300px;" v-model.trim="details.name"></el-input></div>
+                     <div><el-input size="mini" style="width:300px;" v-model.trim="details.name" clearable></el-input></div>
                      <div class="tips" v-if="rules.name.show" >{{rules.name.label}}</div>
                  </div>
              </div>
@@ -18,7 +18,7 @@
                          <input-number
                             :arrow-control="false"
                             v-model="details.spdj"
-                            style="width:150px;"
+                            style="width:130px;"
                          ></input-number>
                          <div class="edit-items-price">
                              <span>原价:￥</span>
@@ -28,6 +28,9 @@
                                 :border="false"
                              ></input-number>
                          </div>
+                         <question text="示例" fixed-width="200">
+                           <img src="../../../../assets/sl.png" alt="" width="100%">
+                         </question>
                      </div>
                      <div class="tips" v-if="rules.spdj.show">{{rules.spdj.label}}</div>
                  </div>
@@ -47,6 +50,7 @@
                                 :key="item.id"
                                 :label="item.name"
                                 :value="item.id"
+                                :disabled="item.yxbz==1"
                             ></el-option>
                          </el-select>
                          <a @click="openRouter('/main/mall/shop/product_group_add/-1')" style="color:#409eff;margin-left:10px;">新建分组</a>
@@ -164,7 +168,7 @@
                  <div>
                      <div>
                          <input-number :arrow-control="false" v-model="details.kcyjsl" style="width:100px;"></input-number>
-                         <i class="el-icon-question" style="margin-right:10px;cursor:pointer;" title="当可售库存到达设置的数量，将受到通知，0代表不预警"></i>
+                         <i class="el-icon-question" style="margin-right:10px;cursor:pointer;" title="当可售库存到达设置的数量，将收到通知，0代表不预警"></i>
                          <div class="edit-items-price">
                              <span>全部可售库存 :</span>
                              <span style="margin-left:10px;">{{calcKcTotal}}</span>
@@ -256,11 +260,11 @@ import py from "../../../../func/pinyin";
 import inputNumber from "../../../../components/inputNumber/index";
 import goodsSelect from "../../../../components/goodsSelect/dialog";
 import lrz from "lrz";
+import question from '../../../../components/question/index'
 export default {
   props:['details'],
   data() {
     return {
-      test:40,
       rules: {
         name: { label: "姓名不可为空", show: false },
         spdj: { label: "售价不可为空", show: false },
@@ -306,9 +310,8 @@ export default {
       deep: true
     },
     'details.yfsz':function(nv){
-      console.log(nv)
       if(nv){
-        this.details.tyyfje='';
+        this.details.tyyfje=0;
       }
       else{
         this.details.yfmbid='';
@@ -330,10 +333,14 @@ export default {
   },
   methods: {
     getCache(key){
-      if(key=='spfzList')
-        this.spfz=this.$util.getCache(key).filter(item=>{
-          return item.id!=1;
-        });
+      if(key=='spfzList'){
+        this.spfz=this.$util.getCache(key);
+        if(this.$route.name=='product_fb'){
+          this.spfz=this.spfz.filter(item=>{
+            return item.yxbz!=1
+          });
+        }
+      }
       else
         this.yfmb=this.$util.getCache(key);
     },
@@ -638,14 +645,14 @@ export default {
     this.resetPage();
   },
   activated() {
-    //console.log(this.details)
-    //this.resetPage();
+   
   },
   components: {
     draggable,
     ggSelect,
     inputNumber,
-    goodsSelect
+    goodsSelect,
+    question
   }
 };
 </script>

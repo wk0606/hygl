@@ -8,6 +8,7 @@
                 v-model="ckname"
                 style="width:200px;"
                 @input="searchList"
+                clearable
             ></el-input>
             <span>公司 :</span>
             <company-select

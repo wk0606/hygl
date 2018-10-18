@@ -15,14 +15,14 @@
                     :value="item.value"
                 ></el-option>
               </el-select>
-              <el-input size="mini" v-model="params.value" class="order-search-item-input"></el-input>
+              <el-input size="mini" v-model="params.value" class="order-search-item-input" clearable></el-input>
           </div>
           <div class="order-search-item">
               <span>下单时间</span>
               <date-picker :date.sync="params.xdsj" need-option class="order-search-item-date"></date-picker>
           </div>
           <div class="order-search-item">
-              <span>仓库门店</span>
+              <span>发货仓库</span>
               <el-select
                 v-model="params.xtgsid"
                 size="mini"
@@ -62,6 +62,10 @@
             :style="{width:item.width,textAlign:item.align}"
           >{{item.label}}</div>
       </div>
+      <div v-if="!List.length" class="empty-tip">
+          <i class="iconfont icon-zanwushuju"></i>
+          <span>暂无数据</span>
+      </div>
       <div
         class="order-table-body"
         v-for="row in List"
@@ -73,23 +77,29 @@
                   <span>下单时间 : {{row.zdrq}}</span>
               </div>
               <div>
-                  <b @click="openDetails(row.ddh)">查看详情</b>
+                  <b @click="openDetails(row)">查看详情</b>
                   <i>-</i>
                   <b @click="openComments(row)">备注</b>
               </div>
           </div>
-          <order-row :columns="colModel" :data="row.details" :sfje="row.zje"></order-row>
+          <order-row
+            :columns="colModel"
+            :data="row.details"
+            :gift="row.gift"
+            :zje="row.zje"
+            :yfje="row.yfje"
+            :records="row.tkrecords"
+            @send-out="openFh(row)"></order-row>
           <div class="order-comments" v-if="row.remark">
               <span>卖家备注 : </span>
               <div>{{row.remark}}</div>
           </div>
       </div>
-      <order-fh v-if="dialog.show" :views="dialog"></order-fh>
+      <!--  -->
   </div>
 </template>
 <script>
 import { search } from "../serachFilter.js"
-import orderFh from './order_fh'
 export default {
   props:['page'],
   mixins: [search],
@@ -109,11 +119,6 @@ export default {
               {label:'无需发货',value:0}
           ],
           ckList:[],
-          dialog:{
-              show:false,
-              lx:0,//0 快递 1 自提
-              data:null
-          },
           params:{
               lx:0,
               value:'',
@@ -126,25 +131,30 @@ export default {
   methods:{
       //初始化查询条件
       initSearchParams(){
-          this.ckList=this.$util.getCache('ksckList');
-          this.ckList.splice(0,0,{
-              id:-1,
-              name:'全部'
-          });
-      },
-      openFh(row){
-          this.dialog.show=true;
-          this.dialog.data=row;
+          this.params={
+              lx:0,
+              value:'',
+              xdsj:[],
+              xtgsid:-1,
+              fhzt:-1
+          };
+          this.$util.removeCache('wdfh');
       }
   },
   mounted(){
+     this.ckList=this.$util.getCache('ksckList');
+     this.ckList.splice(0,0,{
+        id:-1,
+        name:'全部'
+     });
      this.initSearchParams(); 
   },
   activated(){
+     this.ckList.splice(0,0,{
+        id:-1,
+        name:'全部'
+     });
      this.initSearchParams(); 
-  },
-  components:{
-      orderFh
   }
 }
 </script>

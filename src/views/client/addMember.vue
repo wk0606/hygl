@@ -11,13 +11,13 @@
 				<div style="width: 100%;height: auto;overflow-y:auto;">
 					<el-form :model='userform' label-width='100px' ref='userform' :inline='true' :rules="userformRules">
 						<el-form-item label='姓名' prop='name'>
-							<el-input v-model='userform.name' auto-complete='off' placeholder='请输入姓名' size='small' style='width: 295px;'></el-input>
+							<el-input v-model='userform.name' auto-complete='off' placeholder='请输入姓名' size='small' style='width: 295px;' clearable></el-input>
 						</el-form-item>
 						<el-form-item label="微信号" prop="wx">
-							<el-input v-model="userform.wx" placeholder="请输入微信号" size="small" style="width: 295px"></el-input>
+							<el-input v-model="userform.wx" placeholder="请输入微信号" size="small" style="width: 295px" clearable></el-input>
 						</el-form-item>
 						<el-form-item label='手机号' prop='phone'>
-							<el-input v-model="userform.phone" placeholder="请输入手机号" size="small" style="width: 295px"></el-input>
+							<el-input v-model="userform.phone" placeholder="请输入手机号" size="small" style="width: 295px" clearable></el-input>
 						</el-form-item>
 						<!-- <el-form-item label='初始积分' prop='initjf'>
 							<el-input v-model.number="userform.initjf" placeholder="请输入初始积分" size="small" style="width: 295px"></el-input>

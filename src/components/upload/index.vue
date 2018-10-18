@@ -13,7 +13,7 @@
             </div>
             <input type="file" ref="file" @change="uploadImg">
         </div>
-        <span @click="selectFile">重新上传</span>
+        <span @click="selectFile"><i class="el-icon-loading" v-if="loading"></i>重新上传</span>
     </div>
 </template>
 <script>
@@ -31,6 +31,7 @@ export default {
     },
     data(){
         return {
+            commentsLx:false,
             loading:false
         }
     },
@@ -54,6 +55,7 @@ export default {
                     this.$http(this.action,rst.formData).then(res=>{
                         //this.$message('上传成功');
                         this.$emit('update:src',res.file_path);
+                        this.$emit('change',res.file_path);
                     },err=>{
                         this.loading=false;
                     });
@@ -96,6 +98,7 @@ export default {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
+                z-index: 5;
             }
         } 
         >span{

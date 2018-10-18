@@ -13,7 +13,7 @@
 		<div class="cnt-top" ref="top">
 			<div class="top-left">
 				<span>关键字：</span>
-				<el-input v-model="searchkey" auto-complete="off" placeholder="请输入姓名 / 号码关键字进行检索" style="width:260px;" @input="searchHy" size="small">
+				<el-input v-model="searchkey" auto-complete="off" placeholder="请输入姓名 / 号码关键字进行检索" style="width:260px;" @input="searchHy" size="small" clearable>
 				</el-input>
 				<div class="top-filter" @click.stop="showFilter = true">
 					<img src="../../assets/icon_sort.png" width="22" height="22" @click.stop="showFilter = true" /><i class="text" @click.stop="showFilter = true">排序</i>

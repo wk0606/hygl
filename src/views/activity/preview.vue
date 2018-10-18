@@ -1,5 +1,5 @@
 <template>
-    <real-view :width="width" :height="height" :needClose="needClose" @close="close">
+    <real-view :height="height" :needClose="needClose" @close="close">
         <div class="preview">
             <img src="../../assets/hdxq.png" width="100%"/>
             <div class="preview-body">

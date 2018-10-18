@@ -24,12 +24,13 @@ import wdfh from './order_wdfh/index'
 import ddzt from './order_ddzt/index'
 import pagination from '../../../components/pagination/index'
 import comments from './comments'
+import bus from '../../../func/eventBus'
 export default {
   data(){
     return {
       tabs:[
         {label:'全部订单',component:'qbdd'},
-        {label:'网店发货',component:'wdfh'},
+        {label:'快递发货',component:'wdfh'},
         {label:'到店自提',component:'ddzt'}
       ],
       currentTab:'qbdd',
@@ -42,7 +43,12 @@ export default {
         show:false,
         ddh:'',
         data:null
-      }
+      },
+      order:{
+          show:false,
+          lx:0,//0 快递 1 自提
+          data:null
+      },
     }
   },
   methods:{
@@ -58,6 +64,19 @@ export default {
         this.page.no=page;
         this.$refs.order.search();
     }
+  },
+  activated(){
+    bus.$on('order-change',params=>{
+        this.currentTab='qbdd';
+        this.$util.removeCache('qbdd');
+        setTimeout(()=>{
+            this.$refs.order.initSearchParams();
+            for(let key in params){
+                this.$refs.order.params[key]=params[key];
+            }
+            this.$refs.order.search();
+        },0);
+    });
   },
   beforeRouteEnter (to, from, next) {
     next(vm=>{

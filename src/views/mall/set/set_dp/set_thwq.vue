@@ -4,13 +4,13 @@
           <span>售后/维权客服电话 : </span>
           <div>
               <div>
-                  <el-input size="mini" placeholder="请填写手机号" style="width:300px;" v-model="details.wqsjh"></el-input>
+                  <el-input size="mini" placeholder="请填写手机号" style="width:300px;" v-model="details.wqsjh" clearable></el-input>
                   <span>手机号将用于接受卖家维权咨询、维权通知提醒</span>
               </div>
               <div>
-                  <el-input size="mini" placeholder="区号" style="width:80px;" v-model="details.wqzjqh"></el-input>
+                  <el-input size="mini" placeholder="区号" style="width:80px;" v-model="details.wqzjqh" clearable></el-input>
                   <em>-</em>
-                  <el-input size="mini" placeholder="座机号码(可不填)" style="width:194px;" v-model="details.wqzjhm"></el-input>
+                  <el-input size="mini" placeholder="座机号码(可不填)" style="width:194px;" v-model="details.wqzjhm" clearable></el-input>
                   <span>优先展示座机号码</span>
               </div>
           </div>

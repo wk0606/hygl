@@ -3,8 +3,11 @@
         v-model="name"
         size="mini"
         :fetch-suggestions="querySearch"
-        placeholder="请输入内容匹配商品"
+        :placeholder="placeholder"
         @select="handleSelect"
+        @focus="openSlide"
+        ref="component"
+        need-empty
     >
         <template slot-scope="{ item }">
             <div v-if="!item.text" class="custom-item">{{ item.name }}</div>
@@ -25,11 +28,18 @@ export default {
             default:function(){
                 return [];
             }
+        },
+        placeholder:{
+            default:'请输入内容匹配商品'
+        },
+        emptyText:{
+            type:String,
+            default:'暂无数据'
         }
     },
     data(){
         return {
-            name:''
+            name:'',
         }
     },
     methods:{
@@ -65,7 +75,6 @@ export default {
                     });
                 }
             }
-            console.log(temp);
             return temp;
         },
         matchCharForIndex(target,queryString){
@@ -117,13 +126,34 @@ export default {
               });
             }
             return temp;
+        },
+        openSlide(){
+            if(!this.data.length){
+                let target=this.$refs.component.popperElm.children[0].children[0];
+                const NAME='empty-suggestion-tip';
+                if(target.children.length==1){
+                    let empty=document.createElement('div');
+                    empty.setAttribute('class',NAME);
+                    empty.setAttribute('id',this.emptyId);
+                    empty.innerText=this.emptyText;
+                    target.appendChild(empty);
+                }
+            }
         }
+    },
+    mounted(){
+        //this.emptyId=`empty-suggestion-${Math.floor(Math.random()*100000000000)}`;
     }
 }
 </script>
 <style lang="less" scoped>
     .custom-item{
         font-size: 12px;
+        word-break: break-all;
+        white-space: normal;
+        flex-wrap: wrap;
+        line-height: 18px;
+        padding: 5px 0;
     }
     .custom-flex{
         display: flex;

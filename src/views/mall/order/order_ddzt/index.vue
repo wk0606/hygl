@@ -3,7 +3,7 @@
       <div class="order-zt">
           <span>验证提货码</span>
           <div>
-              <div><input type="text" v-model.trim="thm" placeholder="请输入提货码或使用扫描枪扫描"></div>
+              <div><input type="text" v-model.trim="thm" placeholder="请输入提货码或使用扫描枪扫描" @keyup.enter="getOrderDetails"></div>
               <div @click="getOrderDetails">核销</div>
           </div>
       </div>
@@ -22,7 +22,7 @@
                     :value="item.value"
                 ></el-option>
               </el-select>
-              <el-input size="mini" v-model="params.value" class="order-search-item-input"></el-input>
+              <el-input size="mini" v-model="params.value" class="order-search-item-input" clearable></el-input>
           </div>
           <div class="order-search-item">
               <span>下单时间</span>
@@ -69,6 +69,10 @@
             :style="{width:item.width,textAlign:item.align}"
           >{{item.label}}</div>
       </div>
+      <div v-if="!List.length" class="empty-tip">
+          <i class="iconfont icon-zanwushuju"></i>
+          <span>暂无数据</span>
+      </div>
       <div
         class="order-table-body"
         v-for="row in List"
@@ -80,23 +84,29 @@
                   <span>下单时间 : {{row.zdrq}}</span>
               </div>
               <div>
-                  <b @click="openDetails(row.ddh)">查看详情</b>
+                  <b @click="openDetails(row)">查看详情</b>
                   <i>-</i>
                   <b @click="openComments(row)">备注</b>
               </div>
           </div>
-          <order-row :columns="colModel" :data="row.details" :sfje="row.zje"></order-row>
+          <order-row
+            :columns="colModel"
+            :data="row.details"
+            :gift="row.gift"
+            :zje="row.zje"
+            :records="row.tkrecords"
+            @send-out="openFh(row)"></order-row>
           <div class="order-comments" v-if="row.remark">
               <span>卖家备注 : </span>
               <div>{{row.remark}}</div>
           </div>
       </div>
-      <order v-if="dialog.show" :views="dialog"></order>
   </div>
 </template>
 <script>
 import { search } from "../serachFilter.js"
-import order from '../order_wdfh/order_fh'
+import {Loading} from '../../../../func/loading'
+import bus from '../../../../func/eventBus'
 export default {
   props:['page'],
   mixins: [search],
@@ -115,23 +125,18 @@ export default {
         { label: "已完成", value: 3 }
       ],
       ztType: [
-        { label: "全部", value: 0 },
-        { label: "带自提", value: 1 },
+        { label: "全部", value: -1 },
+        { label: "待自提", value: 1 },
         { label: "已自提", value: 2 }
       ],
       ztdList:[],
       thm:'',
-      dialog:{
-        show:false,
-        lx:1,//0 快递 1 自提
-        data:null
-      },
       params:{
           lx:0,
           value:'',
           xdsj:[],
           thmd:-1,
-          ztzt:0
+          ztzt:-1
       }
     };
   },
@@ -143,17 +148,32 @@ export default {
         id:-1,
         name:'全部'
       });
+      this.$util.removeCache('ddzt');
+      this.params={
+          lx:0,
+          value:'',
+          xdsj:[],
+          thmd:-1,
+          ztzt:-1
+      };
     },
     //获取订单详情
     getOrderDetails(){
         if(!this.thm){
             this.$message('请输入提货码','error');
         }else{
+            Loading.open();
             this.$http('/api/x6/hyValidateThm.do',{
                 thm:this.thm
             }).then(res=>{
-                this.dialog.show=true;
-                this.dialog.data=res.List[0];
+                Loading.close();
+                this.List=res.List;
+                if(!res.List.length)
+                    this.$message('未找到该自提码对应的订单,请仔细核对自提码','error');
+                //使页面滚到最底部
+                bus.$emit('scroll-to-bottom');
+            },err=>{
+                Loading.close();
             });
         }
     }
@@ -164,9 +184,6 @@ export default {
   activated(){
     this.initSearchParams();
   },
-  components:{
-      order
-  }
 };
 </script>
 <style lang="less" scoped>

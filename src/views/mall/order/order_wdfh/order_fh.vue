@@ -1,46 +1,39 @@
 <template>
     <pop-up
-        title="网店发货"
-        width="500"
-        :views="views"
+        :title="psfs?'到店自提':'快递发货'"
+        width="600"
         :confirm="save"
         :loading="load"
     >
         <div slot="content" class="content">
             <div class="content-header">
-                <p><b>订单号 ：{{views.data.ddh}}</b></p>
-                <p><b>收货人姓名 ：{{views.data.details[0].shr}}</b><b>收货人联系方式 ：{{views.data.details[0].shrlxfs}}</b></p>
+                <p><b>订单号 ：{{ddh}}</b></p>
+                <p v-if="!psfs"><b>收货人姓名 ：{{details.shr}}</b><b>收货人联系方式 ：{{details.shrlxfs}}</b></p>
+                <p v-if="psfs"><b>买家姓名 ：{{details.mjname}}</b></p>
+                <p v-if="details.shdz"><b>收货地址 ：{{details.shdz}}</b></p>
             </div>
-            <div v-if="!views.lx">
+            <div v-if="!psfs">
                 <el-row>
                     <span>快递单号</span>
-                    <el-input size="mini" v-model.trim="details.fhdh" placeholder="请输入发货单号"></el-input>
+                    <el-input size="mini" v-model.trim="details.fhdh" placeholder="请输入发货单号" clearable></el-input>
                 </el-row>
             </div>
             <div>
                 <el-row>
-                    <span>仓库</span>
-                    <el-select
-                        v-model="details.ckdm"
-                        filterable
-                        placeholder="请选择仓库"
-                        size="mini"
+                    <span>{{psfs?'自提仓库':'发货仓库'}}</span>
+                    <input-search
+                        style="width:280px;"
+                        :data="ckList"
+                        placeholder="请选择发货仓库"
                         @change="handleCk"
-                        style="width:280px"
-                    >
-                        <el-option
-                            v-for="item in ckList"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id">
-                        </el-option>
-                    </el-select>
+                    ></input-search>
+                    <i class="el-icon-question" style="margin-left:10px;font-size:14px;color:#ccc;" title="发货仓库仅为满足本订单商品数量的仓库，当没有仓库可选时，请及时采购调拨"></i>
                 </el-row>
             </div>
             <el-table
                 :data="details.spList"
                 max-height="300"
-            >
+             >
                 <el-table-column width="35">
                     <template slot-scope="scope">
                         <span class="cell-span">{{scope.$index+1}}</span>
@@ -51,12 +44,23 @@
                     label="商品名称"
                 >
                     <template slot-scope="scope">
-                        <span class="cell-span" @click="currentRow=scope.$index">{{scope.row.spname}}</span>
+                        <p class="cell-span" :title="scope.row.spname"><span @click="currentRow=scope.$index">{{scope.row.spname}}</span></p>
+                        <p class="cell-span" :title="scope.row.spggs"><span style="color:#999;">规格：{{scope.row.spggs}}</span></p>
                     </template>
                 </el-table-column>
                 <el-table-column
                     prop="spname"
-                    label="选择串号/仓库"
+                    label="库存商品名"
+                    header-align="center"
+                >
+                    <template slot-scope="scope">
+                        <p class="cell-span" :title="scope.row.qspmc"><span>{{scope.row.qspmc}}</span></p>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                    prop="spname"
+                    label="串号/仓库"
+                    header-align="center"
                 >
                     <template slot-scope="scope">
                         <div @click="currentRow=scope.$index">
@@ -64,12 +68,21 @@
                                 v-if="!scope.row.isch"
                                 :spdm="scope.row.spdm"
                                 :ckdm="details.ckdm"
-                                :text="scope.row.ch"
-                                :selected-array="selectedArray"
+                                :text.sync="scope.row.ch"
                                 :disabled="!details.ckdm"
-                                @selected="handlerImei"
+                                :placeholder="!details.ckdm?'请先选择仓库':'请输入串号'"
                             ></input-imei>
-                            <span v-else class="cell-span">{{getCkName}}</span>
+                            <!-- <span  class="cell-span" :class="{gray:!details.ckdm}"></span> -->
+                            <div
+                                v-else
+                                class="no-imei"
+                            >
+                                <span :class="{gray:!details.ckdm}">{{getCkName}}</span>
+                                <span
+                                    v-if="scope.row.kskc||scope.row.kskc===0"
+                                    :class="{error:scope.row.kskc<=0}"
+                                >库存 : {{scope.row.kskc<0?0:scope.row.kskc}}</span>
+                            </div>
                         </div>
                     </template>
                 </el-table-column>
@@ -80,8 +93,8 @@
 <script>
 import popUp from '../../../../components/popUp/index'
 import inputImei from '../../../../components/inputIMEI/index'
+import inputSearch from '../../../../components/inputSearch/index'
 export default {
-    props:['views'],
     data(){
         return {
             currentRow:'',
@@ -90,6 +103,7 @@ export default {
                 ckdm:'',
                 spList:[]
             },
+            goods:[],
             ckList:[],
             load:false
         }
@@ -98,7 +112,7 @@ export default {
         selectedArray(){
             var temp=[];
             for(let obj of this.details.spList){
-                if(obj.ch)
+                if(!obj.ch)
                     temp.push(obj.ch);
             }
             return temp;
@@ -108,17 +122,26 @@ export default {
                 if(obj.id==this.details.ckdm)
                     return obj.name;
             }
-            return '暂未选择仓库';
+            return '请先选择仓库';
         }
     },
     methods:{
-        handleCk(bm){
-            this.details.ckdm=bm;
+        handleCk(item){
+            this.details.ckdm=item.id;
             for(let obj of this.details.spList){
                 if(obj.isch){
-                    obj.ckdm=bm;
+                    //obj.ckdm=item.id;
+                    this.getKskc(item.id,obj.spdm,obj);
                 }
             }
+        },
+        getKskc(ckdm,spdm,obj){
+            this.$http('/api/x6/getKskcBySpdmCkdm.do',{
+                spdm:spdm,
+                ckdm:ckdm
+            }).then(res=>{
+                this.$set(obj,'kskc',res.kskc);
+            });
         },
         //串号是否已经选择
         vartifyHasSelected(ch){
@@ -132,12 +155,9 @@ export default {
             }
             return flag;
         },
-        handlerImei(ch){
-            this.details.spList[this.currentRow].ch=ch;
-        },
         vartifyForm(){
             var flag=true;
-            if(!this.details.fhdh){
+            if(!this.details.fhdh&&!this.psfs){
                 this.$message('请输入快递单号','error');
                 flag=false;
                 return flag;
@@ -160,11 +180,11 @@ export default {
             if(this.vartifyForm()){
                 this.load=true;
                 var temp={
-                    ddh:this.views.data.ddh,
+                    ddh:this.ddh,
                     kddh:this.details.fhdh,
                     header:{
                         ckdm:this.details.ckdm,
-                        hyid:this.views.data.details[0].hyid,
+                        hyid:this.details.hyid,
                         fph:''
                     },
                     stockrows:[],
@@ -185,38 +205,91 @@ export default {
                         je:obj.je,
                         comments2:''
                     });
-                    zje+=obj.je;
                     index++;
+                    zje+=obj.je;
                 }
                 temp.syxxrows[0].je=zje;
                 this.$http('/api/x6/hyWdfh.do',temp).then(res=>{
                     this.load=false;
+                    this.$message(this.psfs?'自提成功':'发货成功');
+                    if(this.callback)
+                        this.callback();
+                    this.close();
                 },err=>{
                     this.load=false;
                 });
             }
         },
+        async getCkList(sparray){
+            let res=await this.$http('/api/x6/queryKsckListBySpdms.do',{
+                spdmarray:sparray
+            });
+            for(let obj of res.List)
+                obj.id=obj.ckdm;
+            this.ckList=res.List;
+        },
+        close(){
+            document.body.removeChild(document.getElementById(this.DomID));
+        }
     },
     mounted(){
-        this.ckList=this.$util.getCache('ksckList');
-        for(let obj of this.views.data.details){
-            this.details.spList.push({
-               ch:'',
-               ch1:'',
-               isch:obj.isch,
-               spdm:obj.spdm,
-               sl:obj.sl,
-               dj:obj.spdj,
-               je:obj.je,
-               comments2:'',
-               ckdm:'',
-               spname:obj.spname
-            });
-        }
+        this.$http('/api/x6/getFhxxByDdh.do',{
+            ddh:this.ddh
+        }).then(res=>{
+            let temp=[];
+            for(let obj of res.stockrows){
+                temp.push({
+                    spdm:obj.spdm,
+                    sl:obj.sl
+                });
+            }
+            this.getCkList(temp);
+            this.details.hyid=res.header.hyid;
+            this.details.shr=res.header.shr;
+            this.details.shrlxfs=res.header.shrlxfs;
+            this.details.mjname=res.header.mjname;
+            this.details.shdz=res.header.shdz;
+            for(let obj of res.stockrows){
+                if(!obj.isch){
+                    for(let i=0;i<obj.sl;i++){
+                        this.details.spList.push({
+                            ch:'',
+                            ch1:'',
+                            isch:obj.isch,
+                            spdm:obj.spdm,
+                            sl:obj.sl,
+                            dj:obj.dyjg,
+                            je:obj.je,
+                            comments2:'',
+                            ckdm:'',
+                            spname:obj.spname,
+                            qspmc:obj.qspmc,
+                            spggs:obj.spggs
+                        });
+                    }
+                }else{
+                    this.details.spList.push({
+                        ch:'',
+                        ch1:'',
+                        isch:obj.isch,
+                        spdm:obj.spdm,
+                        sl:obj.sl,
+                        dj:obj.dyjg,
+                        je:obj.je,
+                        comments2:'',
+                        ckdm:'',
+                        spname:obj.spname,
+                        qspmc:obj.qspmc,
+                        spggs:obj.spggs
+                    });
+                }
+            }
+        });
     },
     components:{
         popUp,
-        inputImei
+        inputImei,
+        inputSearch
     }
 }
 </script>
@@ -258,5 +331,22 @@ export default {
             b{margin-right: 20px;color: #666;}
         }
     }
+    .gray{
+        color: #999;
+    }
+    .no-imei{
+        display: flex;
+        align-items: top;
+        justify-content: space-between;
+        font-size: 12px;
+        span:nth-child(2){
+            flex-shrink: 0;
+            color: #999;
+        }
+        span:nth-child(1){
+            flex-grow: 1;
+        }
+    }
+    .error{color:red !important;}
 </style>
 

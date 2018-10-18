@@ -14,16 +14,16 @@
                 label-position="top"
             >
                 <el-form-item label="姓名" prop="name" required>
-                    <el-input v-model="views.data.name" size="small" placeholder="请输入姓名" @blur="saveChange('name')" :disabled="disabled"></el-input>
+                    <el-input v-model="views.data.name" size="small" placeholder="请输入姓名" @blur="saveChange('name')" :disabled="disabled" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="手机号" prop="phone" required>
-                    <el-input v-model="views.data.phone" size="small" placeholder="请输入手机号码" @blur="saveChange('phone')" :disabled="disabled"></el-input>
+                    <el-input v-model="views.data.phone" size="small" placeholder="请输入手机号码" @blur="saveChange('phone')" :disabled="disabled" clearable></el-input>
                 </el-form-item>
                 <!-- <el-form-item label="初始积分" prop="initjf">
                     <el-input v-model="views.data.initjf" size="small" placeholder="请输入初始积分" @blur="saveChange('initjf')" :disabled="disabled"></el-input>
                 </el-form-item> -->
                 <el-form-item label="微信号" prop="wx">
-                    <el-input v-model="views.data.wx" size="small" placeholder="请输入微信号" @blur="saveChange('wx')" :disabled="disabled"></el-input>
+                    <el-input v-model="views.data.wx" size="small" placeholder="请输入微信号" @blur="saveChange('wx')" :disabled="disabled" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="性别" prop="sex">
                     <el-radio-group v-model="views.data.sex" @change="saveChange(0)">
@@ -90,7 +90,7 @@
                             ></el-option>
                         </el-select>
                     </div>
-                    <div><el-input v-model="views.data.dz" size="small" placeholder="请输入街道地址" @blur="saveChange('dz')" :disabled="disabled"></el-input></div>
+                    <div><el-input v-model="views.data.dz" size="small" placeholder="请输入街道地址" @blur="saveChange('dz')" :disabled="disabled" clearable></el-input></div>
                 </el-form-item>
                 <el-form-item label="添加画像" prop="hx">
                     <div v-if="!disabled" class="tag-btn"><img src="../../assets/addtag.png" width="20" @click="tags.show=true;"/></div>

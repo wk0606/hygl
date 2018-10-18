@@ -14,6 +14,7 @@
                     v-model.trim="name" 
                     placeholder="回车新增小规格"
                     @keyup.enter.native="saveGg"
+                    clearable
                 ></el-input>
                 <scroll class="scroll" scroll-color="#fff" bar-color="#f2f2f2" need-hover>
                     <ul>
@@ -94,6 +95,7 @@ export default {
                             });
                         }
                     }
+                    this.change(this.name);
                     this.name='';
                 });
             }

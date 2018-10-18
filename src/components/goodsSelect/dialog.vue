@@ -8,7 +8,7 @@
     <div slot="content" class="content">
         <div class="content-item">
             <span>搜索 ：</span>
-            <el-input size="mini" placeholder="请输入搜索关键字" v-model="name" @input="filterByName"></el-input>
+            <el-input size="mini" placeholder="请输入搜索关键字" v-model="name" @input="filterByName" clearable></el-input>
             <el-button size="mini" type="primary" style="margin-left:20px;" @click="reset">重置</el-button>
         </div>
         <div class="content-item content-item-top">

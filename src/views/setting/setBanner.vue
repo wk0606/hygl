@@ -37,6 +37,7 @@
                 placeholder="请填写描述文字"
                 v-model="item.cxt"
                 @input="drawText(index)"
+                clearable
             ></el-input>
             <i class="el-icon-circle-plus" v-if="index+1==desc.length" @click="addDesc"></i>
             <i class="el-icon-remove" v-else @click="removeDesc(index)"></i>

@@ -1,7 +1,7 @@
 <template>
   <div class="input-number" :class="{border:border}">
       <i v-if="icon" :class="icon"></i>
-      <p><input type="number" v-model="val" @input="emitInput" @change="changeValue" :style="{textAlign:align}"></p>
+      <p><input type="number" v-model="val" @input="emitInput" @change="changeValue" :style="{textAlign:align}" @blur="blur"></p>
       <div v-if="arrowControl">
           <i class="el-icon-caret-top" @click="calc('add')"></i>
           <i class="el-icon-caret-bottom" @click="calc('sub')"></i>
@@ -69,6 +69,9 @@ export default {
                 this.val=min;
             this.$emit('input',parseFloat(this.val));
           }
+      },
+      blur(){
+          this.$emit('blur');
       }
   },
   mounted(){

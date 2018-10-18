@@ -7,30 +7,37 @@
                     <i class="el-icon-close" @click="close"></i>
                 </div>
                 <div class="n-body" ref="body">
-                    <scroll class="scroll" need-hover>
+                    <div class="n-body-load" :style="{height:height+'px'}">
+                        <img v-if="height==30" src="../../assets/loading.svg" alt="" height="30">
+                    </div>
+                    <div class="scroll" ref="div" @mousewheel="refreshList">
                         <ul>
                             <li
                                 v-for="tip in List"
                                 :key="tip.id"
+                                @click="openTxPage(tip)"
                             >
-                                <span :style="{color:tipsLxMap[tip.lx].color,borderColor:tipsLxMap[tip.lx].color}">
-                                    {{tipsLxMap[tip.lx].label}}
+                                <!-- :style="{color:tipsLxMap[tip.lx].color,borderColor:tipsLxMap[tip.lx].color}" -->
+                                <span :style="{color:TXLX[tip.lx].color,borderColor:TXLX[tip.lx].color}">
+                                    {{TXLX[tip.lx].label}}
                                 </span>
-                                <div :class="{'notify-wd':!tip.status}">
+                                <div :class="{'notify-wd':!tip.flag}">
                                     <p
-                                        v-for="item in tip.data"
+                                        v-for="item in TXLX[tip.lx].context"
                                         :key="item.key"
                                     >
-                                        <span>{{item.key}}</span>
-                                        <span>{{item.value}}</span>
+                                        <span>{{item.text}}</span>
+                                        <span>{{tip.data[item.key]}}</span>
                                     </p>
                                 </div>
+                                <em v-if="!tip.flag"></em>
                             </li>
                         </ul>
-                    </scroll>
+                        <p class="list-end" v-if="page.no==page.rows"><span style="color:#999;">我是有底线的</span></p>
+                    </div>
                 </div>
                 <div class="n-title n-footer">
-                    <span>全部标记为已读</span>
+                    <span @click="markAllRead">全部标记为已读</span>
                     <div>
                         <a @click="openHistory">
                             <i class="iconfont icon-lishi"></i>
@@ -52,6 +59,8 @@
                         <el-switch
                             v-model="control.all"
                             active-color="#13ce66"
+                            active-value="Y"
+                            inactive-value="N"
                             @change="changeAll"
                         >
                         </el-switch>
@@ -60,14 +69,16 @@
                 </div>
                 <div
                     class="n-item"
-                    v-for="item in control.list"
-                    :key="item.id"
+                    v-for="(item,key) in control.list"
+                    :key="key"
                 >
                     <span>{{item.label}}</span>
                     <el-switch
-                        v-model="item.value"
+                        v-model="item.qybz"
                         active-color="#13ce66"
-                        @change="changeItem(item)"
+                        active-value="Y"
+                        inactive-value="N"
+                        @change="changeItem(key)"
                     >
                     </el-switch>
                 </div>
@@ -80,122 +91,35 @@
 import {Loading} from '../../func/loading'
 import scroll from '../../components/scroll/scroll'
 import history from './notify_history'
+import {txlx} from './Txlx'
+import bus from '../../func/eventBus'
+import clickEvent from './clickNotify'
+
 export default {
+    mixins:[clickEvent],
     props:['views'],
     data(){
         return {
             show:false,
             control:{
                 show:false,
-                all:true,
-                list:[
-                    {label:'商品发货通知',value:true,id:1},
-                    {label:'客户评价通知',value:true,id:2},
-                    {label:'库龄预警提醒',value:true,id:3},
-                    {label:'商品缺货提醒',value:true,id:4},
-                    {label:'会员到店提醒',value:true,id:5}
-                ]
-            },
-            List:[
-                {
-                    id:1,
-                    lx:'spfh',
-                    status:1,
-                    data:[
-                        {key:'订单号',value:'0012544'},
-                        {key:'下单日期',value:'2018-05-16 10:31:25'},
-                        {key:'商品',value:'苹果IphoneX 128G 全网通 黑色'},
-                        {key:'规格',value:'全网通'}
-                    ]
-                },
-                {
-                    id:2,
-                    lx:'khpj',
-                    status:0,
-                    data:[
-                        {key:'评分',value:'5'},
-                        {key:'内容',value:'定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。'}
-                    ]
-                },
-                {
-                    id:3,
-                    lx:'klyj',
-                    status:1,
-                    data:[
-                        {key:'订单号',value:'0012544'},
-                        {key:'下单日期',value:'2018-05-16 10:31:25'},
-                        {key:'商品',value:'苹果IphoneX 128G 全网通 黑色'},
-                        {key:'规格',value:'全网通'}
-                    ]
-                },
-                {
-                    id:4,
-                    lx:'spqh',
-                    status:0,
-                    data:[
-                        {key:'评分',value:'5'},
-                        {key:'内容',value:'定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。'}
-                    ]
-                },
-                {
-                    id:5,
-                    lx:'hydd',
-                    status:0,
-                    data:[
-                        {key:'评分',value:'5'},
-                        {key:'内容',value:'定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。'}
-                    ]
-                },
-                {
-                    id:6,
-                    lx:'spfh',
-                    status:1,
-                    data:[
-                        {key:'订单号',value:'0012544'},
-                        {key:'下单日期',value:'2018-05-16 10:31:25'},
-                        {key:'商品',value:'苹果IphoneX 128G 全网通 黑色'},
-                        {key:'规格',value:'全网通'}
-                    ]
-                },
-                {
-                    id:7,
-                    lx:'khpj',
-                    status:0,
-                    data:[
-                        {key:'评分',value:'5'},
-                        {key:'内容',value:'定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。'}
-                    ]
-                },
-                {
-                    id:8,
-                    lx:'klyj',
-                    status:1,
-                    data:[
-                        {key:'订单号',value:'0012544'},
-                        {key:'下单日期',value:'2018-05-16 10:31:25'},
-                        {key:'商品',value:'苹果IphoneX 128G 全网通 黑色'},
-                        {key:'规格',value:'全网通'}
-                    ]
-                },
-                {
-                    id:9,
-                    lx:'spqh',
-                    status:0,
-                    data:[
-                        {key:'评分',value:'5'},
-                        {key:'内容',value:'定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。'}
-                    ]
-                },
-                {
-                    id:10,
-                    lx:'hydd',
-                    status:0,
-                    data:[
-                        {key:'评分',value:'5'},
-                        {key:'内容',value:'定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。'}
-                    ]
+                all:'',
+                list:{
+                    WDTX_SPFH:{label:'商品发货通知',qybz:'Y'},
+                    WDTX_KHPJ:{label:'客户评价通知',qybz:'Y'},
+                    WDTX_KCYJ:{label:'库龄预警提醒',qybz:'Y'},
+                    WDTX_SPQH:{label:'商品缺货提醒',qybz:'N'},
+                    WDTX_BOX_WELCOME:{label:'会员到店提醒',qybz:'Y'},
+                    WDTX_DDSH:{label:'订单收货通知',qybz:'Y'},
+                    WDTX_DDTK:{label:'订单退款通知',qybz:'Y'}
                 }
-            ],
+            },
+            TXLX:'',
+            page:{
+                size:20,
+                no:1
+            },
+            List:[],
             //通知类型映射表
             tipsLxMap:{
                 spfh:{label:'商品发货',color:'red'},
@@ -206,28 +130,49 @@ export default {
             },
             history_dialog:{
                 show:false,
-                lx:null
-            }
+                txlx:null
+            },
+            height:0,
+            timeout:null
         }
     },
     methods:{
         changeAll(){
-            for(let obj of this.control.list){
-                obj.value=this.control.all;
+            let temp=[];
+            for(let key in this.control.list){
+                temp.push({
+                    code:key,
+                    qybz: this.control.all,
+                    havechild:'',
+                    childvalue:''
+                });
             }
-        },
-        changeItem(item){
-            var temp=this.control.list.filter(item=>{
-                return !item.value;
+            this.$http('/api/tx/saveAllWdSetting.do',{
+                settingList:temp
+            }).then(res=>{
+                for(let key in this.control.list){
+                    this.control.list[key].qybz=this.control.all;
+                }
             });
-            //如果全部关闭了
-            if(temp.length==this.control.list.length){
-               this.control.all=false; 
-            }  
-            //如果全部开启了
-            if(temp.length==0){
-                this.control.all=true; 
-            } 
+        },
+        changeItem(key){
+            let params={
+               code:key,
+               qybz: this.control.list[key].qybz,
+               havechild:'',
+               childvalue:''
+            };
+            this.$http('/api/tx/saveWdSetting.do',params).then(res=>{
+                let temp=res.List[0].rows.filter(item=>{
+                    return item.qybz=='Y';
+                });
+                if(temp.length)
+                    this.control.all='Y';
+                if(!temp.length)
+                    this.control.all='N';
+                temp=null;
+            });
+            
         },
         close(){
             this.show=false;
@@ -240,19 +185,109 @@ export default {
             Loading.open({
                 target:this.$refs.body
             });
-            setTimeout(() => {
-               Loading.close(); 
-            }, 300);
+            this.$http('/api/tx/getWdTxNoClearList.do',{
+                pageSize:this.page.size,
+                pageNo:this.page.no
+            }).then(res=>{
+                Loading.close();
+                for(let obj of res.rows){
+                    obj.data=JSON.parse(obj.data.value);
+                }
+                this.List=this.List.concat(res.rows);
+                this.page.rows=res.totalPages;
+                this.height=0;
+                this.timeout=null;
+            },err=>{
+                Loading.close();
+            });
+        },
+        //加载g恩多
+        getMore(){
+            let st=this.$refs.div.scrollTop;
+            let ch=this.$refs.div.clientHeight;
+            let sh=this.$refs.div.scrollHeight;
+            if(st+ch>=sh-1){
+                if(this.page.no<this.page.rows){
+                    this.page.no++;
+                    this.getList();
+                }          
+            }
+        },
+        refreshList(e){
+            //clearTimeout(this.timeout);
+            //this.timeout=null;
+            //上滚动
+            if(e.wheelDelta&&e.wheelDelta>0||e.detail&&e.detail>0){
+                if(!this.timeout){
+                    this.timeout=setTimeout(()=>{
+                        this.height=0;
+                        this.timeout=null;
+                    },500);
+                }
+                if(this.$refs.div.scrollTop==0&&this.height<30){
+                    this.height++;
+                    if(this.height==5){
+                        clearTimeout(this.timeout);
+                        this.height=30;
+                        this.List=[];
+                        this.page.no=1;
+                        this.getList();
+                    }      
+                }
+            }
+        },
+        openTxPage(obj){
+            if(!obj.flag){
+                bus.$emit('refresh-tips');
+                this.$parent.getNoReadTips();
+            }
+            this.$http('/api/tx/passWdTxByMsgid.do',{
+                msgid:obj.msgid
+            }).then(res=>{
+                obj.flag=true;
+                this.$parent.getNoReadTips();
+            });
+            this.clickNotify(obj);
+            this.close();
         },
         //打开历史通知
         openHistory(){
-            this.history_dialog.lx=this.tipsLxMap;
+            this.history_dialog.txlx=this.TXLX;
             this.history_dialog.show=true;
-        }
+        },
+        //获取提醒设置
+        getSettingList(){
+            this.$http('/api/tx/getWdSetting.do').then(res=>{
+                let temp=res.List[0].rows.filter(item=>{
+                    return item.qybz=='Y';
+                });
+                if(temp.length)
+                    this.control.all='Y';
+                if(!temp.length)
+                    this.control.all='N';
+                temp=null;
+                for(let obj of res.List[0].rows){
+                    this.control.list[obj.code].qybz=obj.qybz;
+                }
+            });
+        },
+        markAllRead(){
+            this.$http('/api/tx/passAllWdTx.do').then(res=>{
+                this.page.no=1;
+                this.$refs.div.scrollTop=0;
+                this.List=[];
+                this.getList();
+                bus.$emit('refresh-tips');
+                this.$parent.getNoReadTips();
+            });
+        },
     },
     mounted(){
+        this.TXLX=txlx;
         this.show=true;
         this.getList();
+        this.$refs.div.addEventListener('scroll',this.getMore,true);
+        this.getSettingList();
     },
     components:{
         scroll,
@@ -269,7 +304,7 @@ export default {
         top:0;
         left: 0;
         background: rgba(0,0,0,.3);
-        z-index: 5;
+        z-index: 6;
         font-size: 12px;
         .notify-main{
             width: 450px;
@@ -289,6 +324,7 @@ export default {
                 justify-content: space-between;
                 font-size: 14px;
                 flex-shrink: 0;
+                color:#999;
                 div{
                     display: inline-flex;
                     align-items: center;
@@ -299,8 +335,19 @@ export default {
             .n-body{
                 height: ~"calc(100% - 95px)";
                 position: relative;
+                display: flex;
+                flex-direction: column;
                 .scroll{
-                    height: 100%;
+                    height: 0;
+                    overflow-y: auto;
+                    flex-grow: 1;
+                }
+                .n-body-load{
+                    flex-shrink: 0;
+                    //height: 30px;
+                    background: #ecebeb;
+                    transition: all .1s;
+                    text-align: center;
                 }
                 ul{
                     li{
@@ -323,6 +370,7 @@ export default {
                             flex-grow: 1;
                             box-sizing: border-box;
                             padding-left: 10px;
+                            color: #bfbdbd;
                             p{
                                 line-height: 18px;
                                 span:nth-child(1){
@@ -334,9 +382,33 @@ export default {
                             }
                             p{margin-top: 4px;}
                         }
-                        .notify-wd{
-                            color: #bfbdbd;
+                        em{
+                            flex-shrink: 0;
+                            align-self: center;
+                            display: block;
+                            width: 8px;
+                            height: 8px;
+                            border-radius: 50%;
+                            background: red;
                         }
+                        .notify-wd{
+                            color: #555;
+                        }
+                    }
+                }
+                .list-end{
+                    width: 60%;
+                    height: 1px;
+                    margin: 20px auto;
+                    border-top: 1px dashed #999;
+                    text-align: center;
+                    span{
+                        font-size: 12px;
+                        display: inline-block;
+                        padding: 2px 7px;
+                        background: #fff;
+                        position: relative;
+                        top:-9px;
                     }
                 }
             }

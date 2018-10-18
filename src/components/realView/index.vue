@@ -35,11 +35,12 @@ export default {
     },
     methods:{
         calcDomSize(){
-            //console.log()
-            this.c_width=this.$refs.main.offsetWidth/1.17;
-            this.c_top=this.$refs.main.offsetHeight/8.48;
-            this.c_height=this.$refs.main.offsetHeight/1.31;
-            this.c_left=this.$refs.main.offsetWidth/14.12;
+            setTimeout(()=>{
+                this.c_width=this.$refs.main.offsetWidth/1.17;
+                this.c_top=this.$refs.main.offsetHeight/8.48;
+                this.c_height=this.$refs.main.offsetHeight/1.31;
+                this.c_left=this.$refs.main.offsetWidth/14.12;
+            },10)
         },
         close(){
             this.$emit('close');

@@ -17,6 +17,7 @@
                                 placeholder="请输入城市拼音"
                                 v-model="maps.pyLeft"
                                 @input="serachItem('List','pyLeft')"
+                                clearable
                             ></el-input>
                         </p>
                         <div class="m-transfer-item">
@@ -47,6 +48,7 @@
                                 placeholder="请输入城市拼音"
                                 v-model="maps.pyRight"
                                 @input="serachItem('selList','pyRight')"
+                                clearable
                             ></el-input>
                         </p>
                         <div class="m-transfer-item">

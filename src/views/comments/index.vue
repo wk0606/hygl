@@ -1,8 +1,13 @@
 <template>
   <div class="container" @click="editForm.show=false;pfModel.show=false">
       <div class="comments-head">
-        <span><i style="color:red;">*</i>日期</span>
-        <date-picker :date.sync="date" @change="handleChange"></date-picker>
+        <div>
+            <span><i style="color:red;">*</i>日期</span>
+            <date-picker :date.sync="date" @change="handleChange"></date-picker>
+        </div>
+        <div>
+            <el-input size="mini" placeholder="请输入单据号" v-model.trim="ddh" @input="getList" clearable></el-input>
+        </div>
       </div>
       <div class="comments-body">
           <el-table
@@ -63,10 +68,12 @@ import pfDetails from './details'
 import order from './order'
 import editMember from '../client/editMember'
 import datePicker from '../../components/datePicker/index'
+import bus from '../../func/eventBus'
 export default {
   data(){
       return{
           date:[],
+          ddh:'',
           pagination:{
             size:20,
             page:1,
@@ -152,7 +159,9 @@ export default {
       getList(){
         this.$http('/api/x6/crmGetRateList.do',{
             fsrqq:this.date[0],
-            fsrqz:this.date[1]
+            fsrqz:this.date[1],
+            name:'',
+            djh:this.ddh
         }).then(res=>{
             this.allList=res.List;
             this.pagination.rows=res.List.length;
@@ -215,7 +224,13 @@ export default {
   mounted(){
       this.date.push(this.$util.getDateByDistance(-90));
       this.date.push(this.$util.getCurrentDate());
+      this.ddh=this.$util.getCache('COMMENTS')?this.$util.getCache('COMMENTS').ddh:'';
+      this.$util.removeCache('COMMENTS');
       this.getList();
+      bus.$on('rate-change',obj=>{
+          this.ddh=obj.ddh;
+          this.getList();
+      });
   },
   components:{
       pagination,
@@ -234,6 +249,8 @@ export default {
         .comments-head{
             box-sizing: border-box;
             padding:20px 10px;
+            display: flex;
+            justify-content: space-between;
         }
         .comments-body{
             height: ~"calc(100% - 125px)";

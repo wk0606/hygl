@@ -4,7 +4,7 @@
 			<div style="width: 100%;box-sizing: border-box;">
 				<div>
 					<el-input v-model="count" auto-complete="off" placeholder="请输入购买条数" size="small" style="width:150px"
-						@keyup.enter.native="getTotalprice" @blur="getTotalprice"
+						@keyup.enter.native="getTotalprice" @blur="getTotalprice" clearable
 						></el-input>
 					<span style="font-size:14px">×</span>
 					<span style="font-size:14px">{{price}}</span>

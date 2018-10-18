@@ -7,6 +7,7 @@
                 v-model="params.lx"
                 size="mini"
                 class="order-search-item-select"
+                @change="params.value=''"
               >
                 <el-option
                     v-for="item in searchType"
@@ -15,7 +16,7 @@
                     :value="item.value"
                 ></el-option>
               </el-select>
-              <el-input size="mini" v-model="params.value" class="order-search-item-input"></el-input>
+              <el-input size="mini" v-model="params.value" class="order-search-item-input" clearable></el-input>
           </div>
           <div class="order-search-item">
               <span>下单时间</span>
@@ -27,9 +28,22 @@
                 v-model="params.ddzt"
                 size="mini"
                 class="order-search-item-select-small"
-              >
+               >
                 <el-option
                     v-for="item in ddType"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                ></el-option>
+              </el-select>
+              <span>退款方式</span>
+              <el-select
+                v-model="params.tkzt"
+                size="mini"
+                class="order-search-item-select-small"
+               >
+                <el-option
+                    v-for="item in tkzt"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -40,7 +54,7 @@
                 v-model="params.psfs"
                 size="mini"
                 class="order-search-item-select-small"
-              >
+               >
                 <el-option
                     v-for="item in psType"
                     :key="item.value"
@@ -62,23 +76,34 @@
             :style="{width:item.width,textAlign:item.align}"
           >{{item.label}}</div>
       </div>
+      <div v-if="!List.length" class="empty-tip">
+          <i class="iconfont icon-zanwushuju"></i>
+          <span>暂无数据</span>
+      </div>
       <div
         class="order-table-body"
         v-for="row in List"
         :key="row.ddh"
-       >
+        >
           <div class="order-table-title">
               <div>
                   <span>订单号 : {{row.ddh}}</span>
                   <span>下单时间 : {{row.zdrq}}</span>
               </div>
               <div>
-                  <b @click="openDetails(row.ddh)">查看详情</b>
+                  <b @click="openDetails(row)">查看详情</b>
                   <i>-</i>
                   <b @click="openComments(row)">备注</b>
               </div>
           </div>
-          <order-row :columns="colModel" :data="row.details" :sfje="row.zje"></order-row>
+          <order-row
+            :columns="colModel"
+            :data="row.details"
+            :gift="row.gift"
+            :zje="row.zje"
+            :yfje="row.yfje"
+            :records="row.tkrecords"
+            @send-out="openFh(row)"></order-row>
           <div class="order-comments" v-if="row.remark">
               <span>卖家备注 : </span>
               <div>{{row.remark}}</div>
@@ -88,6 +113,7 @@
 </template>
 <script>
 import { search } from "../serachFilter.js"
+import bus from '../../../../func/eventBus'
 export default {
   props:['page'],
   mixins: [search],
@@ -109,15 +135,21 @@ export default {
           ],
           psType:[
               {label:'全部',value:-1},
-              {label:'快递',value:1},
-              {label:'自提',value:0}
+              {label:'快递',value:0},
+              {label:'自提',value:1}
+          ],
+          tkzt:[
+              {label:'全部',value:-1},
+              {label:'退款中',value:1},
+              {label:'退款结束',value:9}
           ],
           params: {
               lx:0,
               value:'',
               xdsj:[],
               ddzt:-1,
-              psfs:-1
+              psfs:-1,
+              tkzt:-1
           },
       }
   },
@@ -127,23 +159,21 @@ export default {
       }
   },
   methods:{
-      add(){
-          var c=this.$store.state.count;
-          c+=1;
-          this.$store.commit('updateCount',c);
-      },
       //初始化查询条件
       initSearchParams(){
-          this.params={};
-          this.$set(this.params,'lx',0);
-          this.$set(this.params,'value','');
-          this.$set(this.params,'xdsj',[]);
-          this.$set(this.params,'ddzt',-1);
-          this.$set(this.params,'psfs',-1);
+          this.params={
+              lx:0,
+              value:'',
+              xdsj:[],
+              ddzt:-1,
+              psfs:-1,
+              tkzt:-1
+          };
+          this.$util.removeCache('qbdd');
       }
   },
-  mounted(){
-     //this.initSearchParams(); 
+  activated(){
+     
   }
 }
 </script>

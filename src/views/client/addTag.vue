@@ -9,7 +9,7 @@
 		<div class="add-container" slot="content">
 			<div style="width: 100%;">
 				<div>
-					<el-input v-model="tagname" auto-complete="off" placeholder="标签名称"></el-input>												
+					<el-input v-model="tagname" auto-complete="off" placeholder="标签名称" clearable></el-input>												
 				</div>
 				<div>
 					<div class="circlecolor" v-for="(color,index) in colors" :key="index" :style="{'background-color':color.color}" @click.stop="chooseColor(color,index)">

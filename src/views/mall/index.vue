@@ -1,10 +1,10 @@
 <template>
-  <div class="mall-container">
+  <div class="mall-container" ref="mall">
       <div class="mall-header">
           <div>
               <div>
                   <b>{{ssgsname}}</b>
-                  <div :class="config.isResolveAll?'success':'error'">{{config.isResolveAll?"网店开业中":"网店待开业"}}</div>
+                  <div :class="config.isResolveAll?'success':'error'">{{config.isResolveAll?"网店营业中":"网店待开业"}}</div>
               </div>
               <img src="../../assets/book.png" alt="" width="20" :class="{selected:config.show}" @click="config.show=!config.show;">
           </div>
@@ -34,7 +34,7 @@
                           >{{text}}</p>
                           <p>{{config.data[currentStep].sub2}}</p>
                         </div>
-                        <el-button size="mini">去发布</el-button>
+                        <el-button size="mini" @click="openRzcz">{{setBtnText.label}}</el-button>
                     </div>
                 </div>
             </div>
@@ -55,6 +55,7 @@
   </div>
 </template>
 <script>
+import bus from '../../func/eventBus'
 export default {
   data() {
     return {
@@ -85,7 +86,7 @@ export default {
           isSetact:{ 
             label: "设置开业活动", 
             status: 0 ,
-            sub1:['网点开张，发布一条活动，可有效地促进成交'],
+            sub1:['网店开张，发布一条活动，可有效地促进成交'],
             sub2:'请至少发布一个活动'
           },
           isDdcj:{ 
@@ -102,6 +103,21 @@ export default {
         {label:'网店',value:'shop',path:'/main/mall/shop'}
       ],
       currentTab:'ssgk'
+    }
+  },
+  computed:{
+    setBtnText(){
+      if(!this.config.data.isDprz.status){
+        return {label:'去认证',path:'/main/mall/shop/set_dprz'};
+      }else if(!this.config.data.isYzskzh.status){
+        return {label:'去验证',path:'/main/mall/shop/set_jy'};
+      }else if(!this.config.data.isFbspxx.status){
+        return {label:'去发布',path:'/main/mall/shop/product_fb'};
+      }else if(!this.config.data.isSetact.status){
+        return {label:'去设置',path:'/main/activity-add/-1'};
+      }else{
+        return {label:'去看看',path:'/main/mall/shop/order'};
+      }
     }
   },
   methods: {
@@ -122,11 +138,27 @@ export default {
     openPath(item){
       this.currentTab=item.value;
       this.$router.push(item.path);
+    },
+    openRzcz(){
+      this.$router.push(this.setBtnText.path);
+    },
+    busListener(){
+      bus.$on('scroll-to-bottom',()=>{
+        if(this.$refs.mall.scrollHeight>this.$refs.mall.offsetHeight){
+          this.$refs.mall.scrollTop=this.$refs.mall.scrollHeight-this.$refs.mall.offsetHeight;
+        }
+      });
     }
+  },
+  mounted(){
+    this.ssgsname = this.$util.getCache("user").ssgsname;
+    this.getHelpDetails();
+    this.busListener();
   },
   activated(){
     this.ssgsname = this.$util.getCache("user").ssgsname;
     this.getHelpDetails();
+    this.busListener();
   }
 };
 </script>

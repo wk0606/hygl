@@ -96,6 +96,12 @@ export default {
           prop: "price",
           details: ["priceRate1", "priceRate2"],
           ref: "price"
+        },
+        {
+          label: "红包使用数量",
+          prop: "hbsy",
+          details: ["hbsyRate1", "hbsyRate2"],
+          ref: "hbsy"
         }
       ],
       wdkbDatas: null,
@@ -104,7 +110,7 @@ export default {
               {label:'访客数',value:'totalSum',zzl:'totalSumRate'}
           ],
           order:[
-              {label:'下单人数',value:'hyAmount',zzl:'hyAmountRate',title:'下单人数'},
+              {label:'下单人数',value:'hyAmount',zzl:'hyAmountRate'},
               {label:'下单笔数',value:'orderAmount',zzl:'orderAmountRate'},
               {label:'下单金额',value:'money',zzl:'moneyRate'}
           ],
@@ -161,7 +167,7 @@ export default {
             for(let key in res.VO){
                 let [xData,yData]=[[],[]];
                 for(let sj of res.VO[key]){
-                    yData.push(sj.num);
+                    yData.push(sj.hasOwnProperty('num')?sj.num:sj.sl);
                     xData.push(sj.wd);
                 }
                 this.drawChart(xData,yData,key);

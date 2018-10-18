@@ -27,10 +27,16 @@
                 :class="{selected:item.checked}"
                 @click="changeModels(item)"
             >
-                <p class="flex-center">
+                <div class="flex-center">
                     <span>{{item.label}}</span>
-                    <el-checkbox v-model="item.checked"></el-checkbox>
-                </p>
+                    <div
+                        class="custom-box"
+                        :class="{'custom-selected':item.checked}"
+                    >
+                        <i class="el-icon-check"></i>
+                    </div>
+                    <!-- <el-checkbox v-model="item.checked"></el-checkbox> -->
+                </div>
                 <h3>{{chart[item.type].value}}</h3>
             </div>
         </div>
@@ -59,9 +65,9 @@ export default {
             {value:'M',label:'月',type:'M'}
           ],
           models:[
-              {label:'客流量',type:'kll',checked:true,data:[343,2399,44,1212,667,87,987]},
-              {label:'新客户',type:'newsl',checked:false,data:[343,2399,44,1212,667,87,987]},
-              {label:'回头客',type:'oldsl',checked:false,data:[343,2399,44,1212,667,87,987]}
+              {label:'客流量',type:'kll',checked:true,data:[343,2399,44,1212,667,87,987],color:'#00BFFF'},
+              {label:'新客户',type:'newsl',checked:false,data:[343,2399,44,1212,667,87,987],color:'#FF1493'},
+              {label:'回头客',type:'oldsl',checked:false,data:[343,2399,44,1212,667,87,987],color:'#801dae'}
           ],
           chart:{
               kll:{
@@ -118,7 +124,8 @@ export default {
                 temp.push({
                     type:'line',
                     name:obj.label,
-                    data:this.chart[obj.type].list
+                    data:this.chart[obj.type].list,
+                    color:obj.color
                 });
             }
         }
@@ -166,8 +173,7 @@ export default {
                     type : 'value'
                 }
             ],
-            series : ydata,
-            color:['#00BFFF','#0000FF','#FF1493','#00FFFF']
+            series : ydata
         };
         chart.setOption(option,true);
       },
@@ -218,5 +224,22 @@ export default {
     .charts-body{
         width: 100%;
         height: 300px;
+    }
+    .custom-box{
+        width: 14px;
+        height: 14px;
+        border-radius: 1px;
+        border:1px solid #eee;
+        cursor: pointer;
+        i{
+            font-size: 12px;
+            text-align: center;
+            line-height: 14px;
+            color: #fff;
+        }
+    }
+    .custom-selected{
+        border-color:#409eff;
+        background: #409EFF;
     }
 </style>
