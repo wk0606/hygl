@@ -183,21 +183,26 @@ export default {
     },
     computed:{
         totalTkje(){
+            let total;
             if(this.details.spList.length){
                 if(this.gift){
-                    return this.details.spList[0].tkje||0;
+                    total=this.details.spList[0].tkje||0;
                 }else{
                     if(this.tkzt==0){
-                        return this.selectedRow.reduce((total,item)=>{
+                        total=this.selectedRow.reduce((total,item)=>{
                             return total+item.tkje||0;
                         },0);
                     }else{
-                        return this.details.spList.reduce((total,item)=>{
+                        total=this.details.spList.reduce((total,item)=>{
                             return total+item.tkje||0;
                         },0);
                     }
                 }
             }
+            if(this.details.isyftk){
+                total+=this.details.yfje;
+            }
+            return total;
         }
     },
     methods:{
@@ -214,7 +219,7 @@ export default {
         changeRow(val){
             this.selectedRow=val;
             if(val.length==this.ktsl&&!this.gift&&this.details.yfje>0)
-                this.$set(this.details,'isyftk',this.ddzt>1?true:false);
+                this.$set(this.details,'isyftk',this.ddzt>1?false:true);
             else
                 delete this.details.isyftk;
         },

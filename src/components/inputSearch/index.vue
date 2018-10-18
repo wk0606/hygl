@@ -6,8 +6,10 @@
         :placeholder="placeholder"
         @select="handleSelect"
         @focus="openSlide"
+        @custom-clear="clear"
         ref="component"
         need-empty
+        clearable
     >
         <template slot-scope="{ item }">
             <div v-if="!item.text" class="custom-item">{{ item.name }}</div>
@@ -49,6 +51,14 @@ export default {
                 id:item.id,
                 name:item.name
             });
+        },
+        clear(){
+            this.handleSelect({
+                id:'',
+                name:''
+            });
+            this.$refs.component.$children[0].blur();
+            this.$refs.component.activated = false;
         },
         // Begin
         // !!!!
@@ -134,7 +144,7 @@ export default {
                 if(target.children.length==1){
                     let empty=document.createElement('div');
                     empty.setAttribute('class',NAME);
-                    empty.setAttribute('id',this.emptyId);
+                    //empty.setAttribute('id',this.emptyId);
                     empty.innerText=this.emptyText;
                     target.appendChild(empty);
                 }

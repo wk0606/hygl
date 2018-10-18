@@ -15,8 +15,11 @@
                     <div class="yl-body">
                         <div class="yl-title">
                             <div>
-                                <img src="../../../assets/store.png" alt="">
-                                <b>{{details.dpName}}</b>
+                                <img :src="details.dptpUrl||defaultImg" alt="">
+                                <div>
+                                    <p><b>{{details.dpName}}</b></p>
+                                    <p v-if="details.isValidate==2"><i class="el-icon-circle-check-outline"></i><span>企业认证</span></p>
+                                </div>
                             </div>
                             <img src="../../../assets/mallPhone.png" alt="">
                         </div>
@@ -25,15 +28,15 @@
                             v-for="(item,index) in details.spArray"
                             :key="index"
                         >
-                            <div class="yl-name"><div>{{item.spfzmc}}</div></div>
+                            <div class="yl-name"><div>{{item.spfzName}}</div></div>
                             <div>
                                 <div
                                     class="yl-item"
-                                    v-for="sp in item.spxx"
+                                    v-for="sp in item.spxxList"
                                 >
-                                    <div class="yl-item-img" :style="{backgroundImage:'url('+sp.sptpFirst+')'}"></div>
+                                    <div class="yl-item-img" :style="{backgroundImage:'url('+sp.sptpfirst+')'}"></div>
                                     <div class="yl-text">
-                                        <span class="ellipsis2rows">{{sp.name}}</span>
+                                        <span class="ellipsis2rows pname">{{sp.name}}</span>
                                     </div>
                                     <div class="yl-text yl-price">
                                         <span class="ellipsis2rows">{{'￥'+sp.spdj}}</span>
@@ -88,7 +91,8 @@ export default {
         details:{
             dpName:'',
             spArray:[]
-        }
+        },
+        defaultImg:require('../../../assets/store.png')
       }
   },
   methods:{
@@ -96,6 +100,9 @@ export default {
     preview(){
         this.$http('/api/x6/getWdylInfo.do').then(res=>{
             this.details=res.VO;
+            this.details.spArray=this.details.spArray.filter(item=>{
+                return !!item.spxxList.length;
+            })
         });
     },
   },
@@ -164,15 +171,15 @@ export default {
                 align-items: center;
                 justify-content: space-between;
                 padding: 10px 0;
-                div{
+                >div{
                     display: inline-flex;
                     align-items: center;
                     flex-grow: 1;
                     //text-overflow: ellipsis;
                     overflow: hidden;
                     img{
-                        width: 30px;
-                        height: 30px;
+                        width: 40px;
+                        height: 40px;
                         border-radius: 50%;
                         margin-right: 5px;
                         flex-shrink: 0;
@@ -184,10 +191,19 @@ export default {
                         text-overflow: ellipsis;
                         overflow: hidden;
                     }
+                    p{
+                        display: flex;
+                        align-items: center;
+                        span{
+                            transform: scale(0.8,0.8);
+                        }
+                        i{color: #67C23A;font-size: 14px;}
+                    }
+                    p:nth-child(2){margin-top:2px;}
                 }
                 >img{
-                    width: 20px;
-                    height: 20px;
+                    width: 30px;
+                    height: 30px;
                     flex-shrink: 0;
                     margin-left: 10px;
                 }
@@ -229,6 +245,9 @@ export default {
                             box-sizing: border-box;
                             padding: 5px 10px;
                             font-size: 10px;
+                            .pname{
+                                min-height: 22px;
+                            }
                         }
                         .yl-price{
                             font-size: 12px;

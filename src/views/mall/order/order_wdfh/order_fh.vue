@@ -129,18 +129,18 @@ export default {
         handleCk(item){
             this.details.ckdm=item.id;
             for(let obj of this.details.spList){
-                if(obj.isch){
+                if(obj.isch&&item.id){
                     //obj.ckdm=item.id;
                     this.getKskc(item.id,obj.spdm,obj);
                 }
             }
         },
         getKskc(ckdm,spdm,obj){
-            this.$http('/api/x6/getKskcBySpdmCkdm.do',{
+            this.$http('/api/x6/getSjkcBySpdmCkdm.do',{
                 spdm:spdm,
                 ckdm:ckdm
             }).then(res=>{
-                this.$set(obj,'kskc',res.kskc);
+                this.$set(obj,'kskc',res.sjkc);
             });
         },
         //串号是否已经选择

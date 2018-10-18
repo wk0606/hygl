@@ -92,11 +92,11 @@ export default {
         this.isValidate=res.isValidate;
         this.isYzskzh=res.isYzskzh;
         //this.currentStep=this.isValidate==2&&this.isYzskzh?2:this.isValidate==4?2:0;
-        if(this.isValidate==1||this.isValidate==3){
+        if(this.isValidate==1||this.isValidate==3||this.isValidate==0){
           this.currentStep=0;
         }
         if(this.isValidate==2)
-          this.currentStep=this.isYzskzh?2:1;
+          this.currentStep=this.isYzskzh==2?2:1;
         this.zhje=res.rzje;
       });
     },

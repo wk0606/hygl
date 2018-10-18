@@ -24,7 +24,7 @@
                             <s class="small-je">{{'￥'+views.data.predj}}</s>
                         </div>
                         <div class="context other">
-                            <span>运费 : {{views.data.yfje?$util.formatCash(views.data.yfje):'免运费'}}</span>
+                            <span>运费 : {{setYf(views.data.yfje)}}</span>
                             <span>库存 : {{views.data.kskcs}}</span>
                         </div>
                         <div class="context other">
@@ -134,6 +134,13 @@ export default {
         stop(e){
             e.preventDefault();
             
+        },
+        setYf(je){
+            let temp=je.split(',');
+            if(!parseFloat(temp[0])&&temp.length==1){
+                return '免运费';
+            }
+            return `￥${temp[0]}-￥${temp[1]}`;
         }
     },
     mounted(){

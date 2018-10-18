@@ -122,6 +122,12 @@ export default {
     },
     mounted(){
         this.treeDatas=this.getGsList();
+        for(let obj of this.treeDatas){
+            let count=0;
+            for(let md of obj.list)
+                if(md.select)   count++;
+            obj.select=count==obj.list.length?true:false;
+        }
     },
     components:{
         popUp
