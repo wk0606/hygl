@@ -35,3 +35,16 @@ Vue.filter('currency', function (value) {
         return value
     }
 });
+Vue.directive('resizeImg',{
+    inserted(el){
+        let src=el.children[0].getAttribute('src');
+        var img=new Image();
+        img.src=src;
+        img.onload=function(){
+            if(img.width>=img.height)
+                el.children[0].style.width='100%';
+            else
+                el.children[0].style.height='100%';
+        };
+    }
+});

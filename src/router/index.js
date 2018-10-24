@@ -4,21 +4,21 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    {
-      path: '/',
-      name: 'Main',
-      redirect:'/main'
-    },
     // {
     //   path: '/',
-    //   name: 'Login',
-    //   redirect:'/login'
+    //   name: 'Main',
+    //   redirect:'/main'
     // },
-    // {
-    //   path:'/login',
-    //   name:'Login',
-    //   component: resolve=>require(['../views/Login'],resolve)
-    // },
+    {
+      path: '/',
+      name: 'Login',
+      redirect:'/login'
+    },
+    {
+      path:'/login',
+      name:'Login',
+      component: resolve=>require(['../views/Login'],resolve)
+    },
     {
       path:'/main',
       name:'Main',

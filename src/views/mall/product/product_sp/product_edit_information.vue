@@ -28,7 +28,7 @@
                                 :border="false"
                              ></input-number>
                          </div>
-                         <question text="示例" fixed-width="200">
+                         <question text="示例" :fixed-width="200">
                            <img src="../../../../assets/sl.png" alt="" width="100%">
                          </question>
                      </div>
@@ -75,9 +75,12 @@
                                 <div
                                     v-for="pic in details.sptp"
                                     :key="pic"
-                                    class="edit-items-pic"
-                                    :style="{backgroundImage:'url('+pic+')'}"
-                                ><i class="el-icon-circle-close close" @click="removImg(pic)"></i></div>
+                                    class="edit-items-pic image-fixed"
+                                    
+                                >
+                                  <i class="el-icon-circle-close close" @click="removImg(pic)"></i>
+                                  <img :src="pic" alt="">
+                                </div>
                             </draggable>
                          </div>
                          <div
@@ -186,8 +189,8 @@
                  <div>
                      <div style="line-height:28px;">
                         <el-checkbox-group v-model="details.psfs">
-                          <el-checkbox label="快递配送"></el-checkbox>
-                          <el-checkbox label="到店自提"></el-checkbox>
+                          <el-checkbox label="快递配送" :disabled="iskqkd"></el-checkbox>
+                          <el-checkbox label="到店自提" :disabled="iskqzt"></el-checkbox>
                         </el-checkbox-group>
                      </div>
                      <div class="tips" v-if="rules.psfs.show" style="width:300px;">{{rules.psfs.label}}</div>
@@ -248,6 +251,7 @@
      <goods-select
       v-if="dialog.show"
       :views="dialog"
+      :need-kc="true"
       type="qspmc"
       @selected="goodsSelected"
      ></goods-select>
@@ -286,7 +290,9 @@ export default {
       yfmb: [],
       dialog: { show: false },
       currentIndex: "",
-      imgLoading: false //图片是否再上传中
+      imgLoading: false, //图片是否再上传中
+      iskqzt:true,//是否开启自提
+      iskqkd:true,//是否开启快递
     };
   },
   watch: {
@@ -642,10 +648,17 @@ export default {
     }
   },
   mounted() {
+    this.$http('/api/x6/getZtKdgnKqzt.do').then(res=>{
+      this.iskqzt=res.ztkqzt?false:true;
+      this.iskqkd=res.kdkqzt?false:true;
+    });
     this.resetPage();
   },
   activated() {
-   
+    this.$http('/api/x6/getZtKdgnKqzt.do').then(res=>{
+      this.iskqzt=res.ztkqzt?false:true;
+      this.iskqkd=res.kdkqzt?false:true;
+    });
   },
   components: {
     draggable,

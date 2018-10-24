@@ -43,8 +43,12 @@
                             v-if="item.prop=='tkje'"
                             class="cell-span-wrap"
                         >￥{{scope.row.tkje | currency}}</span>
+                        <div v-if="item.prop=='spname'">
+                            <p class="cell-span" :title="scope.row.spname">{{scope.row.spname}}</p>
+                            <p class="cell-span" :title="'规格:'+scope.row.spggstr" style="color:#aaa;">规格:{{scope.row.spggstr}}</p>
+                        </div>
                         <span
-                            v-if="item.prop!='tkje'"
+                            v-if="item.prop!='tkje'&&item.prop!='spname'"
                             class="cell-span-wrap"
                         >{{item.currency?$util.formatCash(scope.row[item.prop]):scope.row[item.prop]}}</span>
                     </template>
@@ -164,7 +168,7 @@ export default {
                 {label:'不满意',value:'不满意'}
             ],
             colModel:[
-                {label:'商品',prop:'qspmc',min:120},
+                {label:'商品',prop:'spname',min:120},
                 {label:'商品金额',prop:'je',align:'right',currency:true},
                 {label:'运费',prop:'yfje',align:'right',currency:true},
                 {label:'红包',prop:'gift',align:'right',currency:true},
@@ -215,6 +219,13 @@ export default {
                         return [0,1];
                 }
             }
+        },
+        setSpgg(spgg){
+            let str='';
+            for(let obj of spgg){
+                str+=`${obj.name}:${obj.value} `;
+            }
+            return str;
         },
         changeRow(val){
             this.selectedRow=val;

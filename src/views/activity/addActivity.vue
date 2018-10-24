@@ -20,8 +20,9 @@
               ></el-input>                                                                  
             </el-form-item>
             <el-form-item label='活动图片' prop="shortcontent">
-              <div class="act-img" @click="openActImg" :style="{backgroundImage:'url('+addForm.shortcontent+')'}">
+              <div class="act-img image-fixed" @click="openActImg">
                 <i v-if="!addForm.shortcontent" class="el-icon-plus"></i>
+                <img :src="addForm.shortcontent" alt="">
               </div>
             </el-form-item>
             <el-form-item label='活动时间' required>
@@ -372,18 +373,14 @@ input[type="number"] {
   .act-img {
     width: 100px;
     height: 100px;
+    line-height: 100px;
     border-radius: 5px;
     border: 1px solid #dcdfe6;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 30px;
     color: #999;
     position: relative;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
+    overflow: hidden;
     &:before {
       content: "上传活动图片";
       font-size: 12px;
@@ -399,6 +396,7 @@ input[type="number"] {
       align-items: center;
       justify-content: center;
       visibility: hidden;
+      z-index: 2;
     }
     &:hover:before {
       visibility: visible;

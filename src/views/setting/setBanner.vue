@@ -1,6 +1,6 @@
 <template>
   <pop-up
-    title="个性化Banner"
+    title="个性化广告页"
     width="520"
     :views="views"
     confirmText="生成图片"

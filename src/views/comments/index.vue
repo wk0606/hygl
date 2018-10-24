@@ -86,7 +86,7 @@ export default {
               {label:'营业员评论',prop:'rate2',rate:true,click:this.openComments},
               {label:'评论详情',prop:'detail',width:90},
               {label:'关联订单',prop:'djh',width:150,click:this.openOrder},
-              {label:'门店',prop:'ssgsname',width:150,align:'left'},
+              {label:'门店/网店',prop:'ssgsname',width:150,align:'left'},
               {label:'营业员',prop:'ywyname',width:100},
               {label:'评论时间',prop:'zdrq',width:150}
           ],
@@ -152,7 +152,7 @@ export default {
             obj.rate3pic=temp.rate3pic;
             obj.ratecontent3=temp.ratecontent3;
             obj.ishide=temp.ishide;
-            obj.ssgsname=this.$util.getCompanyInfo(obj.ssgsid).name;
+            obj.ssgsname=obj.djh.indexOf('DDH')>-1?obj.wdname:this.$util.getCompanyInfo(obj.ssgsid).name;
             obj.ywyname=this.$util.getYgInfo(obj.ywydm).name;
         }
       },
@@ -170,12 +170,17 @@ export default {
       },
       //打开单据
       openOrder(row){
-        this.$http('/api/x6/loadLsBill.do',{
-            djh:row.djh
-        }).then(res=>{
-            this.orderModel.data=res.List;
-            this.orderModel.show=true;
-        });
+        if(row.djh.indexOf('DDH')>-1){
+            this.$util.setCache('ORDER',{value:row.djh});
+            this.$router.push('/main/mall/shop/order'); 
+        }else{
+            this.$http('/api/x6/loadLsBill.do',{
+                djh:row.djh
+            }).then(res=>{
+                this.orderModel.data=res.List;
+                this.orderModel.show=true;
+            });
+        }
       },
       openCustomer(row){
         this.$http('/api/x6/getHyHyxxDetail.do', {

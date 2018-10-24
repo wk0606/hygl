@@ -34,7 +34,9 @@
                                     class="yl-item"
                                     v-for="sp in item.spxxList"
                                 >
-                                    <div class="yl-item-img" :style="{backgroundImage:'url('+sp.sptpfirst+')'}"></div>
+                                    <div class="yl-item-img" v-resizeImg>
+                                        <img :src="sp.sptpfirst" alt="">
+                                    </div>
                                     <div class="yl-text">
                                         <span class="ellipsis2rows pname">{{sp.name}}</span>
                                     </div>
@@ -237,9 +239,10 @@ export default {
                         overflow: hidden;
                         .yl-item-img{
                             height: 120px;
-                            background-size: cover;
-                            background-repeat: no-repeat;
-                            background-position: center center;
+                            width:100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
                         }
                         .yl-text{
                             box-sizing: border-box;

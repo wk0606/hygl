@@ -143,6 +143,10 @@ export default {
           this.List.splice(0,0,temp);
       },
       exportExcel(){
+          if(!this.List.length){
+            this.$message('当前表格无数据','error');
+            return;
+          }
           this.exportDatas.condition=this.date.join('--');
           var cols=[
             {label:'日期',colLx:'fsrq'},

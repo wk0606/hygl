@@ -36,6 +36,11 @@
                 @cell-click="cellClick"
                 @cell-dblclick="cellDbClick"
             >
+                <div v-if="needKc" slot="empty" style="text-align:left;">
+                  <p style="font-size:12px;color:#438cfe;">没有找到库存商品？</p>
+                  <p style="font-size:12px;color:#ccc;margin:5px 0;">1.没有入库（麦芽365-业务-采购入库）</p>
+                  <p style="font-size:12px;color:#ccc;">2.是否仓库未设置网店可售（店铺设置-可售仓库中开启）</p>
+                </div>
                 <el-table-column label="序号" width="70" align="center">
                     <template slot-scope="scope">
                         <span>{{(page.no-1)*page.size+scope.$index+1}}</span>
@@ -49,7 +54,7 @@
                     <template slot-scope="scope">
                         <div class="table-row">
                             <span>{{scope.row.value}}</span>
-                            <span v-if="type!=='all'" style="color:#999;">可售库存 {{scope.row.kskc}}</span>
+                            <span v-if="type!=='all'&&needKc" style="color:#999;">可售库存 {{scope.row.kskc}}</span>
                             <span
                                 v-else
                                 :class="scope.row.lx=='品牌'?'pp':scope.row.lx=='机型'?'jx':'qc'"
@@ -75,6 +80,9 @@ export default {
     },
     type:{
       default:'all'//返回全部类型或者只包含全称
+    },
+    needKc:{
+      default:false
     }
   },
   data() {

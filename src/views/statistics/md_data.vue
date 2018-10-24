@@ -178,7 +178,7 @@ export default {
         //活动转化率
         this.$http('/api/x6/hyCrmGetHdkbZhlfx.do',params).then(res=>{
             let temp=res.VO.value*100;
-            temp=res.VO.value.toFixed(2)+'%';
+            temp=temp.toFixed(2)+'%';
             res.VO.value=temp;
             this.setChartDatas(this.hdkb[1],res.VO);
             this.drawChart(this.hdkb[1].xData,this.hdkb[1].yData,this.hdkb[1].ref,false);

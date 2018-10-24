@@ -15,7 +15,9 @@
                     :style="{height:views.type==3?'399px':'355px'}"
                 >
                     <div v-if="views.type!=3">
-                        <div class="banner" :style="{backgroundImage:'url('+views.data.sptpFirst+')'}"></div>
+                        <div class="banner" v-resizeImg>
+                            <img :src="views.data.sptpFirst" alt="">
+                        </div>
                         <div class="context" style="padding:10px 10px 5px 10px;">
                             <span class="ellipsis2rows">{{views.data.name}}</span>
                         </div>
@@ -144,7 +146,6 @@ export default {
         }
     },
     mounted(){
-        console.log(this.views)
         this.width=530*9/16;
         this.height=530-45;
         this.height2=this.height*0.2;
@@ -177,10 +178,11 @@ export default {
         background: #f2f2f2;
         margin-top: -4px;
         .banner{
+            width: 100%;
             height: 266px;
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .context{
             box-sizing: border-box;

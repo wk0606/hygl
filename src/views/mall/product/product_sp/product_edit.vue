@@ -123,7 +123,7 @@ export default {
       return data;
     },
     //这里进行一些初始化操作
-    resetPage() {
+    resetPage(value=false) {
       this.footerWidth=this.$refs.tab.offsetWidth;
       this.footer=this.layout;
       //先取缓存
@@ -176,12 +176,12 @@ export default {
             this.currentTab='information';
           });
         }else{
-          this.resetForm();
+          this.resetForm(value);
           this.currentTab='information';
         }
       }
     },
-    resetForm() {
+    resetForm(value) {
       this.form = {
         id: -1,
         name: "",
@@ -192,7 +192,7 @@ export default {
         sptp: [],
         ggspgx: [],
         spList: [], //表格商品列表
-        psfs: [],
+        psfs: value?['快递配送']:[],
         yfsz: 0,
         tyyfje: 0,
         yfmbid: "",
@@ -205,12 +205,16 @@ export default {
     }
   },
   mounted(){
-    this.CACHE_KEY=this.id==-1?'PRODUCT-ADD':'PRODUCT-EDIT';
-    this.resetPage();
+    this.$http('/api/x6/getZtKdgnKqzt.do').then(res=>{
+      this.CACHE_KEY=this.id==-1?'PRODUCT-ADD':'PRODUCT-EDIT';
+      this.resetPage(!!res.kdkqzt);
+    });
   },
   activated() {
-    this.CACHE_KEY=this.id==-1?'PRODUCT-ADD':'PRODUCT-EDIT';
-    this.resetPage();
+    this.$http('/api/x6/getZtKdgnKqzt.do').then(res=>{
+      this.CACHE_KEY=this.id==-1?'PRODUCT-ADD':'PRODUCT-EDIT';
+      this.resetPage(!!res.kdkqzt);
+    });
   },
   deactivated() {
     this.$util.setCache(this.CACHE_KEY,this.form);

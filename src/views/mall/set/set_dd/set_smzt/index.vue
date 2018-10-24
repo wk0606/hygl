@@ -106,6 +106,10 @@ export default {
     updateZtStatus() {
       this.$http("/api/x6/updateZtgnzt.do", {
         ztkqzt: this.openZt ? 1 : 0
+      }).then(res=>{
+
+      },err=>{
+        this.openZt=!this.openZt;
       });
     },
     selectChange(val) {

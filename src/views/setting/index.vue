@@ -3,7 +3,7 @@
 		<div class="search">
 			<div class="upload-div">
 				<b>苏州麦尔芽</b>
-				<el-button type="text" size="small" @click="openUpload">上传Banner图</el-button>
+				<el-button type="text" size="small" @click="openUpload">广告页</el-button>
 			</div> 
 			<div>
 				<el-checkbox v-model="onlyNoLocation" @change="changeList">仅显示未定位</el-checkbox>

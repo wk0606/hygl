@@ -1,5 +1,5 @@
 <template>
-  <div ref="main">
+  <div ref="main" style="padding-bottom:60px;">
     <table cellspacing="10">
       <tr
         v-for="item in details"
@@ -33,7 +33,15 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-            <el-input v-if="item.show&&item.prop=='dpName'" clearable size="mini" v-model="data[item.prop]" @blur="item.show=false" style="width:273px;" autofocus></el-input>
+            <el-input
+              v-if="item.show&&item.prop=='dpName'"
+              clearable size="mini"
+              v-model="data[item.prop]"
+              @blur="item.show=false"
+              style="width:273px;"
+              autofocus
+              :placeholder="item.placeholder"
+            ></el-input>
             <upload v-if="item.prop=='dpImg'" :src.sync="data.dptpUrl"></upload>       
           </div>
         </td>
@@ -64,7 +72,7 @@ export default {
         {label:'公司名称',prop:'gsname'},
         {label:'公司代码',prop:'gsdm'},
         {label:'公司认证',prop:'isValidate',btnText:this.rzBtnText,click:this.openRz,format:this.formatRz},
-        {label:'店铺名称',prop:'dpName',btnText:'修改',show:false,click:this.openInput},
+        {label:'店铺名称',prop:'dpName',btnText:'修改',show:false,click:this.openInput,placeholder:'7个字以内的店铺名效果最优哦'},
         {label:'店铺图片',prop:'dpImg'},
         {label:'主营类目',prop:'zylm',format:this.formatName},
         // {label:'关联微信公众号',prop:'wxgzh'},

@@ -420,7 +420,6 @@ export default {
         this.$http('/api/x6/getSpxxDetailById.do',{
             id:row.id
         }).then(res=>{
-            console.log(row)
             this.dialog.show=true;
             this.dialog.data=res.VO;
             this.dialog.type=2;
@@ -514,7 +513,7 @@ export default {
   justify-content: space-between;
   img {
     width: 50px;
-    height: 50px;
+    height: auto;
     flex-shrink: 0;
     margin-right: 5px;
   }

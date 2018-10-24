@@ -14,7 +14,7 @@
                     <img :src="scope.row.sptpfirst" alt="">
                     <div>
                         <p class="cell-span" :title="scope.row.spname">{{scope.row.spname}}</p>
-                        <p style="color:#999;">规格：{{setSpgg(scope.row.spgg)}}</p>
+                        <p style="color:#999;" :title="setSpgg(scope.row.spgg)">规格：{{setSpgg(scope.row.spgg)}}</p>
                     </div>
                 </div>
             </template>

@@ -60,7 +60,7 @@
             style="padding:40px 0;display:flex;align-items:center;justify-content:center;"
           >
             <i class="el-icon-success" style="font-size:40px;color:#67C23A;margin-right:10px;"></i>
-            <span>您提交信息均已通过认证</span>
+            <span>您的店铺已完成认证 , 开通<span style="color:#F56C6C">网店退款</span>请联系我们<span style="color:#67C23A">(0512-67671677)</span></span>
           </div>
         </div>
       </div>
@@ -77,7 +77,7 @@ export default {
       steps:[
         {label:'填写商户资料',value:0},
         {label:'验证账户金额',value:1},
-        {label:'提交完成',value:2},
+        {label:'认证完成',value:2},
       ],
       currentStep:0,
       isValidate:0,
@@ -91,7 +91,6 @@ export default {
       this.$http('/api/x6/getRzjeInfo.do').then(res=>{
         this.isValidate=res.isValidate;
         this.isYzskzh=res.isYzskzh;
-        //this.currentStep=this.isValidate==2&&this.isYzskzh?2:this.isValidate==4?2:0;
         if(this.isValidate==1||this.isValidate==3||this.isValidate==0){
           this.currentStep=0;
         }
@@ -101,7 +100,7 @@ export default {
       });
     },
     save(){
-      if(!/^[0-9]+.?[0-9]+/.test(this.zhje)){
+      if(!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(this.zhje)){
         this.$message('金额格式有误','error');
       }else{
         this.load=true;

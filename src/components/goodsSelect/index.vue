@@ -17,6 +17,7 @@
     <dialog-list
         v-if="dialog.show"
         :views="dialog"
+        :show-tips="showTips"
         type="qspmc"
         @selected="handleSelected"
     ></dialog-list>

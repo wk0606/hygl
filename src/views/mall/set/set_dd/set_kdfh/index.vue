@@ -100,6 +100,10 @@ export default {
       updateZtStatus(){
           this.$http('/api/x6/updateKdgnzt.do',{
               kdkqzt:this.openKt?1:0
+          }).then(res=>{
+
+          },err=>{
+              this.openKt=!this.openKt;
           });
       },
       getList(){

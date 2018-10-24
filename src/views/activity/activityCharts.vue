@@ -1,6 +1,6 @@
 <template>
     <pop-up
-        title="活动效果"
+        title="活动状态"
         width="800"
         :views="views"
     >
@@ -98,7 +98,7 @@ export default {
             //活动转化率
             this.$http('/api/x6/hyCrmGetHdkbZhlfx.do',params).then(res=>{
                 let temp=res.VO.value*100;
-                temp=res.VO.value.toFixed(2)+'%';
+                temp=temp.toFixed(2)+'%';
                 res.VO.value=temp;
                 this.setChartDatas(this.charts[1],res.VO);
                 this.drawChart(this.charts[1].xData,this.charts[1].yData,this.charts[1].ref,false);

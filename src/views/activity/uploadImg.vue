@@ -6,7 +6,7 @@
     cancelText="确定"
   >
     <div slot="content" class="content">
-        <div class="img-body">
+        <div class="img-body image-fixed">
             <b v-if="!path">请选择活动图片</b>
             <img v-else :src="path"/>
         </div>
@@ -84,18 +84,15 @@ export default {
         .img-body{
             width: 380px;
             height: 380px;
+            line-height: 380px;
             border-radius: 5px;
             background: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             color: #ccc;
             font-size: 30px;
             margin-bottom: 20px;
-            >img{
-                width: 100%;
-                height: 100%;
-            }
+            display: inline-block;
+            position: relative;
+            >img{position: absolute;}
         }
         .img-thumb{
             display: flex;

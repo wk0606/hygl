@@ -1,7 +1,7 @@
 <template>
   <div>
     <pop-up
-        title="Banner图上传 (推荐图片尺寸 1000×400)"
+        title="广告页上传 (推荐图片尺寸 1000×400)"
         width="400"
         :views="views"
     >
@@ -10,7 +10,7 @@
             <div :style="{backgroundImage:'url('+picUrl+')'}">
                 <b v-if="!picUrl">暂未上传</b>
             </div>
-            <p class="tips">如果没有合适的Bannner图，可以<span @click="openSet">点我</span>去定制个性化Banner</p>
+            <p class="tips">如果没有合适的广告页，可以<span @click="openSet">点我</span>去定制个性化广告页</p>
             <input type="file" ref="upload" style="display:none;" @change="uploadBanner"/>
         </div>
         <el-button type="info" size="small" @click="selectImg" :loading="load" slot="footer">选择图片</el-button>

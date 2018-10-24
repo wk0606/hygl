@@ -8,7 +8,6 @@ export default new Vuex.Store({
         count:1,
         user:{},
         dptp:'',
-        name:''
     },
     getters:{
         getShopImg:state=>{
@@ -28,14 +27,6 @@ export default new Vuex.Store({
         updateShopImg(state,data){
             sessionStorage.setItem('dptpUrl',data);
             state.dptp=data;
-        },
-        updateName(state){
-            state.name='uuio';
         }
-    },
-    actions:{
-       checkout({commit}){
-           commit('updateName')
-       }
     }
 });

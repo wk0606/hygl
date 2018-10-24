@@ -348,6 +348,13 @@ var util = {
             document.body.appendChild(audio);
         } 
     },
+    async compareImgWidthAndHeight(pic){
+        var img=new Image();
+        img.src=pic;
+        await img.onload;
+        console.log(img)
+        return img.width;
+    },
     windowResize(callback, route) {
         callback();
         window.onresize = function () {

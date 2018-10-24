@@ -91,6 +91,10 @@ export const search = {
             });
         },
         exportExcel() {
+            if(!this.List.length){
+                this.$message('当前表格无数据','error');
+                return;
+            }
             var params=JSON.parse(JSON.stringify(this.params));
             params.zdrqs=params.xdsj[0]||'';
             params.zdrqz=params.xdsj[1]||'';

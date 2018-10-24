@@ -45,7 +45,7 @@
                     v-for="item in details.xqtp"
                     :key="item"
                 >
-                    <div :style="{backgroundImage:'url('+item+')'}"></div>
+                    <div class="image-fixed"><img :src="item" alt=""></div>
                     <i class="el-icon-circle-close" @click="removeImg(item)"></i>
                 </div>
                 <div class="t-btn" @click="openFile">
@@ -277,15 +277,13 @@ export default {
                 border: 1px solid #ddd;
                 margin: 10px 0 0 10px;
                 box-sizing: border-box;
-                padding: 3px;
                 cursor: pointer;
                 border-radius: 2px;
                 display: inline-block;
                 position: relative;
                 >div{
+                    width: 100%;
                     height: 100%;
-                    background-size: cover;
-                    background-position: center center;
                 }
                 >i{
                     position: absolute;

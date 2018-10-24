@@ -320,6 +320,7 @@ export default {
             width: 40%;
         }
         .mall-datas{
+            width:60%;
             flex-grow: 1;
             color: #999;
             tr:nth-child(1){
@@ -385,7 +386,8 @@ export default {
             width: 40%;
         }
         .mall-datas{
-            flex-grow: 1;
+            width: 60%;
+            //flex-grow: 1;
             color: #999;
             tr:nth-child(1){
                 td{
